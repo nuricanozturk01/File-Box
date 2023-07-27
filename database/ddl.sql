@@ -9,71 +9,55 @@ GO
 
 */
 
-
-
-/*
- * Represent the users' root folder 
- *
-*/
-create table filebox_root_folder
+-- Create the filebox_user Table
+CREATE TABLE filebox_user
 (
-	filebox_rootFolderId bigint primary key not null identity(1,1),
-	filebox_rootFolderName varchar(80) unique not null,
-	filebox_rootFolderPath varchar(80) unique not null
+    user_id uniqueidentifier PRIMARY KEY NOT NULL DEFAULT NEWID(), -- generated automatically
+    first_name varchar(80) NOT NULL,
+    last_name varchar(80) NOT NULL,
+    email varchar(100) NOT NULL UNIQUE, -- unique
+    username varchar(45) NOT NULL UNIQUE, -- unique
+    password varchar(80) NOT NULL, -- encrypted on api
+);
+
+-- Create the filebox_folder Table
+CREATE TABLE filebox_folder
+(
+    folder_id bigint PRIMARY KEY IDENTITY(1, 1), -- primary key folder id. if it is a root path, folder id is NULL
+    parent_folder_id bigint, -- parent folder id used antipattern (Always depends on one's parent)
+    user_id uniqueidentifier NOT NULL, -- user id for detect folder owner.
+    folder_name varchar(255) NOT NULL, -- only name of folder
+    creation_date datetime DEFAULT GETDATE(), -- creation date of folder
+    updated_date datetime DEFAULT GETDATE(),
+    folder_path varchar(255) NOT NULL,
+
+    FOREIGN KEY (parent_folder_id) REFERENCES filebox_folder(folder_id),
+    FOREIGN KEY (user_id) REFERENCES filebox_user(user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Create the filebox_file Table
+CREATE TABLE filebox_file
+(
+    file_id bigint PRIMARY KEY NOT NULL IDENTITY(1, 1), -- primary key file id
+    file_name varchar(255) NOT NULL, -- only file name
+    file_type varchar(45) NOT NULL DEFAULT 'N/A', -- if not entered the file type, default N/A
+    file_size bigint NOT NULL, -- stored byte
+    file_path varchar(255) NOT NULL, -- file fullpath 
+    created_date datetime DEFAULT GETDATE(), -- created file date
+    updated_date datetime DEFAULT GETDATE(), -- updated file date
+
+    folder_id bigint NOT NULL, -- foreign key. if null, root folder
+
+    FOREIGN KEY (folder_id) REFERENCES filebox_folder(folder_id) ON DELETE CASCADE
 );
 
 
-/*
- * Represent the user
- *
-*/
-create table filebox_user
-(
-	filebox_userId uniqueidentifier primary key not null,
-	filebox_firstName varchar(80) not null,
-	filebox_lastName varchar(80) not null,
-	filebox_username varchar(45) unique not null,
-	filebox_password varchar(80) not null,
-	filebox_rootFolderId bigint not null
-
-	foreign key (filebox_rootFolderId) references filebox_root_folder(filebox_rootFolderId) 
-				on delete cascade on update cascade
-
-);
-
-/*
- * Represent folders.
- * parentFolderId represent the subfolders
- *
-*/
-create table filebox_folder
-(
-	filebox_folderId bigint primary key identity(1,1),
-	filebox_parentFolderId bigint,
-	filebox_userId uniqueidentifier  not null,
-	filebox_folderName varchar(254) not null,
-	filebox_folderPath varchar(259) not null
-
-	foreign key (filebox_parentFolderId) references filebox_folder(filebox_folderId) on delete no action on update no action,
-	foreign key (filebox_userId) references filebox_user(filebox_userId) on update cascade
-);
-
-/*
- * Represent the files.
- *
-*/
-create table filebox_file
-(
-	filebox_fileId int primary key not null identity(1,1),
-	filebox_fileName varchar(254) not null,
-	filebox_filePath varchar(259) not null,
-	filebox_folderId bigint not null,
-
-	foreign key (filebox_folderId) references filebox_folder(filebox_folderId)
-);
 
 
-		
+
+
+
+
 
 -- ----------------------------------------------------- STORED PROCEDURES-----------------------------------------------------
 
@@ -81,23 +65,6 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
-/*
- *
- * Create Root Folder
- * 
- *
-*/
-CREATE PROCEDURE filebox_insert_rootFolder @folderName_param varchar(254), @folderPath_param varchar(259)
-AS 
-BEGIN
-	SET NOCOUNT ON;
-
-	INSERT INTO filebox_root_folder(filebox_rootFolderName, filebox_rootFolderPath) 
-				VALUES (@folderName_param, @folderPath_param);
-END
-GO
-
 
 
 
@@ -111,23 +78,38 @@ GO
 /*
  *
  * Insert User to database with given parameters
- * parameters (firstname, lastname, username, password) uuid generated automatically
+ * parameters (firstname, lastname, username, email, password) uuid generated automatically
  *
 */
+drop procedure if exists dbo.filebox_insert_user ;
+go
 
-CREATE PROCEDURE filebox_insert_user @firstname_param varchar(80), 
-									 @lastname_param varchar(80), 
-									 @username_param varchar(45),
-									 @password_param varchar(80),
-									 @rootFolder_param bigint
-AS 
-BEGIN
-	SET NOCOUNT ON;
+create procedure filebox_insert_user @firstname varchar(80), 
+									 @lastname varchar(80), 
+									 @username varchar(45),
+									 @email varchar(100),
+									 @password varchar(80)
+as 
+begin
+	set nocount on;
+	insert into filebox_user (user_id, first_name, last_name, username, email, password) values (newid(), @firstname, @lastname, @username, @email, @password);
+end
+go
 
-	INSERT INTO filebox_user (filebox_userId, filebox_firstName, filebox_lastName, filebox_username, filebox_password, filebox_rootFolderId) 
-				VALUES (NEWID(), @firstname_param, @lastname_param, @username_param, @password_param, @rootFolder_param);
-END
-GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
@@ -136,18 +118,25 @@ GO
  * parameters (parentFolderId, userId, folderName, folderPath)
  *
 */
-CREATE PROCEDURE filebox_insert_folder @parentFolder_param bigint, 
-									   @userId_param uniqueidentifier, 
-									   @folderName_param varchar(254),
-									   @folderPath_param varchar(259)
-AS 
-BEGIN
-	SET NOCOUNT ON;
+drop procedure if exists dbo.filebox_insert_folder;
+go
 
-	INSERT INTO filebox_folder (filebox_parentFolderId, filebox_userId, filebox_folderName, filebox_folderPath) 
-				VALUES (@parentFolder_param, @userId_param, @folderName_param, @folderPath_param);
-END
-GO
+create procedure filebox_insert_folder @parent_folder bigint, 
+									   @user_id uniqueidentifier, 
+									   @folder_name varchar(254),
+									   @folder_path varchar(259)
+as 
+begin
+	set nocount on;
+
+	insert into filebox_folder (parent_folder_id, user_id, folder_name, folder_path) values (@parent_folder, @user_id, @folder_name, @folder_path);
+end
+go
+
+
+
+
+
 
 
 
@@ -160,17 +149,25 @@ GO
  * parameters (folderId, fileName, filePath)
  *
 */
+drop procedure if exists dbo.filebox_insert_file;
+go
+
 CREATE PROCEDURE filebox_insert_file 
-						@folderId_param bigint, 
-						@fileName_param varchar(254), 
-						@filePath_param varchar(259)
-					
-AS 
-BEGIN
-	SET NOCOUNT ON;
-	INSERT INTO filebox_file (filebox_fileName, filebox_filePath, filebox_folderId) VALUES (@fileName_param, @filePath_param, @folderId_param);
-END
-GO
+						@file_name varchar(254), 
+						@file_type varchar(45),
+						@file_size bigint,
+						@file_path varchar(259),
+						@folder_id bigint
+as 
+begin
+	set nocount on;
+	insert into filebox_file (file_name, file_type, file_size, file_path, folder_id) values (@file_name, @file_type, @file_size, @file_path, @folder_id);
+end
+go
+
+
+
+
 
 
 
@@ -184,13 +181,15 @@ GO
  * parameters (fileId, folderId)
  *
 */
+drop procedure if exists dbo.filebox_file_deleteById;
+go
 
-CREATE PROCEDURE filebox_file_deleteById @fileId_param bigint, @folderId_param bigint
+CREATE PROCEDURE filebox_file_deleteById @file_id bigint, @folder_id bigint
 as
 begin
 	set nocount on;
-	delete from filebox_file where filebox_file.filebox_fileId = @fileId_param and 
-								   filebox_file.filebox_folderId = @folderId_param;
+	delete from filebox_file where filebox_file.file_id = @folder_id and 
+								   filebox_file.folder_id = @folder_id;
 end
 go
 
@@ -209,14 +208,18 @@ go
  * Deleted all files on folders.
  *
 */
-CREATE PROCEDURE filebox_folder_deleteById @folderId_param bigint, @userId_param uniqueidentifier
+
+drop procedure if exists dbo.filebox_folder_deleteById;
+
+go
+CREATE PROCEDURE filebox_folder_deleteById @folder_id bigint, @user_id uniqueidentifier
 as
 begin
 	set nocount on;
-	delete from filebox_file where filebox_file.filebox_folderId = @folderId_param;
+	delete from filebox_file where filebox_file.folder_id = @folder_id;
 
-	delete from filebox_folder where filebox_folder.filebox_folderId = @folderId_param and
-									 filebox_folder.filebox_userId = @userId_param
+	delete from filebox_folder where filebox_folder.folder_id = @folder_id and
+									 filebox_folder.user_id = @user_id
 end
 go
 
@@ -232,12 +235,15 @@ go
  * 
  *
 */
-CREATE PROCEDURE filebox_user_deleteById @userId_param uniqueidentifier
+drop procedure if exists dbo.filebox_user_deleteById;
+go
+
+CREATE PROCEDURE filebox_user_deleteById @user_id uniqueidentifier
 as
 begin
 	set nocount on;
 
-	delete from filebox_user where filebox_user.filebox_userId = @userId_param;
+	delete from filebox_user where filebox_user.user_id = @user_id;
 end
 go
 
@@ -252,12 +258,16 @@ go
  * 
  *
 */
-CREATE PROCEDURE filebox_user_deleteByUsername @username_param varchar(80)
+
+drop procedure if exists dbo.filebox_user_deleteByUsername;
+go
+
+CREATE PROCEDURE filebox_user_deleteByUsername @username varchar(80)
 as
 begin
 	set nocount on;
 
-	delete from filebox_user where filebox_user.filebox_username = @username_param;
+	delete from filebox_user where filebox_user.username = @username;
 end
 go
 -- ----------------------------------------------------- STORED PROCEDURES-----------------------------------------------------
@@ -267,6 +277,18 @@ go
 
 -- ----------------------------------------------------- TRIGGERS -----------------------------------------------------
 
+-- delete user informations when user removed
+drop trigger if exists dbo.RemoveFilesWhenDeletedNonParentFolder;
+go
+
+create trigger RemoveFilesWhenDeletedNonParentFolder on filebox_folder
+after delete
+as
+begin
+    set nocount on;
+    
+    delete from filebox_file where folder_id in (select folder_id from deleted);
+end;
 -- ----------------------------------------------------- TRIGGERS -----------------------------------------------------
 
 
@@ -276,20 +298,11 @@ go
 
 
 
-
--- ----------------------------------------------------- VIEWS -----------------------------------------------------
-CREATE VIEW viewUserFolders as 
-	select usr.filebox_username, dir.filebox_folderName, dir.filebox_folderPath
-			from filebox_user as usr, filebox_folder as dir where dir.filebox_userId = usr.filebox_userId;
-go 
-
-CREATE VIEW viewUserFiles as 
-	select usr.filebox_userId, usr.filebox_username, fi.filebox_fileName, fi.filebox_filePath
-			from filebox_user as usr, filebox_file as fi, filebox_folder as dir
-			where fi.filebox_folderId = dir.filebox_folderId and dir.filebox_userId = usr.filebox_userId;
-GO 
+/*
 -- ----------------------------------------------------- VIEWS -----------------------------------------------------
 
+-- ----------------------------------------------------- VIEWS -----------------------------------------------------
+*/
 
 
 
@@ -307,18 +320,6 @@ GO
 
 -- ----------------------------------------------------- FUNCTIONS -----------------------------------------------------
 
-
-create function getFoldersByUsername(@username varchar(80)) 
-returns table as
-	RETURN (select * from viewUserFolders where viewUserFolders.filebox_username = @username);
-go
-
-
-
-create function getFilesByUsername(@username varchar(80)) 
-returns table as
-	RETURN (select * from viewUserFiles where viewUserFiles.filebox_username = @username);
-go
 -- ----------------------------------------------------- FUNCTIONS -----------------------------------------------------
 
 
@@ -330,106 +331,53 @@ go
 
 
 -- ----------------------------------------------------- EXAMPLES -----------------------------------------------------
--- insert root folders
-exec filebox_insert_rootFolder "Nuri Can", 'C:\Users\hp\Desktop\file_box\Nuri Can';
-exec filebox_insert_rootFolder "Halil Can", 'C:\Users\hp\Desktop\file_box\Halil Can';
 
--- insert user
-insert into filebox_user (filebox_userId, filebox_firstName, filebox_lastName, filebox_username, filebox_password, filebox_rootFolderId) values 
-				('261F115D7-0324-41DC-928E-0025045F553E', 'Nuri Can', 'Ozturk', 'nuricanozturk','12345', 1);
+-- FAKE DATAS GENERATED BY CHAT-GPT
 
--- declare @id_1 uniqueidentifier = CONVERT(uniqueidentifier,'261F115D7-0324-41DC-928E-0025045F553E');
-DECLARE @id_1 uniqueidentifier = CONVERT(uniqueidentifier,'261F115D7-0324-41DC-928E-0025045F553E');
+exec filebox_insert_user  'John', 'Doe', 'johndoe', 'john.doe@example.com', 'hashed_password1'
+exec filebox_insert_user  'Jane', 'Smith', 'janesmith', 'jane.smith@example.com', 'hashed_password2'
 
-INSERT INTO filebox_user (filebox_userId, filebox_firstName, filebox_lastName, filebox_username, filebox_password, filebox_rootFolderId) 
-				VALUES (@id_1, 'Nuri Can', 'Ozturk', 'nuricanozturk','12345', 1);
-
-
-insert into filebox_user (filebox_userId, filebox_firstName, filebox_lastName, filebox_username, filebox_password, filebox_rootFolderId) values 
-				('1F0ECEB5-AC39-4E08-A45B-E8B82A856264', 'Halil Can', 'Ozturk','halilozturk', '12312455', 2);
-
-
--- creating first folder to root path
-exec filebox_insert_folder NULL, "A39BA087-FB27-469F-B199-101BF8CF1D4B", "FolderNuri", "Nuri Can\";
-exec filebox_insert_folder NULL, "A39BA087-FB27-469F-B199-101BF8CF1D4B", "FolderNuri_Ders", "Nuri Can\";
-
--- Creating subfolders
-exec filebox_insert_folder 3, "A39BA087-FB27-469F-B199-101BF8CF1D4B", "Design Patterns", "Nuri Can\FolderNuri_Ders";
-exec filebox_insert_folder 2, "A39BA087-FB27-469F-B199-101BF8CF1D4B", "Creational Design Patterns",  "Nuri Can\FolderNuri_Ders\Creational Design Patterns";
-
--- creating first folder to root path
-exec filebox_insert_folder NULL, "6FB05F7F-594C-46C1-98BD-FD54B026DA58", "FolderHalil", "Halil Can\"; 
-exec filebox_insert_folder NULL, "6FB05F7F-594C-46C1-98BD-FD54B026DA58", "FolderHalil_Ders", "Halil Can\"; 
-
-
--- creating some files on nurican
-exec filebox_insert_file 1, "first.txt", "/Nuri Can/Folder1/first.txt";
-exec filebox_insert_file 3, "design_pattern_notes.pdf", "Nuri Can\FolderNuri_Ders";
-exec filebox_insert_file 5, "creational_design_pattern_notes.pdf", "Nuri Can\FolderNuri_Ders\Creational Design Patterns";
-
--- creating some files on halil
-exec filebox_insert_file 7, "first.txt", "/Halil Can/Folder1/first.txt";
-
-
-
--- delete some folders
--- exec filebox_folder_deleteById 5, "61F115D7-0324-41DC-928E-0025045F553E";
-select * from viewUserFolders where viewUserFolders.filebox_username = 'nuricanozturk';
-
-
-
-select * from  dbo.getFilesByUsername('nuricanozturk');
-
-select * from filebox_root_folder;
 select * from filebox_user;
-select * from filebox_folder;
+
+exec filebox_insert_folder NULL, 'F9C94425-237B-41FF-9CAC-171897AC0CA7', 'Root Folder', 'root/user_id_1/';
+exec filebox_insert_folder 1, 'F9C94425-237B-41FF-9CAC-171897AC0CA7', 'Subfolder 1', 'root/user_id_1/Subfolder1/';
+exec filebox_insert_folder 1, 'F9C94425-237B-41FF-9CAC-171897AC0CA7', 'Subfolder 2', 'root/user_id_1/Subfolder2/';
+
+exec filebox_insert_folder NULL, '4CCA451E-027B-4E21-A112-9E73E8BA339A', 'Root Folder', 'root/user_id_2/';
+exec filebox_insert_folder 4, '4CCA451E-027B-4E21-A112-9E73E8BA339A', 'Subfolder 1', 'root/user_id_2/Subfolder1/';
+
+
+exec filebox_insert_file 'document1.txt', 'Text', 1024, 'root/user_id_1/document1.txt', 1;
+exec filebox_insert_file 'image1.jpg', 'Image', 2048, 'root/user_id_1/image1.jpg', 1;
+exec filebox_insert_file 'document2.txt', 'Text', 512, 'root/user_id_1/Subfolder1/document2.txt', 2;
+exec filebox_insert_file 'document3.txt', 'Text', 768, 'root/user_id_1/Subfolder1/document3.txt', 2;
+exec filebox_insert_file 'image2.jpg', 'Image', 3072, 'root/user_id_2/image2.jpg', 4;
+
+
+delete filebox_user from filebox_user where filebox_user.username = 'johndoe';
+
+
+exec filebox_user_deleteByUsername 'janesmith';
+go
+-- ----------------------------------------------------- EXAMPLES -----------------------------------------------------
 select * from filebox_file;
--- exec filebox_insert_folder NULL
+select * from filebox_folder;
+select * from filebox_user;
 
-
+delete filebox_file from filebox_file where filebox_file.file_name = 'image1.jpg';
+delete filebox_folder from filebox_folder where filebox_folder.folder_id = 2;
 
 
 
 /*
 
+
+
+use FileBoxDb;
 go
-exec filebox_folder_deleteById 2, "A39BA087-FB27-469F-B199-101BF8CF1D4B";
+drop table filebox_file;
+drop table filebox_folder;
+drop table filebox_user;
 go
-
-
-
-
-
-
-go
-exec filebox_file_deleteById 6, 6;
-go
-
-
-go
-exec filebox_insert_file 6, "project2.txt", "Nuri Can/projects";
-go
-
-go
-exec filebox_insert_folder NULL, "E14FCE8D-F89E-4287-8592-836F15B7D538", "Folder3" ,".../Folder1/Folder3";
-go
-
-
-go
-exec filebox_insert_folder 5, "D0160896-75C6-4136-AABC-159A3B86A027", "projects" ,"Nuri Can/projects";
-go
-
-/*
-
-GO  
-EXEC filebox_insert_user "Nuri Can", "OZTURK", "nuricanozturk", "12345"  
-GO  
-
-
-select * from filebox_user;*/
-
-select * from filebox_folder;
-select * from filebox_file;
 
 */
--- ----------------------------------------------------- EXAMPLES -----------------------------------------------------
