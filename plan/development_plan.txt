@@ -1,0 +1,37 @@
+Requirements:
+
+	Planned Architecure:
+		Layered Architecture
+		
+	Planned Design Patterns: 
+		1- microservice design pattern: API Gateway (Ocelot library)
+		 why:
+		 	1- Provide single endpoint for access the other microservices, so I can access only API Gateway on front-end part (like facade pattern)
+			2- Creates an additional possible single point of failure
+	
+	Planned microservices:
+		LoginService
+		FileDownloadService
+		FileUploadService
+		FileDeleteService [If needed]
+		FileCompressService [if we need zip both upload and download for folder]
+		FileViewingService
+
+	Planned Technologies and Libraries: (backend)
+		1- Ocleot Lib (for api gateway)
+		2- Asp .net core WEB API
+		3- Entity Framework Core with DB First
+		4- XUnit
+		5- Microsft.AspNetCore.Authentication.JwtBearer
+		6- Fluent Validation.AspNetCore
+		7- AutoMapper
+		8- Moq
+		9- Steeltoe (eureka) for discovering the microservices and communicate it.
+
+
+//.....
+
+
+
+
+
