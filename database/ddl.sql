@@ -356,7 +356,7 @@ exec filebox_insert_file 'image2.jpg', 'Image', 3072, 'root/user_id_2/image2.jpg
 
 delete filebox_user from filebox_user where filebox_user.username = 'johndoe';
 
-
+exec filebox_folder_deleteById 6, "5C69A30A-0B56-4A4D-A777-6B3656B14264";
 exec filebox_user_deleteByUsername 'janesmith';
 go
 -- ----------------------------------------------------- EXAMPLES -----------------------------------------------------
@@ -368,7 +368,7 @@ delete filebox_file from filebox_file where filebox_file.file_name = 'image1.jpg
 delete filebox_folder from filebox_folder where filebox_folder.folder_id = 2;
 
 
-
+update filebox_folder set folder_path = 'johndoe' where folder_path = 'johndoe\Subfolder1';
 /*
 
 
@@ -382,6 +382,3 @@ go
 
 */
 
-declare @Path varchar(100)
-set @Path = 'c:\CreatedFromSQL'
-EXEC master.dbo.xp_create_subdir @Path

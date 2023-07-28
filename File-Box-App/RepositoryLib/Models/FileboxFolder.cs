@@ -31,5 +31,7 @@ public partial class FileboxFolder
         UserId = userId;
         FolderName = folderName;
         FolderPath = folderPath;
+        CreationDate = DateTime.Now;
+        UpdatedDate = DateTime.Now;
     }
 }

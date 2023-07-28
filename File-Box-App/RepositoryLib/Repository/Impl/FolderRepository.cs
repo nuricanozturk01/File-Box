@@ -14,21 +14,22 @@ namespace RepositoryLib.Repository.Impl
             m_dbContext = dbContext;
         }
 
-        public IEnumerable<FileboxFolder> All => throw new NotImplementedException();
+        public IEnumerable<FileboxFolder> All => m_dbContext.FileboxFolders;
 
         public long Count()
         {
-            throw new NotImplementedException();
+            return m_dbContext.FileboxFolders.Count();
         }
 
-        public Task<long> CountAsync()
+        public async Task<long> CountAsync()
         {
-            throw new NotImplementedException();
+            return await m_dbContext.FileboxFolders.CountAsync();
         }
 
         public void Delete(FileboxFolder t)
         {
-            throw new NotImplementedException();
+            m_dbContext.FileboxFolders.Remove(t);
+            m_dbContext.SaveChanges();
         }
 
         public void DeleteAsync(FileboxFolder t)
@@ -38,7 +39,10 @@ namespace RepositoryLib.Repository.Impl
 
         public void DeleteById(long id)
         {
-            throw new NotImplementedException();
+            var folder = m_dbContext.FileboxFolders.Where(folder => folder.FolderId == id).FirstOrDefault();
+
+            if (folder != null)
+                Delete(folder);
         }
 
         public void DeleteByIdAsync(long id)
@@ -48,47 +52,47 @@ namespace RepositoryLib.Repository.Impl
 
         public bool ExistsById(long id)
         {
-            throw new NotImplementedException();
+            return m_dbContext.FileboxFolders.Where(folder => folder.FolderId == id) != null;
         }
 
-        public Task<bool> ExistsByIdAsync(long id)
+        public async Task<bool> ExistsByIdAsync(long id)
         {
-            throw new NotImplementedException();
+            return await Task.Run(() => m_dbContext.FileboxFolders.FirstOrDefaultAsync(folder => folder.FolderId!= id).Result) != null;
         }
 
-        public Task<IEnumerable<FileboxFolder>> FindAllAsync()
+        public async Task<IEnumerable<FileboxFolder>> FindAllAsync()
         {
-            throw new NotImplementedException();
+            return await m_dbContext.FileboxFolders.ToListAsync();
         }
 
         public IEnumerable<FileboxFolder> FindByFilter(Expression<Func<FileboxFolder, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return m_dbContext.FileboxFolders.Where(predicate);
         }
 
-        public Task<IEnumerable<FileboxFolder>> FindByFilterAsync(Expression<Func<FileboxFolder, bool>> predicate)
+        public async Task<IEnumerable<FileboxFolder>> FindByFilterAsync(Expression<Func<FileboxFolder, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await m_dbContext.FileboxFolders.Where(predicate).ToListAsync();
         }
 
         public FileboxFolder FindById(long id)
         {
-            throw new NotImplementedException();
+            return m_dbContext.FileboxFolders.FirstOrDefault(folder => folder.FolderId == id);
         }
 
-        public Task<FileboxFolder> FindByIdAsync(long id)
+        public async Task<FileboxFolder> FindByIdAsync(long id)
         {
-            throw new NotImplementedException();
+            return await m_dbContext.FileboxFolders.FirstOrDefaultAsync(folder => folder.FolderId == id);
         }
 
         public IEnumerable<FileboxFolder> FindByIds(IEnumerable<long> ids)
         {
-            throw new NotImplementedException();
+            return m_dbContext.FileboxFolders.Where(folder => ids.Contains(folder.FolderId)).ToList();
         }
 
-        public Task<IEnumerable<FileboxFolder>> FindByIdsAsync(IEnumerable<long> ids)
+        public async Task<IEnumerable<FileboxFolder>> FindByIdsAsync(IEnumerable<long> ids)
         {
-            throw new NotImplementedException();
+            return await m_dbContext.FileboxFolders.Where(folder => ids.Contains(folder.FolderId)).ToListAsync();
         }
 
         public void InsertFolder(long parentFolder, Guid userId, string folderName, string folderPath)
@@ -98,7 +102,9 @@ namespace RepositoryLib.Repository.Impl
 
         public FileboxFolder Save(FileboxFolder t)
         {
-            throw new NotImplementedException();
+            var folder = m_dbContext.FileboxFolders.Add(t).Entity;
+            m_dbContext.SaveChanges();
+            return folder;
         }
 
         public IEnumerable<FileboxFolder> Save(IEnumerable<FileboxFolder> entities)
@@ -106,9 +112,11 @@ namespace RepositoryLib.Repository.Impl
             throw new NotImplementedException();
         }
 
-        public Task<FileboxFolder> SaveAsync(FileboxFolder t)
+        public async Task<FileboxFolder> SaveAsync(FileboxFolder t)
         {
-            throw new NotImplementedException();
+            var entry = m_dbContext.FileboxFolders.Add(t);
+            await m_dbContext.SaveChangesAsync();
+            return entry.Entity;
         }
 
         public Task<IEnumerable<FileboxFolder>> SaveAsync(IEnumerable<FileboxFolder> entities)

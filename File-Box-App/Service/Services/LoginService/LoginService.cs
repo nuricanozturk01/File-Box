@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
+using Service;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
@@ -19,21 +20,23 @@ namespace FileBoxService.Service
             m_configuration = configuration;
         }
 
-        public string CreateToken()
+        public  string CreateToken()
         {
             var signinCredentials = GetSignInCredentials();
-            var tokenOption = GenerateTokenOptions(signinCredentials);
 
-            return new JwtSecurityTokenHandler().WriteToken(tokenOption);
+            var tokenOptions = GenerateTokenOptions(signinCredentials);
+
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            return accessToken;
         }
 
-        private SecurityToken GenerateTokenOptions(SigningCredentials signinCredentials)
+        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signinCredentials)
         {
             var jwtSettings = m_configuration.GetSection("JwtSettings");
 
             var tokenOptions = new JwtSecurityToken(
                     issuer: jwtSettings["validIssuer"],
-                    //audience: jwtSettings["validAudience"],
+                    audience: jwtSettings["validAudience"],
                     expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expires"])),
                     signingCredentials: signinCredentials);
 
@@ -48,18 +51,27 @@ namespace FileBoxService.Service
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-      
+
         public bool Logout(string username)
         {
             throw new NotImplementedException();
         }
-
+        internal void CreateDirectoryIfNotExists(string username)
+        {
+            var dirName = Util.DIRECTORY_BASE + username;
+            if (!Directory.Exists(dirName))
+                Directory.CreateDirectory(dirName);
+        }
         public bool Login(UserLoginDTO userLoginDTO)
         {
-            var user = m_userRepositoryDal.FindByFilterUser(usr => usr.Username == userLoginDTO.Username &&
-                                                        usr.Password == userLoginDTO.Password).FirstOrDefault();
+            var user = m_userRepositoryDal.FindByFilterUser(usr =>
+                                                        usr.Username == userLoginDTO.Username &&
+                                                        usr.Password == userLoginDTO.Password)
+                                            .FirstOrDefault();
             if (user is null)
                 return false;
+
+            CreateDirectoryIfNotExists(user.Username);
 
             return true;
         }

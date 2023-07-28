@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using RepositoryLib.DTO;
+using RepositoryLib.Models;
 
 namespace File_Box_App.Configuration
 {
@@ -6,7 +8,8 @@ namespace File_Box_App.Configuration
     {
         public MapperConfig() 
         {
-            
+            CreateMap<FolderViewDto, FileboxFolder>();   
+            CreateMap<FolderViewDto, FileboxFolder>().ReverseMap();   
         }
     }
 }
