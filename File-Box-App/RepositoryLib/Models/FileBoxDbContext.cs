@@ -13,7 +13,6 @@ public partial class FileBoxDbContext : DbContext
     {
     }
 
-    public virtual DbSet<InsertFolder> InsertFolderProcedure { get; set; }
     public virtual DbSet<FileboxFile> FileboxFiles { get; set; }
 
     public virtual DbSet<FileboxFolder> FileboxFolders { get; set; }
@@ -132,7 +131,6 @@ public partial class FileBoxDbContext : DbContext
                 .HasColumnName("username");
         });
 
-        modelBuilder.Entity<InsertFolder>().HasNoKey();
 
         OnModelCreatingPartial(modelBuilder);
     }

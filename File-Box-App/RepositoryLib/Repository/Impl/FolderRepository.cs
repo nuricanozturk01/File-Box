@@ -1,12 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RepositoryLib.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RepositoryLib.Repository.Impl
 {
@@ -18,20 +13,9 @@ namespace RepositoryLib.Repository.Impl
         {
             m_dbContext = dbContext;
         }
+
         public IEnumerable<FileboxFolder> All => throw new NotImplementedException();
 
-        public void InsertFolder(long parentFolder, Guid userId, string folderName, string folderPath)
-        {
-            var parentFolderParam = new SqlParameter("@parent_folder", parentFolder);
-            var userIdParam = new SqlParameter("@user_id", userId);
-            var folderNameParam = new SqlParameter("@folder_name", folderName);
-            var folderPathParam = new SqlParameter("@folder_path", folderPath);
-
-
-            m_dbContext.InsertFolderProcedure.FromSqlRaw(
-                "exec filebox_insert_folder @parent_folder, @user_id, @folder_name, @folder_path",
-                parentFolderParam, userIdParam, folderNameParam, folderPathParam);
-        }
         public long Count()
         {
             throw new NotImplementedException();
@@ -107,9 +91,14 @@ namespace RepositoryLib.Repository.Impl
             throw new NotImplementedException();
         }
 
+        public void InsertFolder(long parentFolder, Guid userId, string folderName, string folderPath)
+        {
+            throw new NotImplementedException();
+        }
+
         public FileboxFolder Save(FileboxFolder t)
         {
-            return m_dbContext.Add(t).Entity;
+            throw new NotImplementedException();
         }
 
         public IEnumerable<FileboxFolder> Save(IEnumerable<FileboxFolder> entities)

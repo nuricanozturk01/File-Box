@@ -1,93 +1,288 @@
-﻿using RepositoryLib.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using RepositoryLib.Models;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RepositoryLib.Repository.Impl
 {
     public class UserRepository : IUserRepository
     {
-        public IEnumerable<FileboxUser> All => throw new NotImplementedException();
+        private readonly FileBoxDbContext m_context;
 
+        public UserRepository(FileBoxDbContext context) => m_context = context;
+
+
+        /*
+         * 
+         * Get all users from db 
+         * 
+         */
+        public IEnumerable<FileboxUser> All => m_context.FileboxUsers;
+
+
+
+
+
+
+
+        /*
+         * 
+         * Get user count from db
+         * 
+         */
         public long Count()
         {
-            throw new NotImplementedException();
+            return m_context.FileboxUsers.Count();
         }
 
-        public Task<long> CountAsync()
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Get user count async from db
+         * 
+         */
+        public async Task<long> CountAsync()
         {
-            throw new NotImplementedException();
+            return await m_context.FileboxUsers.CountAsync();
         }
 
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Delete user with given parameter
+         * 
+         */
         public void Delete(FileboxUser t)
         {
-            throw new NotImplementedException();
+            m_context.FileboxUsers.Remove(t);
         }
 
-        public void DeleteAsync(FileboxUser t)
-        {
-            throw new NotImplementedException();
-        }
 
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Delete User By Id 
+         * 
+         */
         public void DeleteById(Guid id)
         {
-            throw new NotImplementedException();
+            var user = m_context.FileboxUsers.FirstOrDefault(usr => usr.UserId == id);
+            m_context.FileboxUsers.Remove(user);
         }
 
-        public void DeleteByIdAsync(Guid id)
+
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Delete User By Id async
+         * 
+         */
+        public async void DeleteByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var user = m_context.FileboxUsers.FirstOrDefaultAsync(usr => usr.UserId == id).Result;
+            await Task.Run(() => m_context.FileboxUsers.Remove(user));
         }
 
+
+
+
+
+
+
+
+        /*
+         * 
+         * Exists User By Id 
+         * 
+         */
         public bool ExistsById(Guid id)
         {
-            throw new NotImplementedException();
+            return m_context.FileboxUsers.FirstOrDefault(usr => usr.UserId == id) != null;
         }
 
-        public Task<bool> ExistsByIdAsync(Guid id)
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Exists User By Id async
+         * 
+         */
+        public async Task<bool> ExistsByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await Task.Run(() => m_context.FileboxUsers.FirstOrDefaultAsync(usr => usr.UserId != id).Result) != null;
         }
 
-        public Task<IEnumerable<FileboxUser>> FindAllAsync()
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Find All Users async
+         * 
+         */
+        public async Task<IEnumerable<FileboxUser>> FindAllAsync()
         {
-            throw new NotImplementedException();
+            return await Task.Run(() => m_context.FileboxUsers);
         }
 
+
+
+
+
+
+
+
+        /*
+         * 
+         * Find Users by predicate
+         * 
+         */
         public IEnumerable<FileboxUser> FindByFilter(Expression<Func<FileboxUser, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return m_context.FileboxUsers.Where(predicate);
         }
 
-        public Task<IEnumerable<FileboxUser>> FindByFilterAsync(Expression<Func<FileboxUser, bool>> predicate)
+
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Find Users by predicate async
+         * 
+         */
+        public async Task<IEnumerable<FileboxUser>> FindByFilterAsync(Expression<Func<FileboxUser, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await Task.Run(() => m_context.FileboxUsers.Where(predicate));
         }
 
+
+
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Find User by id
+         * 
+         */
         public FileboxUser FindById(Guid id)
         {
-            throw new NotImplementedException();
+            // if not found return null
+            return m_context.FileboxUsers.FirstOrDefault(usr => usr.UserId == id);
         }
 
-        public Task<FileboxUser> FindByIdAsync(Guid id)
+
+        /*
+         * 
+         * Find User by id async
+         * 
+         */
+        public async Task<FileboxUser> FindByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await Task.Run(() => m_context.FileboxUsers.FirstOrDefaultAsync(usr => usr.UserId == id));
         }
 
-        public IEnumerable<FileboxUser> FindByIds(IEnumerable<Guid> ids)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<IEnumerable<FileboxUser>> FindByIdsAsync(IEnumerable<Guid> ids)
-        {
-            throw new NotImplementedException();
-        }
 
+
+
+
+
+
+
+        /*
+         * 
+         * Save User to database
+         * 
+         */
         public FileboxUser Save(FileboxUser t)
+        {
+            var user = m_context.FileboxUsers.Add(t).Entity;
+            m_context.SaveChanges();
+            return user;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Save user to database async
+         * 
+         */
+        public async Task<FileboxUser> SaveAsync(FileboxUser t)
+        {
+            var user = await Task.Run(() => m_context.FileboxUsers.AddAsync(t).Result.Entity);
+            m_context.SaveChanges();
+            return user;
+        }
+
+
+        //-------------------------------------------------------------------------------
+
+        public void DeleteAsync(FileboxUser t)
         {
             throw new NotImplementedException();
         }
@@ -96,8 +291,12 @@ namespace RepositoryLib.Repository.Impl
         {
             throw new NotImplementedException();
         }
+        public IEnumerable<FileboxUser> FindByIds(IEnumerable<Guid> ids)
+        {
+            throw new NotImplementedException();
+        }
 
-        public Task<FileboxUser> SaveAsync(FileboxUser t)
+        public Task<IEnumerable<FileboxUser>> FindByIdsAsync(IEnumerable<Guid> ids)
         {
             throw new NotImplementedException();
         }

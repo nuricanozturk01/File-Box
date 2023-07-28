@@ -1,0 +1,17 @@
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\bin\Debug\net6.0\Presentation.deps.json
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\bin\Debug\net6.0\Presentation.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\bin\Debug\net6.0\Presentation.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\bin\Debug\net6.0\RepositoryLib.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\bin\Debug\net6.0\Service.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\bin\Debug\net6.0\RepositoryLib.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\bin\Debug\net6.0\Service.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\Presentation.csproj.AssemblyReference.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\Presentation.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\Presentation.AssemblyInfoInputs.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\Presentation.AssemblyInfo.cs
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\Presentation.csproj.CoreCompileInputs.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\Presentation.csproj.CopyComplete
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\Presentation.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\refint\Presentation.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\Presentation.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\Presentation\obj\Debug\net6.0\ref\Presentation.dll

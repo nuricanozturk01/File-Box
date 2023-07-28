@@ -85,3 +85,4 @@ C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Mic
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\obj\Debug\net6.0\LoginService.RazorAssemblyInfo.cache
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\obj\Debug\net6.0\LoginService.RazorAssemblyInfo.cs
+C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace RepositoryLib.Repository
 {
-    public interface ICrudRepository <T, ID>
+    public interface ICrudRepository<T, ID>
     {
         IEnumerable<T> All { get; }
 

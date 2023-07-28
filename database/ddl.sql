@@ -339,12 +339,12 @@ exec filebox_insert_user  'Jane', 'Smith', 'janesmith', 'jane.smith@example.com'
 
 select * from filebox_user;
 
-exec filebox_insert_folder NULL, 'F9C94425-237B-41FF-9CAC-171897AC0CA7', 'Root Folder', 'root/user_id_1/';
-exec filebox_insert_folder 1, 'F9C94425-237B-41FF-9CAC-171897AC0CA7', 'Subfolder 1', 'root/user_id_1/Subfolder1/';
-exec filebox_insert_folder 1, 'F9C94425-237B-41FF-9CAC-171897AC0CA7', 'Subfolder 2', 'root/user_id_1/Subfolder2/';
+exec filebox_insert_folder NULL, '5C69A30A-0B56-4A4D-A777-6B3656B14264', 'Root Folder', 'root/user_id_1/';
+exec filebox_insert_folder 1, '5C69A30A-0B56-4A4D-A777-6B3656B14264', 'Subfolder 1', 'root/user_id_1/Subfolder1/';
+exec filebox_insert_folder 1, '5C69A30A-0B56-4A4D-A777-6B3656B14264', 'Subfolder 2', 'root/user_id_1/Subfolder2/';
 
-exec filebox_insert_folder NULL, '4CCA451E-027B-4E21-A112-9E73E8BA339A', 'Root Folder', 'root/user_id_2/';
-exec filebox_insert_folder 4, '4CCA451E-027B-4E21-A112-9E73E8BA339A', 'Subfolder 1', 'root/user_id_2/Subfolder1/';
+exec filebox_insert_folder NULL, 'B2D40BDD-2360-4A40-930F-F0A8348771C5', 'Root Folder', 'root/user_id_2/';
+exec filebox_insert_folder 4, 'B2D40BDD-2360-4A40-930F-F0A8348771C5', 'Subfolder 1', 'root/user_id_2/Subfolder1/';
 
 
 exec filebox_insert_file 'document1.txt', 'Text', 1024, 'root/user_id_1/document1.txt', 1;
@@ -381,3 +381,7 @@ drop table filebox_user;
 go
 
 */
+
+declare @Path varchar(100)
+set @Path = 'c:\CreatedFromSQL'
+EXEC master.dbo.xp_create_subdir @Path
