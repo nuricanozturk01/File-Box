@@ -1,0 +1,199 @@
+C:\Users\hp\AppData\Local\Temporary Internet Files
+C:\Users\hp\AppData\Local\Microsoft\Windows\Temporary Internet Files
+C:\Users\hp\AppData\Local\Microsoft\Windows\INetCache\Low\Content.IE5
+C:\Users\hp\AppData\Local\Microsoft\Windows\INetCache\Content.IE5
+C:\Users\hp\AppData\Local\History
+C:\Users\hp\AppData\Local\Application Data
+C:\Windows\WUModels
+C:\Windows\Temp
+C:\Windows\System32\sru
+C:\Windows\System32\spool\SERVERS
+C:\Windows\System32\spool\PRINTERS
+C:\Windows\System32\SleepStudy
+C:\Program Files\WindowsApps
+C:\Program Files\Windows Defender Advanced Threat Protection\Classification\Configuration
+C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\Log
+C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\JOBS
+C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA
+C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\Binn\Xtp
+C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\Backup
+C:\Users\hp\Documents\My Videos
+C:\Users\hp\Documents\My Pictures
+C:\Users\hp\Documents\My Music
+C:\Users\hp\Cookies
+C:\Users\hp\Application Data
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\Trace
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\Temp\PSScriptOutputs
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\SenseNDR
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\SenseCM
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\Platform
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\Downloads
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\DLP
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\DataCollection
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\Cyber
+C:\Users\All Users\Microsoft\Windows Defender Advanced Threat Protection\Cache
+C:\Users\All Users\Microsoft\Windows Defender\Support
+C:\Users\All Users\Microsoft\Windows Defender\Scans
+C:\Users\All Users\Microsoft\Windows Defender\Quarantine
+C:\Users\All Users\Microsoft\Windows Defender\Network Inspection System
+C:\Users\All Users\Microsoft\Windows Defender\LocalCopy
+C:\Users\All Users\Microsoft\Windows Defender\Features
+C:\Users\All Users\Microsoft\Windows Defender\DLPCache
+C:\Users\All Users\Microsoft\Windows Defender\Clean Store
+C:\Users\All Users\Microsoft\Windows\wfp
+C:\Users\All Users\Microsoft\Windows\WER\ReportArchive\Kernel_190_7af4ffcc596332792c6b0ea50ba9718eafc9a6d_00000000_cab_f65f49e5-5903-4b85-b182-611610f15f07
+C:\Users\All Users\Microsoft\Windows\WER\ReportArchive\AppCrash_git.exe_53268e17f1a518bb816e35ebb2aa836be8af90_56648f34_0906e3a6-701c-4f2c-a260-539058f493dd
+C:\Users\All Users\Microsoft\Windows\SystemData
+C:\Users\All Users\Microsoft\Windows\Power Efficiency Diagnostics
+C:\Users\All Users\Microsoft\Windows\PackagedEventProviders
+C:\Users\All Users\Microsoft\Windows\Models
+C:\Users\All Users\Microsoft\Windows\LfSvc
+C:\Users\All Users\Microsoft\Windows\CapabilityAccessManager
+C:\Users\All Users\Microsoft\Windows\AppRepository
+C:\Users\All Users\Microsoft\Spectrum
+C:\Users\All Users\Microsoft\SmsRouter
+C:\Users\All Users\Microsoft\Search\Data
+C:\Users\All Users\Microsoft\Provisioning\AssetCache
+C:\Users\All Users\Microsoft\Network\Downloader
+C:\Users\All Users\Microsoft\NetFramework\BreadcrumbStore
+C:\Users\All Users\Microsoft\Diagnosis
+C:\Users\All Users\Microsoft\Crypto\SystemKeys
+C:\Users\All Users\Microsoft\Crypto\RSA\S-1-5-18
+C:\Users\All Users\Microsoft\Crypto\PCPKSP\WindowsAIK
+C:\Users\hp\Templates
+C:\Users\hp\Start Menu
+C:\Windows\Logs\SystemRestore
+C:\Windows\LiveKernelReports
+C:\Windows\CSC
+C:\Windows\SysWOW64\Msdtc
+C:\Users\Public\Documents\My Videos
+C:\Users\Public\Documents\My Pictures
+C:\Users\Public\Documents\My Music
+C:\Users\ntfs
+C:\Users\Default\Templates
+C:\Users\Default\Start Menu
+C:\Users\Default\SendTo
+C:\Users\Default\Recent
+C:\Users\Default\PrintHood
+C:\Users\Default\NetHood
+C:\Users\Default\My Documents
+C:\Users\Default\Local Settings
+C:\Users\Default\Documents\My Videos
+C:\Users\Default\Documents\My Pictures
+C:\Users\Default\Documents\My Music
+C:\Users\Default\Cookies
+C:\Users\Default\Application Data
+C:\Users\Default\AppData\Local\Temporary Internet Files
+C:\Users\Default\AppData\Local\Microsoft\Windows\Temporary Internet Files
+C:\Users\Default\AppData\Local\History
+C:\Users\Default\AppData\Local\Application Data
+C:\Windows\ServiceState
+C:\Windows\ServiceProfiles\SQLTELEMETRY
+C:\Windows\ServiceProfiles\SQLSERVERAGENT
+C:\Windows\ServiceProfiles\NetworkService
+C:\Windows\ServiceProfiles\MSSQLSERVER
+C:\Windows\ServiceProfiles\MSSQL$SQLEXPRESS01
+C:\Windows\ServiceProfiles\MSSQL$SQLEXPRESS
+C:\Windows\ServiceProfiles\MSSQL$MSSQLSERVER02
+C:\Windows\ServiceProfiles\MSSQL$MSSQLSERVER01
+C:\Windows\ServiceProfiles\LocalService
+C:\Windows\security\cap
+C:\Windows\security\audit
+C:\Windows\Resources\Themes\aero\VSCache
+C:\Windows\Provisioning\Autopilot
+C:\Windows\Prefetch
+C:\Windows\ModemLogs
+C:\Windows\appcompat\Programs
+C:\Windows\appcompat\appraiser
+C:\Users\All Users\WindowsHolographicDevices
+C:\Users\All Users\Templates
+C:\Users\All Users\Start Menu
+C:\Users\All Users\Packages
+C:\Users\All Users\MySQL\MySQL Server 8.0\Data
+C:\Users\All Users\HP\HP Touchpoint Analytics Client
+C:\Users\All Users\ESET\ESET Security\Diagnostics
+C:\Users\All Users\Documents
+C:\Users\All Users\Desktop
+C:\Users\All Users\Application Data
+C:\Windows\System32\wbem\MOF
+C:\Windows\System32\config
+C:\Windows\System32\Com\dmp
+C:\ProgramData\WindowsHolographicDevices
+C:\ProgramData\Templates
+C:\ProgramData\Start Menu
+C:\ProgramData\Packages
+C:\ProgramData\MySQL\MySQL Server 8.0\Data
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\Trace
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\Temp\PSScriptOutputs
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\SenseNDR
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\SenseCM
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\Platform
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\Downloads
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\DLP
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\DataCollection
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\Cyber
+C:\ProgramData\Microsoft\Windows Defender Advanced Threat Protection\Cache
+C:\ProgramData\Microsoft\Windows Defender\Support
+C:\ProgramData\Microsoft\Windows Defender\Scans
+C:\ProgramData\Microsoft\Windows Defender\Quarantine
+C:\ProgramData\Microsoft\Windows Defender\Network Inspection System
+C:\ProgramData\Microsoft\Windows Defender\LocalCopy
+C:\ProgramData\Microsoft\Windows Defender\Features
+C:\ProgramData\Microsoft\Windows Defender\DLPCache
+C:\ProgramData\Microsoft\Windows Defender\Clean Store
+C:\ProgramData\Microsoft\Windows\wfp
+C:\ProgramData\Microsoft\Windows\WER\ReportArchive\Kernel_190_7af4ffcc596332792c6b0ea50ba9718eafc9a6d_00000000_cab_f65f49e5-5903-4b85-b182-611610f15f07
+C:\ProgramData\Microsoft\Windows\WER\ReportArchive\AppCrash_git.exe_53268e17f1a518bb816e35ebb2aa836be8af90_56648f34_0906e3a6-701c-4f2c-a260-539058f493dd
+C:\ProgramData\Microsoft\Windows\SystemData
+C:\ProgramData\Microsoft\Windows\Power Efficiency Diagnostics
+C:\ProgramData\Microsoft\Windows\PackagedEventProviders
+C:\ProgramData\Microsoft\Windows\Models
+C:\ProgramData\Microsoft\Windows\LfSvc
+C:\ProgramData\Microsoft\Windows\CapabilityAccessManager
+C:\ProgramData\Microsoft\Windows\AppRepository
+C:\ProgramData\Microsoft\Spectrum
+C:\ProgramData\Microsoft\SmsRouter
+C:\ProgramData\Microsoft\Search\Data
+C:\ProgramData\Microsoft\Provisioning\AssetCache
+C:\ProgramData\Microsoft\Network\Downloader
+C:\ProgramData\Microsoft\NetFramework\BreadcrumbStore
+C:\ProgramData\Microsoft\Diagnosis
+C:\ProgramData\Microsoft\Crypto\SystemKeys
+C:\ProgramData\Microsoft\Crypto\RSA\S-1-5-18
+C:\ProgramData\Microsoft\Crypto\PCPKSP\WindowsAIK
+C:\ProgramData\HP\HP Touchpoint Analytics Client
+C:\ProgramData\ESET\ESET Security\Diagnostics
+C:\ProgramData\Documents
+C:\ProgramData\Desktop
+C:\ProgramData\Application Data
+C:\Users\hp\NetHood
+C:\Users\hp\My Documents
+C:\Users\hp\Local Settings
+C:\Windows\SysWOW64\Tasks
+C:\Windows\SysWOW64\sru
+C:\Windows\SysWOW64\NetworkList
+C:\Windows\SysWOW64\Configuration
+C:\Windows\SysWOW64\config
+C:\Windows\SysWOW64\Com\dmp
+C:\Windows\SystemTemp
+C:\System Volume Information
+C:\Recovery
+C:\$Recycle.Bin\S-1-5-21-1117853245-1034308624-3347480202-1006
+C:\Users\hp\SendTo
+C:\Users\hp\Recent
+C:\Users\hp\PrintHood
+C:\Users\Default User
+C:\Documents and Settings
+C:\$Recycle.Bin\S-1-5-21-1117853245-1034308624-3347480202-1000
+C:\Windows\System32\WebThreatDefSvc
+C:\Windows\System32\WDI
+C:\Windows\System32\Tasks
+C:\Windows\System32\RsFx
+C:\Windows\System32\networklist
+C:\Windows\System32\MsDtc
+C:\Windows\System32\LogFiles\WMI\RtBackup
+C:\Windows\System32\ias
+C:\Windows\System32\DriverState
+C:\Windows\System32\drivers\DriverData
+C:\Windows\System32\Configuration
+C:\$Recycle.Bin\S-1-5-18

@@ -280,6 +280,23 @@ namespace RepositoryLib.Repository.Impl
         }
 
 
+
+
+
+
+
+       /*
+        * 
+        * Update user
+        * 
+        */
+        public FileboxUser Update(FileboxUser user)
+        {
+            m_context.Update(user);
+            m_context.SaveChanges();
+            return user;
+        }
+
         //-------------------------------------------------------------------------------
 
         public void DeleteAsync(FileboxUser t)
@@ -305,5 +322,7 @@ namespace RepositoryLib.Repository.Impl
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

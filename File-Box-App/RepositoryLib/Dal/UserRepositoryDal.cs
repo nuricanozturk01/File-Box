@@ -81,5 +81,12 @@ namespace RepositoryLib.Dal
         {
             return await Task.Run(() => m_userRepository.FindByIdAsync(id));
         }
+
+
+
+        public FileboxUser Update(FileboxUser user)
+        {
+            return m_userRepository.Update(user);
+        }
     }
 }

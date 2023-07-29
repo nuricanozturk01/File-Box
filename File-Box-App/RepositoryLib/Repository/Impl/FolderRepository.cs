@@ -100,6 +100,12 @@ namespace RepositoryLib.Repository.Impl
             throw new NotImplementedException();
         }
 
+        public void RemoveAllAsync(IEnumerable<FileboxFolder> folders)
+        {
+            m_dbContext.RemoveRange(folders);
+            m_dbContext.SaveChanges();
+        }
+
         public FileboxFolder Save(FileboxFolder t)
         {
             var folder = m_dbContext.FileboxFolders.Add(t).Entity;
@@ -122,6 +128,13 @@ namespace RepositoryLib.Repository.Impl
         public Task<IEnumerable<FileboxFolder>> SaveAsync(IEnumerable<FileboxFolder> entities)
         {
             throw new NotImplementedException();
+        }
+
+        public FileboxFolder Update(FileboxFolder folder)
+        {
+            m_dbContext.Update(folder);
+            m_dbContext.SaveChanges();
+            return folder;
         }
     }
 }

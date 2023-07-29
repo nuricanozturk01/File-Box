@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
+using RepositoryLib.Models;
 using Service;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -56,22 +57,28 @@ namespace FileBoxService.Service
         {
             throw new NotImplementedException();
         }
-        internal void CreateDirectoryIfNotExists(string username)
+        internal void CreateDirectoryIfNotExists(string username, Guid userId, FileboxUser user)
         {
             var dirName = Util.DIRECTORY_BASE + username;
+
             if (!Directory.Exists(dirName))
+            {
                 Directory.CreateDirectory(dirName);
+                user.FileboxFolders.Add(new FileboxFolder(null, userId, username, username));
+                m_userRepositoryDal.Update(user);
+            }
         }
+
         public bool Login(UserLoginDTO userLoginDTO)
         {
-            var user = m_userRepositoryDal.FindByFilterUser(usr =>
-                                                        usr.Username == userLoginDTO.Username &&
-                                                        usr.Password == userLoginDTO.Password)
-                                            .FirstOrDefault();
+            var user = m_userRepositoryDal
+                .FindByFilterUser(user => user.Username == userLoginDTO.Username && user.Password == userLoginDTO.Password)
+                .FirstOrDefault();
+
             if (user is null)
                 return false;
-
-            CreateDirectoryIfNotExists(user.Username);
+            
+            CreateDirectoryIfNotExists(user.Username, user.UserId, user);
 
             return true;
         }

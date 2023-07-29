@@ -2,18 +2,17 @@
 {
     public class FolderSaveDTO
     {
-
-
-        public string folderName { get; set; }
+        public string newFolderName { get; set; }
+        public string currentFolderPath { get; set; }
+        public string userId { get; set; }
 
         public FolderSaveDTO() { }
 
-        public FolderSaveDTO(string folderName)
+        public FolderSaveDTO(string newFolderName, string currentFolderPath, string userId)
         {
-         
-
-            this.folderName = folderName;
-
+            this.newFolderName = newFolderName;
+            this.currentFolderPath = currentFolderPath;
+            this.userId = userId;
         }
     }
 }

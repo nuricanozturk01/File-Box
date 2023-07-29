@@ -103,8 +103,15 @@ namespace RepositoryLib.Dal
         {
            return await m_folderRepository.SaveAsync(t);
         }
-
-
+        
+        public void RemoveAll(IEnumerable<FileboxFolder> folders)
+        {
+            m_folderRepository.RemoveAllAsync(folders);
+        }
+        public FileboxFolder Update(FileboxFolder folder)
+        {
+            return m_folderRepository.Update(folder);
+        }
 
     }
 }
