@@ -97,7 +97,7 @@ namespace Service.Services.FolderService
         public async void RenameFolder(long folderId, string newFolderName)
         {
             var folder = await m_folderDal.FindByIdAsync(folderId); // find folder by id
-            
+            var oldName = folder.FolderName;
             // nuricanozturk/dev/nuri     new name: can
             var oldPathParent = Path.GetDirectoryName(folder.FolderPath); // without last folder (nuricanozturk/dev)
             var newFullPath = Path.Combine(oldPathParent, newFolderName); // nuricanozturk/dev/can
@@ -107,8 +107,9 @@ namespace Service.Services.FolderService
             folder.FolderName = newFolderName;
             folder.FolderPath = newFullPath;
             folder.UpdatedDate = DateTime.Now;
-           
+            folder.FileboxFiles.ToList().ForEach(file => file.FilePath = file.FilePath.Replace(oldName, newFolderName));
             m_folderDal.Update(folder);
+
         }
     }
 }

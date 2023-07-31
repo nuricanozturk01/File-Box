@@ -9,7 +9,9 @@ namespace File_Box_App.Configuration
         public MapperConfig() 
         {
             CreateMap<FolderViewDto, FileboxFolder>();   
-            CreateMap<FolderViewDto, FileboxFolder>().ReverseMap();   
+            CreateMap<FolderViewDto, FileboxFolder>().ReverseMap();
+            CreateMap<FileboxFile, FileViewDto>().ReverseMap();
+            
         }
     }
 }

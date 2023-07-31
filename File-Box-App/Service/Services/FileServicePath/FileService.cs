@@ -1,4 +1,5 @@
-﻿using RepositoryLib.Dal;
+﻿using AutoMapper;
+using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
 
@@ -8,11 +9,13 @@ namespace Service.Services.FileServicePath
     {
         private readonly FolderRepositoryDal m_folderDal;
         private readonly FileRepositoryDal m_fileDal;
+        private readonly IMapper m_mapper;
 
-        public FileService(FileRepositoryDal fileDal, FolderRepositoryDal folderDal)
+        public FileService(FileRepositoryDal fileDal, FolderRepositoryDal folderDal, IMapper mapper)
         {
             m_fileDal = fileDal;
             m_folderDal = folderDal;
+            m_mapper = mapper;
         }
 
         public async Task<bool> CreateFile(FileSaveDto fileSaveDto)
@@ -45,20 +48,26 @@ namespace Service.Services.FileServicePath
             return true;
         }
 
-        public async Task<IEnumerable<FileboxFile>?> GetFilesByUserIdAsync(Guid userId, long folderId)
+        // Return the all files on specific folder with given parameters userId and folderId
+        public async Task<IEnumerable<FileViewDto>?> GetFilesByUserIdAndFolderIdAsync(Guid userId, long folderId)
         {
-            return await m_fileDal.FindByFilterAsync(f => f.FolderId == folderId);
+            var files =  await m_fileDal.FindByFilterAsync(f => f.FolderId == folderId);
+
+            return files.AsParallel().Select(file => m_mapper.Map<FileViewDto>(file));
         }
 
         public void RenameFile(long fileId, string newFileName)
         {
             var fileObj = m_fileDal.FindById(fileId);
+            
             var pathWithoutFolderName = Path.GetDirectoryName(fileObj.FilePath);
             var newFilePath = Path.Combine(pathWithoutFolderName, newFileName);
 
             File.Move(Util.DIRECTORY_BASE + fileObj.FilePath, Util.DIRECTORY_BASE + newFilePath);
+            
             fileObj.FileName = newFileName;
             fileObj.FilePath = newFilePath;
+            fileObj.UpdatedDate = DateTime.Now;
 
             m_fileDal.Update(fileObj);
         }

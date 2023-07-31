@@ -67,7 +67,7 @@ namespace Presentation.Controllers
         [HttpGet("find/all/id")]
         public async Task<IActionResult> FindFoldersByUserId([FromQuery(Name = "uid")] string uid, [FromQuery(Name = "folderId")] long folderId)
         {
-            return Ok(await m_fileService.GetFilesByUserIdAsync(Guid.Parse(uid), folderId));
+            return Ok(await m_fileService.GetFilesByUserIdAndFolderIdAsync(Guid.Parse(uid), folderId));
         }
     }
 }
