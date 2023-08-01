@@ -97,11 +97,16 @@ namespace RepositoryLib.Dal
             return await m_fileRepository.SaveAsync(t);
         }
 
-
+        
 
         public FileboxFile Update(FileboxFile file)
         {
             return m_fileRepository.Update(file);
+        }
+
+        public async Task UpdateAll(IEnumerable<FileboxFile> files)
+        {
+            await m_fileRepository.UpdateAll(files);
         }
     }
 }

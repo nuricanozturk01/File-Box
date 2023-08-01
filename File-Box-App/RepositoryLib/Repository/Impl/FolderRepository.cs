@@ -125,9 +125,11 @@ namespace RepositoryLib.Repository.Impl
             return entry.Entity;
         }
 
-        public Task<IEnumerable<FileboxFolder>> SaveAsync(IEnumerable<FileboxFolder> entities)
+        public async Task<IEnumerable<FileboxFolder>> SaveAsync(IEnumerable<FileboxFolder> entities)
         {
-            throw new NotImplementedException();
+            entities.ToList().ForEach(f => m_dbContext.FileboxFolders.Add(f));
+            await m_dbContext.SaveChangesAsync();
+            return entities;
         }
 
         public FileboxFolder Update(FileboxFolder folder)
@@ -135,6 +137,12 @@ namespace RepositoryLib.Repository.Impl
             m_dbContext.Update(folder);
             m_dbContext.SaveChanges();
             return folder;
+        }
+
+        public async Task UpdateAll(IEnumerable<FileboxFolder> folders)
+        {
+            //await Task.Run(() => folders.ToList().ForEach(folder => m_dbContext.Update(folder)));
+            await m_dbContext.SaveChangesAsync();
         }
     }
 }

@@ -96,9 +96,15 @@ namespace RepositoryLib.Dal
         {
             return m_folderRepository.Save(t);
         }
+        public async Task UpdateAll(IEnumerable<FileboxFolder> folders)
+        {
+            await m_folderRepository.UpdateAll(folders);
+        }
 
-
-
+        public async Task<IEnumerable<FileboxFolder>> SaveAsync(IEnumerable<FileboxFolder> entities)
+        {
+            return await m_folderRepository.SaveAsync(entities);
+        }
         public async Task<FileboxFolder> SaveAsync(FileboxFolder t)
         {
            return await m_folderRepository.SaveAsync(t);

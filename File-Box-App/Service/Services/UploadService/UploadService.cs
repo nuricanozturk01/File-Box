@@ -57,45 +57,37 @@ namespace Service.Services.UploadService
         }
 
 
+        private async Task UploadSingleFolderCallback(FolderUploadDto sourcePath, long folderId, Guid uid)
+        {
 
+            var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
+
+            var targetFolderName = Path.GetFileName(sourcePath.sourceFilePath);
+
+            var expectedCreatingDirectory = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, targetFolderName);
+
+            if (uid != folder.UserId) // If folder owner not the entered user
+                return;
+
+            if (!Directory.Exists(expectedCreatingDirectory))
+            {
+                Directory.CreateDirectory(expectedCreatingDirectory); // directory created.
+                var folderBox = new FileboxFolder(folderId, uid, targetFolderName, folder.FolderPath + "\\" + targetFolderName);
+                m_folderRepositoryDal.Save(folderBox);
+            }
+
+
+            var task =  UploadFilesAndSubFolders(sourcePath.sourceFilePath, expectedCreatingDirectory, folderId, folder.FolderPath + "\\" + targetFolderName, uid);
+
+            await Task.WhenAll(task);
+        }
         // destination path without copied folder name
         public async Task<bool> UploadSingleFolder(FolderUploadDto sourcePath, long folderId, Guid uid)
         {
             try
             {
-                var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
+                await UploadSingleFolderCallback(sourcePath, folderId, uid);  
 
-                var targetFolderName = Path.GetFileName(sourcePath.sourceFilePath);
-
-                var expectedCreatingDirectory = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, targetFolderName);
-
-                if (uid != folder.UserId) // If folder owner not the entered user
-                    return false;
-
-                if (!Directory.Exists(expectedCreatingDirectory))
-                    Directory.CreateDirectory(expectedCreatingDirectory); // directory created.
-
-                var sourceDirectory = new DirectoryInfo(sourcePath.sourceFilePath);
-
-                // All files on specific directory
-                foreach (var file in sourceDirectory.GetFiles())
-                {
-                    using (FileStream sourceFileStream = file.OpenRead())
-                    {
-                        var targetFilePath = Path.Combine(expectedCreatingDirectory, file.Name);
-                        if (File.Exists(targetFilePath))
-                            File.Delete(targetFilePath);
-
-                        using (FileStream outputFileStream = File.Create(targetFilePath))
-                        {
-                            await sourceFileStream.CopyToAsync(outputFileStream);
-                        }
-                    }
-
-                    await m_fileRepositoryDal.SaveAsync(new FileboxFile(folderId, file.Name,
-                                                             Path.Combine(folder.FolderPath, file.Name),
-                                                             file.Extension, file.Length));
-                }
 
                 return true;
             }
@@ -106,11 +98,59 @@ namespace Service.Services.UploadService
 
         }
 
+        private async Task UploadFilesAndSubFolders(string sourcePath, string targetPath, long folderId, string folderPath, Guid uid)
+        {
+            foreach (var file in Directory.GetFiles(sourcePath))
+            { 
+                using (FileStream sourceFileStream = File.OpenRead(file))
+                {
+                    var targetFilePath = Path.Combine(targetPath, Path.GetFileName(file));
+                    
+                    
+
+                    if (File.Exists(targetFilePath))
+                        File.Delete(targetFilePath);
+                    
+                    using (FileStream outputFileStream = File.Create(targetFilePath))
+                    {
+                        await sourceFileStream.CopyToAsync(outputFileStream);
+                    }
+                }
+                var fp = m_folderRepositoryDal.FindByFilterAsync(f => f.FolderPath == folderPath).Result.FirstOrDefault();
+                await m_fileRepositoryDal.SaveAsync(new FileboxFile(fp.FolderId, Path.GetFileName(file),
+                                                         Path.Combine(folderPath, Path.GetFileName(file)),
+                                                         Path.GetExtension(file), new FileInfo(file).Length));
+            }
+
+            // Upload files in subdirectories
+            foreach (var subdirectory in Directory.GetDirectories(sourcePath))
+            {
+                var subdirectoryName = Path.GetFileName(subdirectory);
+                var subdirectoryTargetPath = Path.Combine(targetPath, subdirectoryName);
+                var subdirectoryFolderPath = Path.Combine(folderPath, subdirectoryName);
+
+                if (!Directory.Exists(subdirectoryTargetPath))
+                {
+                    Directory.CreateDirectory(subdirectoryTargetPath);
+                    var folderBox = new FileboxFolder(folderId, uid, subdirectoryName, subdirectoryFolderPath);
+                    FileboxFolder?  newFolder = m_folderRepositoryDal.Save(folderBox);
+                    //subdirectoryTargetPath = Path.Combine(Util.DIRECTORY_BASE, newFolder.FolderPath, subdirectoryName);
+                }
+
+                
+
+                await UploadFilesAndSubFolders(subdirectory, subdirectoryTargetPath, folderId, subdirectoryFolderPath, uid);
+            }
+        }
 
         public async Task<bool> UploadMultipleFolder(List<FolderUploadDto> sourcePaths, long folderId, Guid uid)
         {
             var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
-            sourcePaths.ForEach(sp => UploadSingleFolder(sp, folderId, uid));
+            
+            foreach (var dir in sourcePaths)
+            {
+                await UploadSingleFolderCallback(dir, folderId, uid);
+            }
             return true;
         }
 

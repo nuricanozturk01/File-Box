@@ -60,3 +60,57 @@ void Main()
 }
 
 Main();
+
+void ZipFolders(string[] sourceFolderPaths, string destinationZipPath)
+{
+    try
+    {
+        using (var memoryStream = new MemoryStream())
+        {
+            using (var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                foreach (string folderPath in sourceFolderPaths)
+                {
+                    AddFolderToZip(zipArchive, folderPath, "");
+                }
+            }
+
+            using (var fileStream = new FileStream(destinationZipPath, FileMode.Create))
+            {
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                memoryStream.CopyTo(fileStream);
+            }
+        }
+
+        Console.WriteLine("Folders successfully zipped!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error while zipping folders: {ex.Message}");
+    }
+}
+
+void AddFolderToZip(ZipArchive zipArchive, string sourceFolderPath, string parentFolderName)
+{
+    string folderName = Path.GetFileName(sourceFolderPath);
+
+    // Create an entry for the folder in the zip archive
+    if (!string.IsNullOrEmpty(parentFolderName))
+    {
+        folderName = Path.Combine(parentFolderName, folderName);
+    }
+    zipArchive.CreateEntry(folderName + "/");
+
+    // Add all files in the folder to the zip archive
+    foreach (string filePath in Directory.GetFiles(sourceFolderPath))
+    {
+        string fileName = Path.GetFileName(filePath);
+        zipArchive.CreateEntryFromFile(filePath, Path.Combine(folderName, fileName));
+    }
+
+    // Recursively add subfolders
+    foreach (string subfolderPath in Directory.GetDirectories(sourceFolderPath))
+    {
+        AddFolderToZip(zipArchive, subfolderPath, folderName);
+    }
+}

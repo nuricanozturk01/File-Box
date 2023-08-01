@@ -9,9 +9,9 @@ namespace Service.Services.DownloadService
 {
     public interface IDownloadService
     {
-        Task<(byte[], string, string)> DownloadSingleFile(string filePath);
-        Task<(byte[], string, string)> DownloadMultipleFile(List<FolderUploadDto> filePaths);
-        Task<(byte[] bytes, string content, string fileName)> DownloadSingleFolder(string filePath);
-        Task<(byte[] bytes, string content, string fileName)> DownloadMultipleFolder(List<FolderUploadDto> filePath);
+        Task<(byte[], string, string)> DownloadSingleFile(long fileId, Guid uid);
+        Task<byte[]> DownloadMultipleFile(List<MultipleFileDownloadDto> filesDownloadDtoi, Guid uid);
+        Task<(byte[] bytes, string content, string fileName)> DownloadSingleFolder(long folderId, Guid uid);
+        Task<(byte[] bytes, string content, string fileName)> DownloadMultipleFolder(List<MultipleFolderDownloadDto> folderDownloadDto, Guid uid);
     }
 }

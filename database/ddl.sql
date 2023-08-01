@@ -31,7 +31,7 @@ CREATE TABLE filebox_folder
     updated_date datetime DEFAULT GETDATE(),
     folder_path varchar(255) NOT NULL,
 
-    FOREIGN KEY (parent_folder_id) REFERENCES filebox_folder(folder_id),
+    FOREIGN KEY (parent_folder_id) REFERENCES filebox_folder(folder_id) , -- on update cascade
     FOREIGN KEY (user_id) REFERENCES filebox_user(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -338,6 +338,7 @@ exec filebox_insert_user  'Nuri Can', 'OZTURK', 'nuricanozturk', 'canozturk309@g
 exec filebox_insert_user  'Yagmur', 'Dolu', 'yagmur', 'yagmur@example.com', '12345'
 exec filebox_insert_user  'ahmet', 'koc', 'ahmetkoc', 'ahmetkoc@example.com', '12345'
 exec filebox_insert_user  'dogan', 'arik', 'dogan', 'dogan@example.com', '12345'
+
 select * from filebox_user;
 
 exec filebox_insert_folder NULL, '812EEE16-72AE-4D3E-A201-1010FC7DD172', 'johndoe', 'C:\Users\hp\Desktop\file_box\johndoe';
@@ -369,15 +370,19 @@ delete filebox_file from filebox_file where filebox_file.file_name = 'image1.jpg
 delete filebox_folder from filebox_folder where filebox_folder.folder_id = 2;
 
 
-update filebox_folder set folder_path = 'ahmetkoc\dir1\ders' where folder_path = 'C:\Users\hp\Desktop\file_box\ahmetkoc\dir1\ders';
+update filebox_folder set folder_path = 'nuricanozturk\books' where folder_path = 'nuricanozturk\newBooks';
+update filebox_folder set folder_path = 'nuricanozturk\books\New folder' where folder_path = 'nuricanozturk\newBooks\New folder';
+
 update filebox_folder set folder_name = 'ders' where folder_name = 'derss';
 
 
+
+update filebox_folder set folder_name = 'books' where folder_name = 'newBooks';
+
 delete filebox_folder where folder_id = 2;
+
+
 /*
-
-
-
 use FileBoxDb;
 go
 

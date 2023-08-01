@@ -7,5 +7,7 @@ namespace RepositoryLib.Repository
         void InsertFolder(long parentFolder, Guid userId, string folderName, string folderPath);
         void RemoveAllAsync(IEnumerable<FileboxFolder> folder);
         FileboxFolder Update(FileboxFolder folder);
+
+        Task UpdateAll(IEnumerable<FileboxFolder> folder);
     }
 }

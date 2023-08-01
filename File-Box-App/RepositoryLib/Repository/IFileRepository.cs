@@ -6,5 +6,6 @@ namespace RepositoryLib.Repository
     {
         void RemoveAllAsync(IEnumerable<FileboxFile> files);
         FileboxFile Update(FileboxFile file);
+        Task UpdateAll(IEnumerable<FileboxFile> files);
     }
 }

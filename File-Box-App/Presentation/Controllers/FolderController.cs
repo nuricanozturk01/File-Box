@@ -32,11 +32,15 @@ namespace Presentation.Controllers
             }
         }
 
+
+
         [HttpGet("find/all/id")]
         public async Task<IActionResult> FindFoldersByUserId([FromQuery(Name = "id")] Guid id)
         {
             return Ok(await m_folderService.GetFoldersByUserIdAsync(id));
         }
+
+
 
         [HttpPost("rename/dir")]
         public async Task<IActionResult> RenameFolder([FromQuery(Name = "id")] long folderId, [FromQuery(Name = "n")] string newFolderName)
@@ -45,6 +49,9 @@ namespace Presentation.Controllers
 
             return Ok();
         }
+
+
+
         [HttpDelete("remove/dir")]
         public async Task<IActionResult> DeleteDirectory([FromQuery(Name = "id")] long folderId)
         {

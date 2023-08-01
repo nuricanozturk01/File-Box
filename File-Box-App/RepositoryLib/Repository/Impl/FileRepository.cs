@@ -114,6 +114,12 @@ namespace RepositoryLib.Repository.Impl
             m_dbContext.SaveChanges();
             return file;
         }
+
+
+        public async Task UpdateAll(IEnumerable<FileboxFile> files)
+        {
+            await m_dbContext.SaveChangesAsync();
+        }
         //-----------------------------------------------------------------------------------------------------
 
 

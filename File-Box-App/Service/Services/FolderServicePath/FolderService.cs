@@ -2,21 +2,22 @@
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
-using System.Linq;
 
 namespace Service.Services.FolderService
 {
     public class FolderService : IFolderService
     {
         private readonly FolderRepositoryDal m_folderDal;
+        private readonly FileRepositoryDal m_fileRepositoryDal;
         private readonly UserRepositoryDal m_userRepositoryDal;
         private readonly IMapper m_mapper;
 
-        public FolderService(FolderRepositoryDal folderDal, IMapper mapper, UserRepositoryDal userRepositoryDal)
+        public FolderService(FolderRepositoryDal folderDal, IMapper mapper, UserRepositoryDal userRepositoryDal, FileRepositoryDal fileRepositoryDal)
         {
             m_folderDal = folderDal;
             m_mapper = mapper;
             m_userRepositoryDal = userRepositoryDal;
+            m_fileRepositoryDal = fileRepositoryDal;
         }
 
 
@@ -43,7 +44,7 @@ namespace Service.Services.FolderService
             var fileBoxFolder = new FileboxFolder(GetParentFolderId(folderSaveDto.currentFolderPath), userUID, folderNameWithoutPath, userFolderPath);
 
             m_folderDal.Save(fileBoxFolder);
-        
+
             if (!Directory.Exists(fullName))
                 Directory.CreateDirectory(fullName);
 
@@ -73,13 +74,13 @@ namespace Service.Services.FolderService
         public async Task<bool> DeleteFolder(long folderId)
         {
             var dir = await m_folderDal.FindByIdAsync(folderId);
-            
+
             var deletedFolderWihtSubFolders = GetAllSubFolders(dir);
-            
+
             m_folderDal.RemoveAll(deletedFolderWihtSubFolders);
-            
+
             deletedFolderWihtSubFolders.ToList().ForEach(f => Directory.Delete(Util.DIRECTORY_BASE + f.FolderPath, true));
-            
+
             return true;
         }
 
@@ -97,7 +98,10 @@ namespace Service.Services.FolderService
         public async void RenameFolder(long folderId, string newFolderName)
         {
             var folder = await m_folderDal.FindByIdAsync(folderId); // find folder by id
-            var oldName = folder.FolderName;
+
+            var oldPath = folder.FolderPath; //nuricanozturk/dev/nuri
+            var oldName = folder.FolderName; //nuri
+
             // nuricanozturk/dev/nuri     new name: can
             var oldPathParent = Path.GetDirectoryName(folder.FolderPath); // without last folder (nuricanozturk/dev)
             var newFullPath = Path.Combine(oldPathParent, newFolderName); // nuricanozturk/dev/can
@@ -107,9 +111,26 @@ namespace Service.Services.FolderService
             folder.FolderName = newFolderName;
             folder.FolderPath = newFullPath;
             folder.UpdatedDate = DateTime.Now;
-            folder.FileboxFiles.ToList().ForEach(file => file.FilePath = file.FilePath.Replace(oldName, newFolderName));
-            m_folderDal.Update(folder);
 
+            var files = await m_fileRepositoryDal.FindByFilterAsync(file => file.FolderId == folderId);
+
+            foreach (var file in files)
+            {
+                file.FilePath = file.FilePath.Replace(oldName, newFolderName);
+                file.UpdatedDate = DateTime.Now;
+            }
+            await m_fileRepositoryDal.UpdateAll(files);
+
+
+            var subfolders = await m_folderDal.FindByFilterAsync(f => f.FolderPath.Contains(oldPath));
+
+            foreach (var subfolder in subfolders)
+            {
+                subfolder.UpdatedDate = DateTime.Now;
+                subfolder.FolderPath = subfolder.FolderPath.Replace(oldName, newFolderName);
+            }
+
+            await m_folderDal.UpdateAll(subfolders);
         }
     }
 }

@@ -78,11 +78,12 @@ namespace Presentation.Controllers
          */
         [HttpPost("folder")]
         public async Task<IActionResult> UploadSingleFolder(
-                                        [FromBody] FolderUploadDto sourceFolder,
+                                        [FromBody] List<FolderUploadDto> sourceFolder,
                                         [FromQuery(Name = "uid")] string uid,
                                         [FromQuery(Name = "fid")] long folderId)
         {
-            var uploadResult = await m_uploadService.UploadSingleFolder(sourceFolder, folderId, Guid.Parse(uid));
+            var uploadResult = await m_uploadService.UploadMultipleFolder(sourceFolder, folderId, Guid.Parse(uid));
+
 
             return uploadResult ? Ok("Uploaded succsesfully!") : BadRequest("Internal Server Error");
         }
