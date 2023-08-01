@@ -17,6 +17,18 @@ namespace Presentation.Controllers
             m_folderService = folderService;
         }
 
+
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Create empty folder with given FolderSaveDto body parameter 
+         * 
+         */
         [HttpPost("create")]
         public async Task<IActionResult> CreateFolder([FromBody] FolderSaveDTO folderSaveDTO)
         {
@@ -34,6 +46,15 @@ namespace Presentation.Controllers
 
 
 
+
+
+
+        /*
+         * 
+         * 
+         * Find Folders given user id
+         * 
+         */
         [HttpGet("find/all/id")]
         public async Task<IActionResult> FindFoldersByUserId([FromQuery(Name = "id")] Guid id)
         {
@@ -42,6 +63,15 @@ namespace Presentation.Controllers
 
 
 
+
+
+
+        /*
+         * 
+         * 
+         * Rename folder with given folder id, new folder name parameters
+         * 
+         */
         [HttpPost("rename/dir")]
         public async Task<IActionResult> RenameFolder([FromQuery(Name = "id")] long folderId, [FromQuery(Name = "n")] string newFolderName)
         {
@@ -52,6 +82,15 @@ namespace Presentation.Controllers
 
 
 
+
+
+
+        /*
+         * 
+         * 
+         * Remove folder with given folder id parameter
+         * 
+         */
         [HttpDelete("remove/dir")]
         public async Task<IActionResult> DeleteDirectory([FromQuery(Name = "id")] long folderId)
         {

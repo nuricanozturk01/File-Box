@@ -6,7 +6,7 @@ using System.Net.Mime;
 
 namespace Presentation.Controllers
 {
-   // [Authorize]
+    [Authorize]
     [Route("api/download")]
     [ApiController]
     public class DownloadFileController : ControllerBase
@@ -39,7 +39,9 @@ namespace Presentation.Controllers
 
 
 
-        /*
+
+
+       /*
         * 
         * Firstly program zip the files then download zip with given filePath parameter 
         * 

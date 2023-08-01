@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RepositoryLib.Models;
 using System.Linq.Expressions;
 
@@ -32,10 +31,6 @@ namespace RepositoryLib.Repository.Impl
             m_dbContext.SaveChanges();
         }
 
-        public void DeleteAsync(FileboxFolder t)
-        {
-            throw new NotImplementedException();
-        }
 
         public void DeleteById(long id)
         {
@@ -45,11 +40,6 @@ namespace RepositoryLib.Repository.Impl
                 Delete(folder);
         }
 
-        public void DeleteByIdAsync(long id)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool ExistsById(long id)
         {
             return m_dbContext.FileboxFolders.Where(folder => folder.FolderId == id) != null;
@@ -57,7 +47,7 @@ namespace RepositoryLib.Repository.Impl
 
         public async Task<bool> ExistsByIdAsync(long id)
         {
-            return await Task.Run(() => m_dbContext.FileboxFolders.FirstOrDefaultAsync(folder => folder.FolderId!= id).Result) != null;
+            return await Task.Run(() => m_dbContext.FileboxFolders.FirstOrDefaultAsync(folder => folder.FolderId != id).Result) != null;
         }
 
         public async Task<IEnumerable<FileboxFolder>> FindAllAsync()
@@ -95,11 +85,6 @@ namespace RepositoryLib.Repository.Impl
             return await m_dbContext.FileboxFolders.Where(folder => ids.Contains(folder.FolderId)).ToListAsync();
         }
 
-        public void InsertFolder(long parentFolder, Guid userId, string folderName, string folderPath)
-        {
-            throw new NotImplementedException();
-        }
-
         public void RemoveAllAsync(IEnumerable<FileboxFolder> folders)
         {
             m_dbContext.RemoveRange(folders);
@@ -113,10 +98,6 @@ namespace RepositoryLib.Repository.Impl
             return folder;
         }
 
-        public IEnumerable<FileboxFolder> Save(IEnumerable<FileboxFolder> entities)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<FileboxFolder> SaveAsync(FileboxFolder t)
         {
@@ -141,8 +122,23 @@ namespace RepositoryLib.Repository.Impl
 
         public async Task UpdateAll(IEnumerable<FileboxFolder> folders)
         {
-            //await Task.Run(() => folders.ToList().ForEach(folder => m_dbContext.Update(folder)));
             await m_dbContext.SaveChangesAsync();
+        }
+        //------------------------------------------------------------------------------------------------------------------------
+
+        public IEnumerable<FileboxFolder> Save(IEnumerable<FileboxFolder> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteAsync(FileboxFolder t)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteByIdAsync(long id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

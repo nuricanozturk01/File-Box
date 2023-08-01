@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
@@ -8,18 +7,25 @@ namespace Service.Services.UploadService
 {
     public class UploadService : IUploadService
     {
-        private readonly IWebHostEnvironment m_webHostEnvironment;
-        private readonly UserRepositoryDal m_userRepositoryDal;
         private readonly FolderRepositoryDal m_folderRepositoryDal;
         private readonly FileRepositoryDal m_fileRepositoryDal;
-        public UploadService(IWebHostEnvironment webHostEnvironment, UserRepositoryDal userRepositoryDal, FolderRepositoryDal folderRepositoryDal, FileRepositoryDal fileRepositoryDal)
+        public UploadService(FolderRepositoryDal folderRepositoryDal, FileRepositoryDal fileRepositoryDal)
         {
-            m_webHostEnvironment = webHostEnvironment;
-            m_userRepositoryDal = userRepositoryDal;
             m_folderRepositoryDal = folderRepositoryDal;
             m_fileRepositoryDal = fileRepositoryDal;
         }
 
+
+
+
+
+
+        /*
+         * 
+         * Upload multiple files with using compressing
+         * returns the boolean value that if success return true else return false
+         * 
+         */
         public async Task<bool> UploadMultipleFiles(List<IFormFile> formFiles, long folderId, Guid uid)
         {
             try
@@ -47,7 +53,6 @@ namespace Service.Services.UploadService
                                                              fileInfo.Extension, fileInfo.Length));
                 }
 
-
                 return true;
             }
             catch (Exception ex)
@@ -57,6 +62,21 @@ namespace Service.Services.UploadService
         }
 
 
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Upload single folder callback with using compressing. Using for multiple and single uploads.
+         * 
+         * 
+         */
         private async Task UploadSingleFolderCallback(FolderUploadDto sourcePath, long folderId, Guid uid)
         {
 
@@ -77,40 +97,40 @@ namespace Service.Services.UploadService
             }
 
 
-            var task =  UploadFilesAndSubFolders(sourcePath.sourceFilePath, expectedCreatingDirectory, folderId, folder.FolderPath + "\\" + targetFolderName, uid);
+            var task = UploadFilesAndSubFolders(sourcePath.sourceFilePath, expectedCreatingDirectory, folderId, folder.FolderPath + "\\" + targetFolderName, uid);
 
             await Task.WhenAll(task);
         }
-        // destination path without copied folder name
-        public async Task<bool> UploadSingleFolder(FolderUploadDto sourcePath, long folderId, Guid uid)
-        {
-            try
-            {
-                await UploadSingleFolderCallback(sourcePath, folderId, uid);  
 
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
 
-        }
 
+
+
+
+
+
+
+
+        /*
+         * 
+         * Zip uploaded files and folders include subfolders and their files. (recursively)
+         * 
+         * 
+         */
         private async Task UploadFilesAndSubFolders(string sourcePath, string targetPath, long folderId, string folderPath, Guid uid)
         {
             foreach (var file in Directory.GetFiles(sourcePath))
-            { 
+            {
                 using (FileStream sourceFileStream = File.OpenRead(file))
                 {
                     var targetFilePath = Path.Combine(targetPath, Path.GetFileName(file));
-                    
-                    
+
+
 
                     if (File.Exists(targetFilePath))
                         File.Delete(targetFilePath);
-                    
+
                     using (FileStream outputFileStream = File.Create(targetFilePath))
                     {
                         await sourceFileStream.CopyToAsync(outputFileStream);
@@ -122,7 +142,6 @@ namespace Service.Services.UploadService
                                                          Path.GetExtension(file), new FileInfo(file).Length));
             }
 
-            // Upload files in subdirectories
             foreach (var subdirectory in Directory.GetDirectories(sourcePath))
             {
                 var subdirectoryName = Path.GetFileName(subdirectory);
@@ -133,20 +152,38 @@ namespace Service.Services.UploadService
                 {
                     Directory.CreateDirectory(subdirectoryTargetPath);
                     var folderBox = new FileboxFolder(folderId, uid, subdirectoryName, subdirectoryFolderPath);
-                    FileboxFolder?  newFolder = m_folderRepositoryDal.Save(folderBox);
-                    //subdirectoryTargetPath = Path.Combine(Util.DIRECTORY_BASE, newFolder.FolderPath, subdirectoryName);
+                    FileboxFolder? newFolder = m_folderRepositoryDal.Save(folderBox);
                 }
 
-                
+
 
                 await UploadFilesAndSubFolders(subdirectory, subdirectoryTargetPath, folderId, subdirectoryFolderPath, uid);
             }
         }
 
+
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Upload multiple folders with using compressing. But using on single folder. list length is one
+         * returns the boolean value that if success return true else return false
+         * 
+         */
         public async Task<bool> UploadMultipleFolder(List<FolderUploadDto> sourcePaths, long folderId, Guid uid)
         {
             var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
-            
+
+            if (folder.UserId != uid)
+                return false;
+
             foreach (var dir in sourcePaths)
             {
                 await UploadSingleFolderCallback(dir, folderId, uid);
@@ -155,9 +192,23 @@ namespace Service.Services.UploadService
         }
 
 
+
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Upload single file
+         * returns the boolean value that if success return true else return false
+         * 
+         */
         public async Task<bool> UploadSingleFile(IFormFile formFile, long folderId, Guid uid)
         {
-
             try
             {
                 var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);

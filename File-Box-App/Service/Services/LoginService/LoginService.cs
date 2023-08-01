@@ -13,15 +13,30 @@ namespace FileBoxService.Service
     public class LoginService : IUserLoginService
     {
         private readonly UserRepositoryDal m_userRepositoryDal;
+        private readonly FolderRepositoryDal m_folderRepositoryDal;
         private readonly IConfiguration m_configuration;
 
-        public LoginService(UserRepositoryDal userRepositoryDal, IConfiguration configuration)
+
+        public LoginService(UserRepositoryDal userRepositoryDal, IConfiguration configuration, FolderRepositoryDal folderRepositoryDal)
         {
             m_userRepositoryDal = userRepositoryDal;
             m_configuration = configuration;
+            m_folderRepositoryDal = folderRepositoryDal;
         }
 
-        public  string CreateToken()
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Create jwt token and return it
+         * 
+         * 
+         */
+        public string CreateToken()
         {
             var signinCredentials = GetSignInCredentials();
 
@@ -31,6 +46,18 @@ namespace FileBoxService.Service
             return accessToken;
         }
 
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Control and validate the jwt token options
+         * returns JwtSecurityToken
+         * 
+         */
         private JwtSecurityToken GenerateTokenOptions(SigningCredentials signinCredentials)
         {
             var jwtSettings = m_configuration.GetSection("JwtSettings");
@@ -44,6 +71,18 @@ namespace FileBoxService.Service
             return tokenOptions;
         }
 
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Return the SigningCredentials about jwt tokents.
+         * 
+         * 
+         */
         private SigningCredentials GetSignInCredentials()
         {
             var jwtSettings = m_configuration.GetSection("JwtSettings");
@@ -53,11 +92,35 @@ namespace FileBoxService.Service
         }
 
 
+
+
+
+
+        /*
+         * 
+         * 
+         * Logout operation [NOT IMPLEMENTED YET]
+         * 
+         * 
+         */
         public bool Logout(string username)
         {
             throw new NotImplementedException();
         }
-        internal void CreateDirectoryIfNotExists(string username, Guid userId, FileboxUser user)
+
+
+
+
+
+
+        /*
+         * 
+         * 
+         * If login operation is successfull, create the root file for user
+         * 
+         * 
+         */
+        internal async void CreateDirectoryIfNotExists(string username, Guid userId, FileboxUser user)
         {
             var dirName = Util.DIRECTORY_BASE + username;
 
@@ -67,8 +130,27 @@ namespace FileBoxService.Service
                 user.FileboxFolders.Add(new FileboxFolder(null, userId, username, username));
                 m_userRepositoryDal.Update(user);
             }
+            else
+            {
+                var rootFolder = m_folderRepositoryDal.FindByFilter(folder => folder.UserId == user.UserId).FirstOrDefault();
+
+                if (rootFolder is null)
+                    m_folderRepositoryDal.Save(new FileboxFolder(null, userId, username, username));
+            }
         }
 
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Login operation for user with given userLoginDto parameter. 
+         * returns the status of login operation
+         * 
+         */
         public bool Login(UserLoginDTO userLoginDTO)
         {
             var user = m_userRepositoryDal

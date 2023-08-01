@@ -9,18 +9,27 @@ namespace Service.Services.FolderService
     {
         private readonly FolderRepositoryDal m_folderDal;
         private readonly FileRepositoryDal m_fileRepositoryDal;
-        private readonly UserRepositoryDal m_userRepositoryDal;
         private readonly IMapper m_mapper;
 
-        public FolderService(FolderRepositoryDal folderDal, IMapper mapper, UserRepositoryDal userRepositoryDal, FileRepositoryDal fileRepositoryDal)
+        public FolderService(FolderRepositoryDal folderDal, IMapper mapper, FileRepositoryDal fileRepositoryDal)
         {
             m_folderDal = folderDal;
             m_mapper = mapper;
-            m_userRepositoryDal = userRepositoryDal;
             m_fileRepositoryDal = fileRepositoryDal;
         }
 
 
+
+
+
+
+        /*
+         * 
+         * 
+         * Find Parent Folder Id given current folder path.
+         * 
+         * 
+         */
         public long? GetParentFolderId(string currentfolder)
         {
             var folder = m_folderDal.FindByFilterAsync(f => f.FolderPath == currentfolder).Result.FirstOrDefault();
@@ -28,6 +37,18 @@ namespace Service.Services.FolderService
             return folder == null ? null : folder.FolderId;
         }
 
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Create Empty folder with given FolderSaveDTO parameter.
+         * 
+         * 
+         */
         public async Task<bool> CreateFolder(FolderSaveDTO folderSaveDto)
         {
             var userUID = Guid.Parse(folderSaveDto.userId); // user uuid
@@ -50,7 +71,13 @@ namespace Service.Services.FolderService
 
             return true;
         }
+        
 
+
+
+
+
+    
         /*
          * 
          * 
@@ -71,6 +98,15 @@ namespace Service.Services.FolderService
 
 
 
+
+
+        /*
+         * 
+         * 
+         * Remove folder with given folderId parameter
+         * 
+         * 
+         */
         public async Task<bool> DeleteFolder(long folderId)
         {
             var dir = await m_folderDal.FindByIdAsync(folderId);
@@ -86,6 +122,16 @@ namespace Service.Services.FolderService
 
 
 
+
+
+
+        /*
+         * 
+         * 
+         * Get Folders for specific user
+         * 
+         * 
+         */
         public async Task<IEnumerable<FolderViewDto>> GetFoldersByUserIdAsync(Guid userId)
         {
             var folders = m_folderDal.AllFolders.Where(x => x.UserId == userId).ToList();
@@ -95,6 +141,16 @@ namespace Service.Services.FolderService
 
 
 
+
+
+
+        /*
+         * 
+         * 
+         * Rename Folder and update file and folder paths its files, subfolders and their files.
+         * 
+         * 
+         */
         public async void RenameFolder(long folderId, string newFolderName)
         {
             var folder = await m_folderDal.FindByIdAsync(folderId); // find folder by id

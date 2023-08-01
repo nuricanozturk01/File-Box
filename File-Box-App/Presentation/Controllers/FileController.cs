@@ -19,7 +19,15 @@ namespace Presentation.Controllers
 
 
 
-        // create empty file
+
+
+
+        /*
+         * 
+         * 
+         * Create Empty File with given fileSaveDto parameter.
+         * 
+         */
         [HttpPost("create")]
         public async Task<IActionResult> CreateFile([FromBody] FileSaveDto fileSaveDto)
         {
@@ -38,10 +46,19 @@ namespace Presentation.Controllers
 
 
 
+
+
+        /*
+         * 
+         * 
+         * Remove file with given file id parameter
+         * 
+         */
+
         [HttpDelete("remove")]
-        public async Task<IActionResult> RemoveFile([FromQuery(Name = "id")] long folderId)
+        public async Task<IActionResult> RemoveFile([FromQuery(Name = "id")] long fileId)
         {
-            return Ok(await m_fileService.DeleteFile(folderId));
+            return Ok(await m_fileService.DeleteFile(fileId));
         }
 
 
@@ -49,8 +66,12 @@ namespace Presentation.Controllers
 
 
 
-
-
+        /*
+         * 
+         * 
+         * Rename file with given file id and new file name
+         * 
+         */
 
         [HttpPut("rename")]
         public async Task<IActionResult> RenameFile([FromQuery(Name = "id")] long id, [FromQuery(Name = "n")] string newFileName)
@@ -64,6 +85,12 @@ namespace Presentation.Controllers
 
 
 
+        /*
+         * 
+         * 
+         * Find folders specific folder and user with given user id and folder id.
+         * 
+         */
         [HttpGet("find/all/id")]
         public async Task<IActionResult> FindFoldersByUserId([FromQuery(Name = "uid")] string uid, [FromQuery(Name = "folderId")] long folderId)
         {

@@ -97,7 +97,7 @@ namespace RepositoryLib.Repository.Impl
             return file;
         }
 
-       
+
 
         public async Task<FileboxFile> SaveAsync(FileboxFile t)
         {
@@ -106,7 +106,7 @@ namespace RepositoryLib.Repository.Impl
             return entry.Entity;
         }
 
-      
+
 
         public FileboxFile Update(FileboxFile file)
         {

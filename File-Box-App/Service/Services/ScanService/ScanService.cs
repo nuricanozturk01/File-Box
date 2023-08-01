@@ -77,7 +77,7 @@ namespace Service.Services.ScanService
             var userDir = Util.DIRECTORY_BASE + user.Username; // file_box\\nuricanozturk etc
 
             var rootDir = new DirectoryInfo(userDir); // root directory specific user(nuricanozturk)
-            
+
             var allDirs = rootDir.GetDirectories("*.*", SearchOption.AllDirectories).ToList(); // all directories with subdirectories
             //allDirs.Add(userDir)
 
@@ -123,8 +123,8 @@ namespace Service.Services.ScanService
 
         private async Task<bool> IsExistFileOnDirectory(FileboxFolder dir, FileInfo file, Guid userId)
         {
-            var result = await m_fileRepositoryDal.FindByFilterAsync(f => f.FileName == file.Name && 
-                                                                          f.FolderId == dir.FolderId && 
+            var result = await m_fileRepositoryDal.FindByFilterAsync(f => f.FileName == file.Name &&
+                                                                          f.FolderId == dir.FolderId &&
                                                                           dir.UserId == userId);
 
             return result.FirstOrDefault() != null;

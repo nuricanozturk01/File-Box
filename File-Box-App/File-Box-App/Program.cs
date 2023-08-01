@@ -1,17 +1,6 @@
-using File_Box_App;
-
+using File_Box_App.Configuration;
 using FileBoxService.Service;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using RepositoryLib.Dal;
 using RepositoryLib.Models;
-using RepositoryLib.Repository;
-using RepositoryLib.Repository.Impl;
-using Service.Services.DownloadService;
-using Service.Services.FileServicePath;
-using Service.Services.FolderService;
-using Service.Services.ScanService;
-using Service.Services.UploadService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,76 +12,64 @@ builder.Services.AddSingleton<FileBoxDbContext>();
 
 builder.Services.AddScoped<IUserLoginService, LoginService>();
 
-// For added the DI to RepositoryLib Class Library
 
-// helper classes
-builder.Services.AddSingleton<UserRepositoryDal>();
-builder.Services.AddSingleton<FolderRepositoryDal>();
-builder.Services.AddSingleton<FileRepositoryDal>();
+/*
+ * 
+ * 
+ * DI to RepositoryLib Class Library
+ * Configurations with extension methods 
+ * 
+ * 
+ */
 
-// Repositories
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
-builder.Services.AddSingleton<IFileRepository, FileRepository>();
-builder.Services.AddSingleton<IFolderRepository, FolderRepository>();
+// Repositories and Helper Classes
+builder.Services.ConfigureRepositoriesAndHelpers();
 
 // Services
-builder.Services.AddScoped<IFolderService, FolderService>();
-builder.Services.AddScoped<IUserLoginService, LoginService>();
-builder.Services.AddScoped<IFileService, FileService>();
-builder.Services.AddScoped<IScanService, ScanService>();
-builder.Services.AddScoped<IUploadService, UploadService>();
-builder.Services.AddScoped<IDownloadService, DownloadService>();
+builder.Services.ConfigureServices();
 
 // Mapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+
+/*
+ * 
+ * 
+ * Configurations with extension methods 
+ * 
+ * 
+ */
+
+
 //JWT
 builder.Services.ConfigureJwt(builder.Configuration);
 
+// Max Request Configuration extension methods
+builder.Services.ConfigureMaxRequest();
+
 // Configure the file byte limits
-
-builder.Services.Configure<FormOptions>(x =>
-{
-    x.ValueLengthLimit = int.MaxValue;
-    x.MultipartBodyLengthLimit = int.MaxValue;
-});
-builder.Services.Configure<IISServerOptions>(options =>
-{
-    options.MaxRequestBodySize = int.MaxValue;
-});
- 
-builder.Services.Configure<KestrelServerOptions>(options =>
-{
-    options.Limits.MaxRequestBodySize = int.MaxValue; // if don't set default value is: 30 MB
-});
-builder.Services.Configure<KestrelServerOptions>(options =>
-{
-    // Set the maximum response buffer size to a larger value (in bytes).
-    options.Limits.MaxResponseBufferSize = 1024 * 1024 * 999; // For example, 100 MB
-});
-
-
+builder.Services.ConfigureFormOptionMaxValues();
 
 // Endpoint configures
 builder.Services.AddControllers().AddApplicationPart(typeof(Presentation.Controllers.AssemblyReference).Assembly);
 builder.Services.AddEndpointsApiExplorer();
 
+
+
+/*
+ * 
+ * 
+ * App Config with extension methods 
+ * 
+ * 
+ */
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-app.UseCors(
-                builder => builder
-                    .WithOrigins(
-                        "http://localhost:5299",
-                        "http://127.0.0.1:5500", // Live Server
-                        "http://localhost:5299")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials()
-                );
+app.ConfigurationCorsOptions();
+
 app.Run();

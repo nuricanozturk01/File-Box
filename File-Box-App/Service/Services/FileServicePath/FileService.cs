@@ -18,6 +18,18 @@ namespace Service.Services.FileServicePath
             m_mapper = mapper;
         }
 
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Create Empty file with given FileSaveDto parameter.
+         * 
+         * 
+         */
         public async Task<bool> CreateFile(FileSaveDto fileSaveDto)
         {
             var folder = await m_folderDal.FindByIdAsync(fileSaveDto.folderId);
@@ -38,17 +50,40 @@ namespace Service.Services.FileServicePath
             return true;
         }
 
-        public async Task<bool> DeleteFile(long folderId)
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Remove file with given file Id
+         * 
+         * 
+         */
+        public async Task<bool> DeleteFile(long fileId)
         {
-            var folder = await m_fileDal.FindByIdAsync(folderId);
+            var folder = await m_fileDal.FindByIdAsync(fileId);
 
             File.Delete(Util.DIRECTORY_BASE + folder.FilePath);
-            m_fileDal.DeleteById(folderId);
+            m_fileDal.DeleteById(fileId);
 
             return true;
         }
 
-        // Return the all files on specific folder with given parameters userId and folderId
+
+
+
+
+
+        /*
+         * 
+         * 
+         *  Return the all files on specific folder with given parameters userId and folderId
+         * 
+         * 
+         */
         public async Task<IEnumerable<FileViewDto>?> GetFilesByUserIdAndFolderIdAsync(Guid userId, long folderId)
         {
             var files =  await m_fileDal.FindByFilterAsync(f => f.FolderId == folderId);
@@ -56,6 +91,18 @@ namespace Service.Services.FileServicePath
             return files.AsParallel().Select(file => m_mapper.Map<FileViewDto>(file));
         }
 
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Rename file and update its filepath and updated date informations with given fileId and new File Name.
+         * 
+         * 
+         */
         public void RenameFile(long fileId, string newFileName)
         {
             var fileObj = m_fileDal.FindById(fileId);

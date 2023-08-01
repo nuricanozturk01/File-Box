@@ -4,10 +4,41 @@ namespace RepositoryLib.Repository
 {
     public interface IFolderRepository : ICrudRepository<FileboxFolder, long>
     {
-        void InsertFolder(long parentFolder, Guid userId, string folderName, string folderPath);
+
+
+
+
+
+        /*
+         * 
+         * Remove All Fodlers with given IEnumerable<FileBoxFolder> parameter 
+         * 
+         * 
+         */
         void RemoveAllAsync(IEnumerable<FileboxFolder> folder);
+
+
+
+
+
+        /*
+         * 
+         * Remove All Folders with given FileBoxFolder parameter 
+         * 
+         * 
+         */
         FileboxFolder Update(FileboxFolder folder);
 
+
+
+
+
+        /*
+         * 
+         * Update All Folders with given IEnumerable<FileBoxFolder> parameter 
+         * 
+         * 
+         */
         Task UpdateAll(IEnumerable<FileboxFolder> folder);
     }
 }

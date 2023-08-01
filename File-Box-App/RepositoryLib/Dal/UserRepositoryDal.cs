@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace RepositoryLib.Dal
 {
-    /*
+   /*
     * 
     * Helper class for user repository. This class is a facade pattern for repositories 
     * 

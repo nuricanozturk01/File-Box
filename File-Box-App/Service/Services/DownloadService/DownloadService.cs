@@ -1,10 +1,7 @@
-﻿using AutoMapper;
-using Azure;
-using RepositoryLib.Dal;
+﻿using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
 using System.IO.Compression;
-using System.Net.Mime;
 /*
  * 
  *  
@@ -18,20 +15,25 @@ namespace Service.Services.DownloadService
     {
         private readonly FileRepositoryDal m_fileRepositoryDal;
         private readonly FolderRepositoryDal m_folderRepositoryDal;
-        private readonly UserRepositoryDal m_userRepositoryDal;
-        private readonly IMapper m_mapper;
 
 
-        public DownloadService(FileRepositoryDal fileRepositoryDal, FolderRepositoryDal folderRepositoryDal, UserRepositoryDal userRepositoryDal, IMapper mapper)
+
+        public DownloadService(FileRepositoryDal fileRepositoryDal, FolderRepositoryDal folderRepositoryDal)
         {
             m_fileRepositoryDal = fileRepositoryDal;
             m_folderRepositoryDal = folderRepositoryDal;
-            m_userRepositoryDal = userRepositoryDal;
-            m_mapper = mapper;
         }
+
+
+
+
+
+
         /*
          * 
-         * Download Single file.
+         * Download Single File without zip feature.  
+         * Given parameters are fileId and user uuid
+         * Return the Triple structure and become the file on the controller.
          * 
          */
         public async Task<(byte[], string, string)> DownloadSingleFile(long fileId, Guid uid)
@@ -49,16 +51,21 @@ namespace Service.Services.DownloadService
 
 
 
+
+
+
         /*
          * 
-         * Download Multiple files zipped.
+         * Download Multiple File with zip feature.  
+         * Given parameters are List<MultipleFileDownloadDto> and user uuid
+         * Return the byte of zip file and become the file on the controller.
          * 
          */
         public async Task<byte[]> DownloadMultipleFile(List<MultipleFileDownloadDto> filesDownloadDto, Guid uid)
-        {   
+        {
             var listIds = filesDownloadDto.Select(dto => dto.fileId).ToList();
             var files = await m_fileRepositoryDal.FindByIdsAsync(listIds);
-            
+
             // Control the owner of each file is same
             if (!await ControlFileOwnersAsync(files, uid))
                 return null;
@@ -79,6 +86,88 @@ namespace Service.Services.DownloadService
             }
         }
 
+
+
+
+
+
+        /*
+        * 
+        * Download Single Folder with zip feature. Include all subfolders and files. 
+        * Given parameters are folderId and user uuid
+        * Return the Triple structure and become the file on the controller.
+        * 
+        */
+        public async Task<(byte[] bytes, string content, string fileName)> DownloadSingleFolder(long folderId, Guid uid)
+        {
+            var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
+
+            if (uid != folder.UserId)
+                return (null, null, null);
+
+            var folderPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
+
+            var dir = new DirectoryInfo(folderPath);
+
+            var zipFileName = DateTime.Now.ToString("[yyyy-MM-dd HH.mm.ss]") + "_downloaded_files.zip";
+
+            if (!dir.Exists)
+                return (null, null, null);
+
+
+            ZipFolders(zipFileName, folderPath);
+
+            return (await File.ReadAllBytesAsync(zipFileName), "application/zip", zipFileName);
+        }
+
+
+
+
+
+
+        /*
+         * 
+         * Download Multiple File with zip feature. Include all subfolders and files. 
+         * Given parameters are List<MultipleFolderDownloadDto> and user uuid
+         * Return the Triple structure and become the file on the controller.
+         * 
+         */
+        public async Task<(byte[] bytes, string content, string fileName)> DownloadMultipleFolder(List<MultipleFolderDownloadDto> folderDownloadDto, Guid uid)
+        {
+
+            var folderIds = folderDownloadDto.Select(fid => fid.folderId).ToList();
+            var folders = await m_folderRepositoryDal.FindByIdsAsync(folderIds);
+
+            // Control the owner of each file is same
+            if (!ControlFolderOwnersAsync(folders, uid))
+                return (null, null, null);
+
+
+
+            var folderPaths = folders.ToList().Select(f => Path.Combine(Util.DIRECTORY_BASE, f.FolderPath)).ToArray();
+
+            if (!folderPaths.Any(fp => !Directory.Exists(Util.DIRECTORY_BASE + fp)))
+                return (null, null, null);
+
+
+            var zipFileName = DateTime.Now.ToString("[yyyy-MM-dd HH.mm.ss]") + "_downloaded_files.zip";
+
+
+            ZipFolders(zipFileName, folderPaths);
+
+            return (await File.ReadAllBytesAsync(zipFileName), "application/zip", zipFileName);
+        }
+
+
+
+
+
+
+
+
+
+
+
         /*
          * 
          * If owner of selected files is valid, return true.
@@ -97,8 +186,14 @@ namespace Service.Services.DownloadService
 
 
 
-
-       public void AddFolderToZip(ZipArchive zipArchive, string sourceFolderPath, string parentFolderName)
+        /*
+         * 
+         * Zip given folder (folder path) and given zip file a created by ZipFolders method.
+         * 
+         * Running the recursively and iteration of each subfolder, create new directory in zip then files of folders added to zip file.
+         * 
+         */
+        public void AddFolderToZip(ZipArchive zipArchive, string sourceFolderPath, string parentFolderName)
         {
             string folderName = Path.GetFileName(sourceFolderPath);
 
@@ -126,36 +221,15 @@ namespace Service.Services.DownloadService
 
 
 
+
+
         /*
          * 
-         * Download Single folder zipped. Include subfolders
+         * Zip folders with given name of zip file  and folderPaths parameters.
+         * 
+         * Trigger method for AddFolderToZip method.
          * 
          */
-        public async Task<(byte[] bytes, string content, string fileName)> DownloadSingleFolder(long folderId, Guid uid)
-        {
-            var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
-
-            if (uid != folder.UserId)
-                return (null, null, null);
-
-            var folderPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
-
-            var dir = new DirectoryInfo(folderPath);
-
-            var zipFileName = DateTime.Now.ToString("[yyyy-MM-dd HH.mm.ss]") + "_downloaded_files.zip";
-            
-            if (!dir.Exists)
-                return (null, null, null);
-
-
-            ZipFolders(zipFileName, folderPath);
-
-            return (await File.ReadAllBytesAsync(zipFileName), "application/zip", zipFileName);
-        }
-
-
-
-
         private void ZipFolders(string zipFileName, params string[] folderPaths)
         {
             using (var zipArchive = ZipFile.Open(zipFileName, ZipArchiveMode.Create))
@@ -172,38 +246,13 @@ namespace Service.Services.DownloadService
 
 
 
-
         /*
          * 
-         * Download Multiple folder zipped. Include subfolders
+         * Check the owner of each folders are same. Compare it with given user uuid parameter
+         * 
+         * Return the boolean value if owner of each folders are same.
          * 
          */
-        public async Task<(byte[] bytes, string content, string fileName)> DownloadMultipleFolder(List<MultipleFolderDownloadDto> folderDownloadDto, Guid uid)
-        {
-
-            var folderIds = folderDownloadDto.Select(fid => fid.folderId).ToList();
-            var folders = await m_folderRepositoryDal.FindByIdsAsync(folderIds);
-            
-            // Control the owner of each file is same
-            if (!ControlFolderOwnersAsync(folders, uid))
-                return (null, null, null);
-
-
-
-            var folderPaths = folders.ToList().Select(f => Path.Combine(Util.DIRECTORY_BASE, f.FolderPath)).ToArray();
-
-            if (!folderPaths.Any(fp =>! Directory.Exists(Util.DIRECTORY_BASE + fp)))
-                return (null, null, null);
-
-            
-            var zipFileName = DateTime.Now.ToString("[yyyy-MM-dd HH.mm.ss]") + "_downloaded_files.zip";
-
-
-            ZipFolders(zipFileName, folderPaths);
-
-            return (await File.ReadAllBytesAsync(zipFileName), "application/zip", zipFileName);
-        }
-
         private bool ControlFolderOwnersAsync(IEnumerable<FileboxFolder> folders, Guid uid)
         {
             return folders.All(f => f.UserId == uid);
