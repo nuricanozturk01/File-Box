@@ -337,6 +337,7 @@ end;
 exec filebox_insert_user  'Nuri Can', 'OZTURK', 'nuricanozturk', 'canozturk309@gmail.com', '12345'
 exec filebox_insert_user  'Yagmur', 'Dolu', 'yagmur', 'yagmur@example.com', '12345'
 exec filebox_insert_user  'ahmet', 'koc', 'ahmetkoc', 'ahmetkoc@example.com', '12345'
+exec filebox_insert_user  'dogan', 'arik', 'dogan', 'dogan@example.com', '12345'
 select * from filebox_user;
 
 exec filebox_insert_folder NULL, '812EEE16-72AE-4D3E-A201-1010FC7DD172', 'johndoe', 'C:\Users\hp\Desktop\file_box\johndoe';

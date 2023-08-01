@@ -6,7 +6,7 @@ using RepositoryLib.DTO;
 
 namespace Presentation.Controllers
 {
-    [Route("users")]
+    [Route("api/auth")]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -15,7 +15,6 @@ namespace Presentation.Controllers
         public LoginController(IUserLoginService userLoginService) => m_userLoginService = userLoginService;
 
         /*
-         * 
          * 
          * User login operation 
          * 
