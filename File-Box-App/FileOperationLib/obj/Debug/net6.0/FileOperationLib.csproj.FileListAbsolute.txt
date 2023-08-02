@@ -1,0 +1,12 @@
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\bin\Debug\net6.0\FileOperationLib.deps.json
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\bin\Debug\net6.0\FileOperationLib.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\bin\Debug\net6.0\FileOperationLib.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\obj\Debug\net6.0\FileOperationLib.csproj.AssemblyReference.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\obj\Debug\net6.0\FileOperationLib.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\obj\Debug\net6.0\FileOperationLib.AssemblyInfoInputs.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\obj\Debug\net6.0\FileOperationLib.AssemblyInfo.cs
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\obj\Debug\net6.0\FileOperationLib.csproj.CoreCompileInputs.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\obj\Debug\net6.0\FileOperationLib.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\obj\Debug\net6.0\refint\FileOperationLib.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\obj\Debug\net6.0\FileOperationLib.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileOperationLib\obj\Debug\net6.0\ref\FileOperationLib.dll

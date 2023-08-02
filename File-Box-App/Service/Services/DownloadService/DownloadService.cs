@@ -1,6 +1,7 @@
 ﻿using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
+using Service.Exceptions;
 using System.IO.Compression;
 /*
  * 
@@ -39,10 +40,13 @@ namespace Service.Services.DownloadService
         public async Task<(byte[], string, string)> DownloadSingleFile(long fileId, Guid uid)
         {
             var file = await m_fileRepositoryDal.FindByIdAsync(fileId); // Find file given file id
+            
+            if (file is null)
+                throw new ServiceException("Files is not found!");
+            
             var folder = await m_folderRepositoryDal.FindByIdAsync(file.FolderId); // Find file's folder
 
-            if (uid != folder.UserId) // control the user is valid
-                return (null, null, null);
+            CheckFolderAndPermits(folder, uid);
 
             var filePath = Util.DIRECTORY_BASE + file.FilePath; // real file path
 
@@ -63,26 +67,49 @@ namespace Service.Services.DownloadService
          */
         public async Task<byte[]> DownloadMultipleFile(List<MultipleFileDownloadDto> filesDownloadDto, Guid uid)
         {
-            var listIds = filesDownloadDto.Select(dto => dto.fileId).ToList();
-            var files = await m_fileRepositoryDal.FindByIdsAsync(listIds);
-
-            // Control the owner of each file is same
-            if (!await ControlFileOwnersAsync(files, uid))
-                return null;
-
-            using (var zip = new MemoryStream())
+           try
             {
-                using (var archive = new ZipArchive(zip, ZipArchiveMode.Create, true))
-                {
-                    foreach (var file in files)
-                    {
-                        var filePath = Util.DIRECTORY_BASE + file.FilePath;
+                var listIds = filesDownloadDto.Select(dto => dto.fileId).ToList();
+                var files = await m_fileRepositoryDal.FindByIdsAsync(listIds);
 
-                        if (File.Exists(filePath))
-                            archive.CreateEntryFromFile(filePath, Path.GetFileName(filePath), CompressionLevel.Optimal);
+                // Control the owner of each file is same
+                if (!await ControlFileOwnersAsync(files, uid))
+                    throw new ServiceException("You cannot acces these files!");
+
+                using (var zip = new MemoryStream())
+                {
+                    using (var archive = new ZipArchive(zip, ZipArchiveMode.Create, true))
+                    {
+                        foreach (var file in files)
+                        {
+                            var filePath = Util.DIRECTORY_BASE + file.FilePath;
+
+                            if (File.Exists(filePath))
+                                archive.CreateEntryFromFile(filePath, Path.GetFileName(filePath), CompressionLevel.Optimal);
+                        }
                     }
+                    return zip.ToArray();
                 }
-                return zip.ToArray();
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw new ServiceException("Files are not found!");
+            }
+            catch (IOException ex)
+            {
+                throw new ServiceException("Files are not zipped!");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new ServiceException("You cannot zip this file!");
+            }
+            catch (ServiceException ex)
+            {
+                throw new ServiceException(ex.GetMessage);
+            }
+            catch (Exception ex)
+            {
+                throw new ServiceException("Somethings are wrong on zip operation!");
             }
         }
 
@@ -102,8 +129,7 @@ namespace Service.Services.DownloadService
         {
             var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
 
-            if (uid != folder.UserId)
-                return (null, null, null);
+            CheckFolderAndPermits(folder, uid);
 
             var folderPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
 
@@ -112,7 +138,7 @@ namespace Service.Services.DownloadService
             var zipFileName = DateTime.Now.ToString("[yyyy-MM-dd HH.mm.ss]") + "_downloaded_files.zip";
 
             if (!dir.Exists)
-                return (null, null, null);
+                throw new ServiceException("Direction is not found!");
 
 
             ZipFolders(zipFileName, folderPath);
@@ -140,14 +166,14 @@ namespace Service.Services.DownloadService
 
             // Control the owner of each file is same
             if (!ControlFolderOwnersAsync(folders, uid))
-                return (null, null, null);
+                throw new ServiceException("You cannot access these folders!");
 
 
 
             var folderPaths = folders.ToList().Select(f => Path.Combine(Util.DIRECTORY_BASE, f.FolderPath)).ToArray();
 
             if (!folderPaths.Any(fp => !Directory.Exists(Util.DIRECTORY_BASE + fp)))
-                return (null, null, null);
+                throw new ServiceException("Directories are not exists!");
 
 
             var zipFileName = DateTime.Now.ToString("[yyyy-MM-dd HH.mm.ss]") + "_downloaded_files.zip";
@@ -175,7 +201,11 @@ namespace Service.Services.DownloadService
          */
         private async Task<bool> ControlFileOwnersAsync(IEnumerable<FileboxFile> files, Guid uid)
         {
+            if (files is null)
+                throw new ServiceException("Files are not found!");
+
             var usersFolders = await m_folderRepositoryDal.FindByFilterAsync(folder => folder.UserId == uid);
+
             var usersFolderIds = usersFolders.Select(folder => folder.FolderId).ToHashSet();
 
             return files.All(file => usersFolderIds.Contains(file.FolderId));
@@ -195,26 +225,33 @@ namespace Service.Services.DownloadService
          */
         public void AddFolderToZip(ZipArchive zipArchive, string sourceFolderPath, string parentFolderName)
         {
-            string folderName = Path.GetFileName(sourceFolderPath);
-
-            // Create an entry for the folder in the zip archive
-            if (!string.IsNullOrEmpty(parentFolderName))
+            try
             {
-                folderName = Path.Combine(parentFolderName, folderName);
+                string folderName = Path.GetFileName(sourceFolderPath);
+
+                // Create an entry for the folder in the zip archive
+                if (!string.IsNullOrEmpty(parentFolderName))
+                {
+                    folderName = Path.Combine(parentFolderName, folderName);
+                }
+                zipArchive.CreateEntry(folderName + "/");
+
+                // Add all files in the folder to the zip archive
+                foreach (string filePath in Directory.GetFiles(sourceFolderPath))
+                {
+                    string fileName = Path.GetFileName(filePath);
+                    zipArchive.CreateEntryFromFile(filePath, Path.Combine(folderName, fileName));
+                }
+
+                // Recursively add subfolders
+                foreach (string subfolderPath in Directory.GetDirectories(sourceFolderPath))
+                {
+                    AddFolderToZip(zipArchive, subfolderPath, folderName);
+                }
             }
-            zipArchive.CreateEntry(folderName + "/");
-
-            // Add all files in the folder to the zip archive
-            foreach (string filePath in Directory.GetFiles(sourceFolderPath))
+            catch (Exception ex)
             {
-                string fileName = Path.GetFileName(filePath);
-                zipArchive.CreateEntryFromFile(filePath, Path.Combine(folderName, fileName));
-            }
-
-            // Recursively add subfolders
-            foreach (string subfolderPath in Directory.GetDirectories(sourceFolderPath))
-            {
-                AddFolderToZip(zipArchive, subfolderPath, folderName);
+                throw new ServiceException("Error on Zip Folder Operation!");
             }
         }
 
@@ -255,7 +292,31 @@ namespace Service.Services.DownloadService
          */
         private bool ControlFolderOwnersAsync(IEnumerable<FileboxFolder> folders, Guid uid)
         {
+            if (folders is null)
+                throw new ServiceException("Folders are not found!");
+
             return folders.All(f => f.UserId == uid);
+        }
+
+
+
+
+
+
+
+        /*
+         * 
+         * Check the folder and folder owner is same with user Id
+         * 
+         * 
+         */
+        private void CheckFolderAndPermits(FileboxFolder folder, Guid userId)
+        {
+            if (folder is null)
+                throw new ServiceException("Folder is not found!");
+
+            if (folder.UserId != userId)
+                throw new ServiceException("You cannot access this folder!");
         }
     }
 }

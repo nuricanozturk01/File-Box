@@ -383,11 +383,12 @@ delete filebox_file from filebox_file where filebox_file.file_name = 'image1.jpg
 delete filebox_folder from filebox_folder where filebox_folder.folder_id = 2;
 
 
-update filebox_folder set folder_path = 'nuricanozturk\colors' where folder_path = 'nuricanozturk\cancan';
+update filebox_folder set folder_path = 'nuricanozturk\Dotnet\Dotnet' where folder_path = 'nuricanozturk\Dotnet\ASD';
 update filebox_folder set folder_path = 'nuricanozturk\books\New folder' where folder_path = 'nuricanozturk\newBooks\New folder';
 
-update filebox_folder set folder_name = 'colors' where folder_name = 'cancan';
+update filebox_folder set folder_name = 'Dotnet' where folder_name = 'ASD';
 
+update filebox_file set file_path = 'nuricanozturk\Dotnet\Dotnet\Homework-002.pdf' where file_path = 'C:\Users\hp\Desktop\file_box\nuricanozturk\Dotnet\ASD\Homework-002.pdf';
 
 update filebox_file set file_path = 'nuricanozturk\New Folder\Other\New Text Document.txt' where file_path = 'nuricanozturk\Other\Other\New Text Document.txt';
 update filebox_folder set folder_name = 'books' where folder_name = 'newBooks';
@@ -395,7 +396,10 @@ update filebox_folder set folder_name = 'books' where folder_name = 'newBooks';
 delete filebox_file where file_path like 'nuricanozturk\Projects%';
 delete filebox_folder where folder_path like '%nuricanozturk\allProjects%';
 
-select * from filebox_folder where folder_path = 'nuricanozturk\Projects';
+select * from filebox_folder where folder_path = 'nuricanozturk\Dotnet\New folder';
+
+
+select * from filebox_file where folder_id = 474;
 /*
 use FileBoxDb;
 go

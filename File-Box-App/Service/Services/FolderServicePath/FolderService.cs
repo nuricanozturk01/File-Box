@@ -84,17 +84,14 @@ namespace Service.Services.FolderService
          * 
          * 
          * Find all subfolders given folder and sort it by folderPath length so,
-         * deleted folder starting with leaf node.
-         * I am think thinking using the dfs algorithm.
          * 
          * 
          */
-        private IEnumerable<FileboxFolder> GetAllSubFolders(FileboxFolder folder)
+        private async Task<IEnumerable<FileboxFolder>> GetAllSubFolders(FileboxFolder folder)
         {
-            return m_folderDal
-                .FindByFilterAsync(f => f.FolderId >= folder.FolderId && f.FolderPath.Contains(folder.FolderName))
-                .Result
-                .OrderByDescending(f => f.FolderPath.Length);
+            var folders = await m_folderDal.FindByFilterAsync(f => f.FolderId >= folder.FolderId && f.FolderPath.Contains(folder.FolderName));
+
+            return folders.OrderByDescending(f => f.FolderPath.Length);
         }
 
 
@@ -115,7 +112,7 @@ namespace Service.Services.FolderService
 
             CheckFolderAndPermits(dir, userID);
             
-            var deletedFolderWithSubFolders = GetAllSubFolders(dir);
+            var deletedFolderWithSubFolders = await GetAllSubFolders(dir);
 
             CheckFolderExistsIfNotRemoveIt(deletedFolderWithSubFolders);
 
@@ -180,33 +177,49 @@ namespace Service.Services.FolderService
         {
             try
             {
+                
+
                 var folder = await m_folderDal.FindByIdAsync(folderId); // find folder by id
 
                 CheckFolderAndPermits(folder, userId);
 
-                var oldPath = folder.FolderPath; //nuricanozturk/dev/nuri
-                var oldName = folder.FolderName; //nuri
+                if (folder.ParentFolderId is null)
+                    throw new ServiceException("Root folder name cannot be changed!");
+
+                var oldFolderPathStartsWithRoot = folder.FolderPath; //"nuricanozturk\\Dotnet\\Dotnet"
+                var oldFolderName = folder.FolderName; //"Dotnet"
 
                 // nuricanozturk/dev/nuri     new name: can
-                var oldPathParent = Path.GetDirectoryName(folder.FolderPath); // without last folder (nuricanozturk/dev)
-                var newFullPath = Path.Combine(oldPathParent, newFolderName); // nuricanozturk/dev/can
+                var oldFolderPathWithoutOldName = Path.GetDirectoryName(folder.FolderPath); // "nuricanozturk\\Dotnet"
+                var newFolderPathStartsWithRoot = Path.Combine(oldFolderPathWithoutOldName, newFolderName); // "nuricanozturk\\Dotnet\\ASD"
 
                 // Rename folder
-                Directory.Move(Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath), Path.Combine(Util.DIRECTORY_BASE, newFullPath));
+                Directory.Move(Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath), Path.Combine(Util.DIRECTORY_BASE, newFolderPathStartsWithRoot));
 
                 // Update parent folder
                 folder.FolderName = newFolderName;
-                folder.FolderPath = newFullPath;
+                folder.FolderPath = newFolderPathStartsWithRoot;
                 folder.UpdatedDate = DateTime.Now;
 
+                m_folderDal.Update(folder);
 
-                // Update subfolders
-                await UpdateSubFolders(oldPath, oldName, newFolderName);
+                var newFullPathOnSystem = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
 
-                // Update files on parent folder
-                await UpdateFiles(folderId, oldName, newFolderName);
+                // Update files of parent folder
+                var files = (await m_fileRepositoryDal.FindAllAsync()).Where(file => file.FilePath.Contains(oldFolderPathStartsWithRoot)).ToList();
+                
+                files.ForEach(file => file.FilePath = file.FilePath.Replace(oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot));
+                
+                await m_fileRepositoryDal.UpdateAll(files);
 
-                return (oldPath, newFullPath);
+                var folders = (await m_folderDal.FindAllAsync()).Where(f => f.FolderPath.Contains(oldFolderPathStartsWithRoot)).ToList();
+                
+                folders.ForEach(f => f.FolderPath = f.FolderPath.Replace(oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot));
+
+                await m_folderDal.UpdateAll(folders);
+               
+
+                return (oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot);
             }
             catch (DirectoryNotFoundException ex)
             {
@@ -222,68 +235,12 @@ namespace Service.Services.FolderService
             }
             catch (IOException ex)
             {
-                throw new ServiceException("Files does not deleted!");
+                throw new ServiceException(ex.Message);
             }
             catch (ServiceException ex)
             {
                 throw new ServiceException(ex.GetMessage);
             }
-        }
-
-
-
-
-
-
-        /*
-         * 
-         * 
-         * Update subfolders when rename parent folder
-         * 
-         * 
-         */
-        private async Task UpdateSubFolders(string oldPath, string oldName, string newFolderName)
-        {
-            var subfolders = await m_folderDal.FindByFilterAsync(f => f.FolderPath.Contains(oldPath));
-            
-            if (subfolders is null)
-                throw new ServiceException("Subfolders are null!");
-
-            foreach (var subfolder in subfolders)
-            {
-                subfolder.UpdatedDate = DateTime.Now;
-                subfolder.FolderPath = subfolder.FolderPath.Replace(oldName, newFolderName);
-            }
-
-            await m_folderDal.UpdateAll(subfolders);
-        }
-
-
-
-
-
-
-
-        /*
-         * 
-         * 
-         * update files when rename parent folder
-         * 
-         * 
-         */
-        private async Task UpdateFiles(long folderId, string oldName, string newFolderName)
-        {
-            var files = await m_fileRepositoryDal.FindByFilterAsync(file => file.FolderId == folderId);
-            
-            if (files is null)
-                throw new ServiceException("Files are null!");
-            
-            foreach (var file in files)
-            {
-                file.FilePath = file.FilePath.Replace(oldName, newFolderName);
-                file.UpdatedDate = DateTime.Now;
-            }
-            await m_fileRepositoryDal.UpdateAll(files);
         }
 
 
@@ -328,6 +285,7 @@ namespace Service.Services.FolderService
             if (Guid.Parse(folder.userId) != userId)
                 throw new ServiceException("You cannot access this folder!");
         }
+
 
 
 

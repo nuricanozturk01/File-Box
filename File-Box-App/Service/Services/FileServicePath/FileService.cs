@@ -235,9 +235,8 @@ namespace Service.Services.FileServicePath
         public async Task<IEnumerable<FileViewDto>> SortFilesByFileBytesAsync(long folderId, Guid userId)
         {
             var folder = await m_folderDal.FindByIdAsync(folderId);
-
-            if (folder.UserId != userId)
-                return null;
+               
+            CheckFolderAndPermits(folder, userId);
 
             var files = await m_fileDal.FindByFilterAsync(file => file.FolderId == folderId);
             var sortedFiles = await Task.Run(() => files.OrderByDescending(file => file.FileSize));
