@@ -9,6 +9,19 @@ GO
 
 */
 
+
+
+/*
+use FileBoxDb;
+go
+
+drop table filebox_file;
+drop table filebox_folder;
+drop table filebox_user;
+go
+
+*/
+
 -- Create the filebox_user Table
 CREATE TABLE filebox_user
 (
@@ -370,18 +383,19 @@ delete filebox_file from filebox_file where filebox_file.file_name = 'image1.jpg
 delete filebox_folder from filebox_folder where filebox_folder.folder_id = 2;
 
 
-update filebox_folder set folder_path = 'nuricanozturk\books' where folder_path = 'nuricanozturk\newBooks';
+update filebox_folder set folder_path = 'nuricanozturk\colors' where folder_path = 'nuricanozturk\cancan';
 update filebox_folder set folder_path = 'nuricanozturk\books\New folder' where folder_path = 'nuricanozturk\newBooks\New folder';
 
-update filebox_folder set folder_name = 'ders' where folder_name = 'derss';
+update filebox_folder set folder_name = 'colors' where folder_name = 'cancan';
 
 
-
+update filebox_file set file_path = 'nuricanozturk\New Folder\Other\New Text Document.txt' where file_path = 'nuricanozturk\Other\Other\New Text Document.txt';
 update filebox_folder set folder_name = 'books' where folder_name = 'newBooks';
 
-delete filebox_folder where folder_id = 2;
+delete filebox_file where file_path like 'nuricanozturk\Projects%';
+delete filebox_folder where folder_path like '%nuricanozturk\allProjects%';
 
-
+select * from filebox_folder where folder_path = 'nuricanozturk\Projects';
 /*
 use FileBoxDb;
 go

@@ -1,22 +1,10 @@
 ﻿using RepositoryLib.DTO;
+using RepositoryLib.Models;
 
 namespace Service.Services.FileServicePath
 {
     public interface IFileService
     {
-
-
-
-
-
-        /*
-         * 
-         * 
-         *  Return the all files on specific folder with given parameters userId and folderId
-         * 
-         * 
-         */
-        Task<IEnumerable<FileViewDto>?> GetFilesByUserIdAndFolderIdAsync(Guid userId, long folderId);
 
 
 
@@ -44,7 +32,7 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        Task<bool> DeleteFile(long folderId);
+        Task<string> DeleteFile(long folderId);
 
 
 
@@ -58,6 +46,43 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        void RenameFile(long fileId, string newFileName);
+        Task<string> RenameFile(long fileId, string newFileName, Guid userId);
+
+
+
+
+
+
+        /*
+         * 
+         * Get all files from db with given folder ıd, user ıd and file extension parameter
+         * 
+         * 
+         */
+        Task<IEnumerable<FileViewDto>> GetFilesByFolderIdAsync(long folderId, Guid userId);
+
+
+
+
+
+        /*
+         * 
+         * Get all files from db with given folder ıd, user ıd and file extension parameter
+         * 
+         * 
+         */
+        Task<IEnumerable<FileViewDto>> GetFilesByFileExtensionAndFolderIdAsync(long folderId, string? fileExtension, Guid userId);
+
+
+
+
+
+        /*
+         * 
+         * Sort files with given folder ıd, user ıd and file extension parameter
+         * 
+         * 
+         */
+        Task<IEnumerable<FileViewDto>> SortFilesByFileBytesAsync(long folderId, Guid userId);
     }
 }

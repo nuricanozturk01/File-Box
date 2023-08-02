@@ -1,5 +1,6 @@
 ﻿using RepositoryLib.Models;
 using RepositoryLib.Repository;
+using System.IO;
 using System.Linq.Expressions;
 
 namespace RepositoryLib.Dal
@@ -94,6 +95,9 @@ namespace RepositoryLib.Dal
 
         public FileboxFile Save(FileboxFile t)
         {
+            var extension = string.IsNullOrEmpty(t.FileType) ? "N/A" : t.FileType;
+            t.FileType = extension;
+
             return m_fileRepository.Save(t);
         }
 
@@ -101,6 +105,9 @@ namespace RepositoryLib.Dal
 
         public async Task<FileboxFile> SaveAsync(FileboxFile t)
         {
+            var extension = string.IsNullOrEmpty(t.FileType) ? "N/A" : t.FileType;
+            t.FileType = extension;
+
             return await m_fileRepository.SaveAsync(t);
         }
 

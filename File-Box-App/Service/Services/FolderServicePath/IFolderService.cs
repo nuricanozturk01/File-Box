@@ -1,4 +1,5 @@
 ﻿using RepositoryLib.DTO;
+using RepositoryLib.Models;
 
 namespace Service.Services.FolderService
 {
@@ -45,7 +46,7 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        Task<bool> DeleteFolder(long folderId);
+        Task<string> DeleteFolder(long folderId, Guid userID);
 
 
 
@@ -59,6 +60,20 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        void RenameFolder(long folderId, string newFolderName);
+        Task<(string oldPath, string newPath)> RenameFolder(long folderId, string newFolderName, Guid userId);
+
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Find Root folder by user uuid
+         * 
+         * 
+         */
+        Task<FolderViewDto> FindRootFolder(Guid guid);
     }
 }

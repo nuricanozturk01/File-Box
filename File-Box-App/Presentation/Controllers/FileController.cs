@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLib.DTO;
+using Service.Exceptions;
 using Service.Services.FileServicePath;
 
 namespace Presentation.Controllers
@@ -35,11 +36,11 @@ namespace Presentation.Controllers
             {
                 await m_fileService.CreateFile(fileSaveDto);
 
-                return Ok("Created file " + fileSaveDto.fileName + " owner id is: " + fileSaveDto.userId);
+                return Ok(new ResponseMessage(true, "file created successfully!", new FileResponseSuccessWithFileNameAndOwner(fileSaveDto.fileName, fileSaveDto.userId)));
             }
-            catch (Exception ex)
+            catch (ServiceException ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
             }
         }
 
@@ -58,7 +59,16 @@ namespace Presentation.Controllers
         [HttpDelete("remove")]
         public async Task<IActionResult> RemoveFile([FromQuery(Name = "id")] long fileId)
         {
-            return Ok(await m_fileService.DeleteFile(fileId));
+            try
+            {
+                var removedFileName = await m_fileService.DeleteFile(fileId);
+
+                return Ok(new ResponseMessage(true, "file removed successfully!", new FileDeleteSuccessResponse(removedFileName)));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }     
         }
 
 
@@ -74,10 +84,18 @@ namespace Presentation.Controllers
          */
 
         [HttpPut("rename")]
-        public async Task<IActionResult> RenameFile([FromQuery(Name = "id")] long id, [FromQuery(Name = "n")] string newFileName)
+        public async Task<IActionResult> RenameFile([FromQuery(Name = "fid")] long fileId, [FromQuery(Name = "n")] string newFileName, [FromQuery(Name = "uid")] string userId)
         {
-            m_fileService.RenameFile(id, newFileName);
-            return Ok();
+            try
+            {
+                var oldFileName = await m_fileService.RenameFile(fileId, newFileName, Guid.Parse(userId));
+
+                return Ok(new ResponseMessage(true, "Rename operation is successful!", new FileResponseSuccessRename(oldFileName, newFileName)));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
         }
 
 
@@ -87,14 +105,74 @@ namespace Presentation.Controllers
 
         /*
          * 
+         * Get all files from db with given folder ıd, user ıd and file extension parameter
          * 
-         * Find folders specific folder and user with given user id and folder id.
          * 
          */
-        [HttpGet("find/all/id")]
-        public async Task<IActionResult> FindFoldersByUserId([FromQuery(Name = "uid")] string uid, [FromQuery(Name = "folderId")] long folderId)
+        [HttpGet("find/all/folder")]
+        public async Task<IActionResult> FindFilesByFolderIdAsync([FromQuery(Name = "fid")] long folderId, [FromQuery(Name = "uid")] string userId)
         {
-            return Ok(await m_fileService.GetFilesByUserIdAndFolderIdAsync(Guid.Parse(uid), folderId));
+            try
+            {
+                var filesOnFolders = await m_fileService.GetFilesByFolderIdAsync(folderId, Guid.Parse(userId));
+                return Ok(new ResponseMessage(true, $"Found {filesOnFolders.Count()} items.", new FileResponseFileList(filesOnFolders)));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+        /*
+         * 
+         * Get all files from db with given folder ıd, user ıd and file extension parameter
+         * 
+         * 
+         */
+        [HttpGet("find/all/extension")]
+        public async Task<IActionResult> FindFilesByFileExtensionAndFolderIdAsync([FromQuery(Name = "fid")] long folderId,
+                                                                                  [FromQuery(Name = "ext")] string extension,
+                                                                                  [FromQuery(Name = "uid")] string userId)
+        {
+            try
+            {
+                var filesOnFolders = await m_fileService.GetFilesByFileExtensionAndFolderIdAsync(folderId, extension, Guid.Parse(userId));
+                return Ok(new ResponseMessage(true, $"Found {filesOnFolders.Count()} items.", new FileResponseFileList(filesOnFolders)));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+
+       /*
+        * 
+        * Sort files with given folder ıd, user ıd and file extension parameter
+        * 
+        * 
+        */
+        [HttpGet("sort/byte")]
+        public async Task<IActionResult> SortFilesByFileBytesAsync([FromQuery(Name = "fid")] long folderId,
+                                                                   [FromQuery(Name = "uid")] string userId)
+        {
+            try
+            {
+                var filesOnFolders = await m_fileService.SortFilesByFileBytesAsync(folderId, Guid.Parse(userId));
+                return Ok(new ResponseMessage(true, $"Found {filesOnFolders.Count()} items.", new FileResponseFileList(filesOnFolders)));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.IdentityModel.Tokens;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
+using Service.Exceptions;
 
 namespace Service.Services.FolderService
 {
@@ -107,17 +109,35 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        public async Task<bool> DeleteFolder(long folderId)
+        public async Task<string> DeleteFolder(long folderId, Guid userID)
         {
             var dir = await m_folderDal.FindByIdAsync(folderId);
 
-            var deletedFolderWihtSubFolders = GetAllSubFolders(dir);
+            CheckFolderAndPermits(dir, userID);
+            
+            var deletedFolderWithSubFolders = GetAllSubFolders(dir);
 
-            m_folderDal.RemoveAll(deletedFolderWihtSubFolders);
+            CheckFolderExistsIfNotRemoveIt(deletedFolderWithSubFolders);
 
-            deletedFolderWihtSubFolders.ToList().ForEach(f => Directory.Delete(Util.DIRECTORY_BASE + f.FolderPath, true));
+            if (!deletedFolderWithSubFolders.IsNullOrEmpty())
+            {
+                m_folderDal.RemoveAll(deletedFolderWithSubFolders);
 
-            return true;
+                deletedFolderWithSubFolders.ToList().ForEach(f => Directory.Delete(Util.DIRECTORY_BASE + f.FolderPath, true));
+            }
+          
+            return dir.FolderPath;
+        }
+
+        private void CheckFolderExistsIfNotRemoveIt(IEnumerable<FileboxFolder> deletedFolderWithSubFolders)
+        {
+            foreach (var folder in deletedFolderWithSubFolders)
+            {
+                var fullPathOnSystem = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
+
+                if (!Directory.Exists(fullPathOnSystem))
+                    m_folderDal.Delete(folder);
+            }
         }
 
 
@@ -135,7 +155,12 @@ namespace Service.Services.FolderService
         public async Task<IEnumerable<FolderViewDto>> GetFoldersByUserIdAsync(Guid userId)
         {
             var folders = m_folderDal.AllFolders.Where(x => x.UserId == userId).ToList();
+
+            if (folders is null)
+                throw new ServiceException("Folders are null!");
+
             var folderViewDtos = folders.Select(folder => m_mapper.Map<FolderViewDto>(folder)).ToList();
+
             return await Task.FromResult(folderViewDtos);
         }
 
@@ -151,34 +176,78 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        public async void RenameFolder(long folderId, string newFolderName)
+        public async Task<(string oldPath, string newPath)> RenameFolder(long folderId, string newFolderName, Guid userId)
         {
-            var folder = await m_folderDal.FindByIdAsync(folderId); // find folder by id
-
-            var oldPath = folder.FolderPath; //nuricanozturk/dev/nuri
-            var oldName = folder.FolderName; //nuri
-
-            // nuricanozturk/dev/nuri     new name: can
-            var oldPathParent = Path.GetDirectoryName(folder.FolderPath); // without last folder (nuricanozturk/dev)
-            var newFullPath = Path.Combine(oldPathParent, newFolderName); // nuricanozturk/dev/can
-
-            Directory.Move(Util.DIRECTORY_BASE + folder.FolderPath, Util.DIRECTORY_BASE + newFullPath);
-
-            folder.FolderName = newFolderName;
-            folder.FolderPath = newFullPath;
-            folder.UpdatedDate = DateTime.Now;
-
-            var files = await m_fileRepositoryDal.FindByFilterAsync(file => file.FolderId == folderId);
-
-            foreach (var file in files)
+            try
             {
-                file.FilePath = file.FilePath.Replace(oldName, newFolderName);
-                file.UpdatedDate = DateTime.Now;
+                var folder = await m_folderDal.FindByIdAsync(folderId); // find folder by id
+
+                CheckFolderAndPermits(folder, userId);
+
+                var oldPath = folder.FolderPath; //nuricanozturk/dev/nuri
+                var oldName = folder.FolderName; //nuri
+
+                // nuricanozturk/dev/nuri     new name: can
+                var oldPathParent = Path.GetDirectoryName(folder.FolderPath); // without last folder (nuricanozturk/dev)
+                var newFullPath = Path.Combine(oldPathParent, newFolderName); // nuricanozturk/dev/can
+
+                // Rename folder
+                Directory.Move(Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath), Path.Combine(Util.DIRECTORY_BASE, newFullPath));
+
+                // Update parent folder
+                folder.FolderName = newFolderName;
+                folder.FolderPath = newFullPath;
+                folder.UpdatedDate = DateTime.Now;
+
+
+                // Update subfolders
+                await UpdateSubFolders(oldPath, oldName, newFolderName);
+
+                // Update files on parent folder
+                await UpdateFiles(folderId, oldName, newFolderName);
+
+                return (oldPath, newFullPath);
             }
-            await m_fileRepositoryDal.UpdateAll(files);
+            catch (DirectoryNotFoundException ex)
+            {
+                throw new ServiceException("Directory Not Found!");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new ServiceException("You do not have permits for deleting the file!");
+            }
+            catch (PathTooLongException ex)
+            {
+                throw new ServiceException("Path too long! Please attention to path length!");
+            }
+            catch (IOException ex)
+            {
+                throw new ServiceException("Files does not deleted!");
+            }
+            catch (ServiceException ex)
+            {
+                throw new ServiceException(ex.GetMessage);
+            }
+        }
 
 
+
+
+
+
+        /*
+         * 
+         * 
+         * Update subfolders when rename parent folder
+         * 
+         * 
+         */
+        private async Task UpdateSubFolders(string oldPath, string oldName, string newFolderName)
+        {
             var subfolders = await m_folderDal.FindByFilterAsync(f => f.FolderPath.Contains(oldPath));
+            
+            if (subfolders is null)
+                throw new ServiceException("Subfolders are null!");
 
             foreach (var subfolder in subfolders)
             {
@@ -187,6 +256,96 @@ namespace Service.Services.FolderService
             }
 
             await m_folderDal.UpdateAll(subfolders);
+        }
+
+
+
+
+
+
+
+        /*
+         * 
+         * 
+         * update files when rename parent folder
+         * 
+         * 
+         */
+        private async Task UpdateFiles(long folderId, string oldName, string newFolderName)
+        {
+            var files = await m_fileRepositoryDal.FindByFilterAsync(file => file.FolderId == folderId);
+            
+            if (files is null)
+                throw new ServiceException("Files are null!");
+            
+            foreach (var file in files)
+            {
+                file.FilePath = file.FilePath.Replace(oldName, newFolderName);
+                file.UpdatedDate = DateTime.Now;
+            }
+            await m_fileRepositoryDal.UpdateAll(files);
+        }
+
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Find Root path with given userid parameter.
+         * 
+         * 
+         */
+        public async Task<FolderViewDto> FindRootFolder(Guid guid)
+        {
+            var folder = (await GetFoldersByUserIdAsync(guid)).FirstOrDefault();
+
+            CheckFolderAndPermits(folder, guid);
+
+            return folder;
+        }
+
+
+
+
+
+
+
+
+        /*
+         * 
+         * Check the folder and folder owner is same with user Id
+         * 
+         * 
+         */
+        private void CheckFolderAndPermits(FolderViewDto folder, Guid userId)
+        {
+            if (folder is null)
+                throw new ServiceException("Folder is not found!");
+
+            if (Guid.Parse(folder.userId) != userId)
+                throw new ServiceException("You cannot access this folder!");
+        }
+
+
+
+
+
+        /*
+         * 
+         * Check the folder and folder owner is same with user Id
+         * 
+         * 
+         */
+        private void CheckFolderAndPermits(FileboxFolder folder, Guid userId)
+        {
+            if (folder is null)
+                throw new ServiceException("Folder is not found!");
+
+            if (folder.UserId != userId)
+                throw new ServiceException("You cannot access this folder!");
         }
     }
 }

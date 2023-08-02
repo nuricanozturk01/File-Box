@@ -23,12 +23,11 @@ namespace Presentation.Controllers
         public IActionResult Login([FromBody] UserLoginDTO userLoginDTO)
         {
             if (!m_userLoginService.Login(userLoginDTO))
-                return Unauthorized(new MessageResponse(
-                    "Failure!", 401, $"{userLoginDTO.Username} login operation was failure!"));
+                return Unauthorized(new ResponseMessage(false, "login operation is failed!", null));
 
             var tokenDto = m_userLoginService.CreateToken();
-
-            return Ok(new MessageResponse("Success!", 200, $"{userLoginDTO.Username} login operation is successful!", tokenDto));
+            
+            return Ok(new ResponseMessage(true, "login operation is successful!", new UserSuccesfulLoginDto(userLoginDTO.Username, tokenDto)));
         }
 
 

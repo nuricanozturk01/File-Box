@@ -12,8 +12,10 @@ namespace RepositoryLib.DTO
 
         public long folderId { get; set; }
 
+        [JsonIgnore]
         public string userId { get; set; }
 
+        [JsonIgnore]
         public long? parentFolderId { get; set; }
 
         public FolderViewDto(string folderName, string folderPath, DateTime creationDate, long folderId, string userId, long? parentFolderId)
