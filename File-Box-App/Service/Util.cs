@@ -9,5 +9,15 @@
 
         public static long ByteToMB(long bytes) => bytes >> 20;
         public static long ByteToGB(long bytes) => bytes >> 30;
+
+        public static string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        public static bool VerifyPassword(string enteredPassword, string hashedPassword)
+        {
+            return BCrypt.Net.BCrypt.Verify(enteredPassword, hashedPassword);
+        }
     }
 }

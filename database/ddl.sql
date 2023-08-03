@@ -30,7 +30,7 @@ CREATE TABLE filebox_user
     last_name varchar(80) NOT NULL,
     email varchar(100) NOT NULL UNIQUE, -- unique
     username varchar(45) NOT NULL UNIQUE, -- unique
-    password varchar(80) NOT NULL, -- encrypted on api
+    password varchar(128) NOT NULL, -- encrypted on api
 );
 
 -- Create the filebox_folder Table
@@ -70,7 +70,7 @@ select * from filebox_folder;
 select * from filebox_user;
 
 
-
+update filebox_user set email = 'lkjj93670@gmail.com' where username = 'ahmetkoc';
 
 
 

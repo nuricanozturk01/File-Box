@@ -93,3 +93,4 @@ C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Pre
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Service.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Presentation.pdb
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Service.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\BCrypt.Net-Next.dll

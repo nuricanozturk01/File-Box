@@ -4,6 +4,7 @@ using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
 using Service;
+using Service.Exceptions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
@@ -151,18 +152,14 @@ namespace FileBoxService.Service
          * returns the status of login operation
          * 
          */
-        public bool Login(UserLoginDTO userLoginDTO)
+        public async Task Login(UserLoginDTO userLoginDTO)
         {
-            var user = m_userRepositoryDal
-                .FindByFilterUser(user => user.Username == userLoginDTO.Username && user.Password == userLoginDTO.Password)
-                .FirstOrDefault();
+            var user = (await m_userRepositoryDal.FindByFilterAsyncUser(user => user.Username == userLoginDTO.Username)).FirstOrDefault();
 
-            if (user is null)
-                return false;
-            
+            if (user is null || !Util.VerifyPassword(userLoginDTO.Password, user.Password))
+                throw new ServiceException("Username or password is invalid!");
+
             CreateDirectoryIfNotExists(user.Username, user.UserId, user);
-
-            return true;
         }
     }
 }

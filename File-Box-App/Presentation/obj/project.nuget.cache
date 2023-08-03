@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "rCQOxquVuP2HEbmrIjh8YZ0aW1mQnM3nqBkAzqW7Hhtoyi9jDuuDS5+NtMo4nG/P3Zph8HZjVdwobzcgAYODMA==",
+  "dgSpecHash": "XFlmJoZJ8ulEQx4WKe1zKpSM+XWVCM7pOFyFtZotfOLkcxX8xBSU8mXlaca2Z6DGmCFdyPr3Zo5QnzCxpDZAdw==",
   "success": true,
   "projectFilePath": "C:\\Users\\hp\\source\\repos\\File-Box\\File-Box-App\\Presentation\\Presentation.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "C:\\Users\\hp\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\6.0.0\\microsoft.aspnetcore.authentication.jwtbearer.6.0.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

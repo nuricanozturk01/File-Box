@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository.Exceptions;
 using RepositoryLib.DTO;
+using Service.Exceptions;
 
 namespace Presentation.Controllers
 {
@@ -20,14 +21,21 @@ namespace Presentation.Controllers
          * 
          */
         [HttpPost("login/user")]
-        public IActionResult Login([FromBody] UserLoginDTO userLoginDTO)
+        public async Task<IActionResult> Login([FromBody] UserLoginDTO userLoginDTO)
         {
-            if (!m_userLoginService.Login(userLoginDTO))
-                return Unauthorized(new ResponseMessage(false, "login operation is failed!", null));
 
-            var tokenDto = m_userLoginService.CreateToken();
-            
-            return Ok(new ResponseMessage(true, "login operation is successful!", new UserSuccesfulLoginDto(userLoginDTO.Username, tokenDto)));
+            try
+            {
+                await m_userLoginService.Login(userLoginDTO);
+
+                var tokenDto = m_userLoginService.CreateToken();
+                
+                return Ok(new ResponseMessage(true, "login operation is successful!", new UserSuccesfulLoginDto(userLoginDTO.Username, tokenDto)));
+            }
+            catch (ServiceException ex)
+            {
+                return Unauthorized(new ResponseMessage(false, ex.GetMessage, null));
+            }
         }
 
 

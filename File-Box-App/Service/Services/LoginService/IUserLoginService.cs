@@ -17,7 +17,7 @@ namespace FileBoxService.Service
          * returns the status of login operation
          * 
          */
-        bool Login(UserLoginDTO userLoginDTO);
+        Task Login(UserLoginDTO userLoginDTO);
 
 
 

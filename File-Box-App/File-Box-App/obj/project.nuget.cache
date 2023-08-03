@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "A5i14CVKpRSHjbQuQgQLeOtQjrxp/ZGhC42GeG2SkirnkEd484Qa0aBSi0zUWHXnhGvkxtFiCoSQoTcVLUL+JQ==",
+  "dgSpecHash": "eBN/+8gfo4vMyhrG/VpRYz4f51SAzDhkDsuXNsByHQr4suKB6Bzz8zO5khgBdGVl0T/KpEPa7KyKsi3ebAZG+A==",
   "success": true,
   "projectFilePath": "C:\\Users\\hp\\source\\repos\\File-Box\\File-Box-App\\File-Box-App\\FileBoxApp.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "C:\\Users\\hp\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
+    "C:\\Users\\hp\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.antiforgery\\2.2.0\\microsoft.aspnetcore.antiforgery.2.2.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",

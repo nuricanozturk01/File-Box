@@ -83,7 +83,10 @@ namespace RepositoryLib.Dal
         }
 
 
-
+        public async Task<FileboxUser> FindUserByEmailAsync(string email)
+        {
+            return (await m_userRepository.FindByFilterAsync(user => user.Email == email)).FirstOrDefault();
+        }
         public FileboxUser Update(FileboxUser user)
         {
             return m_userRepository.Update(user);

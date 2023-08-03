@@ -16,7 +16,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n     \"username\": \"ahmetkoc\",\r\n     \"password\": \"12345\"\r\n}",
+					"raw": "{\r\n     \"username\": \"yagmur\",\r\n     \"password\": \"123456\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1241,6 +1241,33 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Change Password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/change/password?email=lkjj93670@gmail.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"change",
+						"password"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "lkjj93670@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
@@ -1275,13 +1302,13 @@
 	],
 	"variable": [
 		{
-			"key": "user_id",
-			"value": "D82C30DE-EACB-4F2C-BE49-BA2639BE1741",
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwNjA0OTMsImlzcyI6ImZpbGUtYm94IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1Mjk5In0.80azfKzFwZYI9mWgpZi22FBL5wyJh2b0xPhdS8My5Ac",
 			"type": "string"
 		},
 		{
-			"key": "token",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwNDMzODMsImlzcyI6ImZpbGUtYm94IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1Mjk5In0.-G_PCbr5EsxGyNH3iC5rwm6XZaXr2kx0mX8bmHH1OCM",
+			"key": "user_id",
+			"value": "D82C30DE-EACB-4F2C-BE49-BA2639BE1741",
 			"type": "string"
 		},
 		{
