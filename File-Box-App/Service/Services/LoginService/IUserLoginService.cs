@@ -46,5 +46,6 @@ namespace FileBoxService.Service
          * 
          */
         string CreateToken();
+        void WriteTokenToDb(string tokenDto, string username);
     }
 }

@@ -48,8 +48,8 @@ namespace Service.Services.FileServicePath
 
             fs.Close();
 
-            m_fileDal.Save(new FileboxFile(fileSaveDto.folderId, fileSaveDto.fileName, fileFullPathDb, fileSaveDto.fileType, 0));
-
+            await m_fileDal.Save(new FileboxFile(fileSaveDto.folderId, fileSaveDto.fileName, fileFullPathDb, fileSaveDto.fileType, 0));
+            await m_fileDal.SaveChangesAsync();
             return true;
         }
 
@@ -74,7 +74,7 @@ namespace Service.Services.FileServicePath
                 CheckFolderAndPermits(folder, guid);
                 File.Delete(Util.DIRECTORY_BASE + file.FilePath);
                 m_fileDal.DeleteById(fileId);
-
+                await m_fileDal.SaveChangesAsync();
                 return file.FileName;
             }
             catch (ArgumentNullException ex)
@@ -121,7 +121,7 @@ namespace Service.Services.FileServicePath
 
             try
             {
-                var fileObj = m_fileDal.FindById(fileId);
+                var fileObj = await m_fileDal.FindById(fileId);
 
                 if (fileObj is null)
                     throw new ServiceException("File not found!");
@@ -142,7 +142,7 @@ namespace Service.Services.FileServicePath
                 fileObj.UpdatedDate = DateTime.Now;
 
                 m_fileDal.Update(fileObj);
-
+                await m_fileDal.SaveChangesAsync();
                 return oldFileName;
             }
             catch (FileNotFoundException ex) 

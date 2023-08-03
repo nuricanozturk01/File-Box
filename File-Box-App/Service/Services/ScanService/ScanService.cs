@@ -43,6 +43,7 @@ namespace Service.Services.ScanService
                 if (folderInfo is null || !folderInfo.Exists)
                 {
                     m_folderRepositoryDal.Delete(folder);
+                    m_folderRepositoryDal.SaveChanges();
                     affectedFolderCount++;
                 }
                 else
@@ -59,6 +60,7 @@ namespace Service.Services.ScanService
                         if (fi is null || !fi.Exists)
                         {
                             m_fileRepositoryDal.Delete(file);
+                            await m_fileRepositoryDal.SaveChangesAsync();
                             affectedFileCount++;
                         }
                     }
@@ -119,6 +121,7 @@ namespace Service.Services.ScanService
             folder.FileboxFiles.Add(fileBox);
 
             m_folderRepositoryDal.Update(folder);
+            m_folderRepositoryDal.SaveChanges();
         }
 
         private async Task<bool> IsExistFileOnDirectory(FileboxFolder dir, FileInfo file, Guid userId)
@@ -141,7 +144,9 @@ namespace Service.Services.ScanService
 
             var folderBox = new FileboxFolder(folder.FolderId, user.UserId, dir.Name, folder.FolderPath + "\\" + dir.Name);
 
-            return m_folderRepositoryDal.Save(folderBox);
+            var savedFolder = await m_folderRepositoryDal.Save(folderBox);
+            await m_folderRepositoryDal.SaveChangesAsync();
+            return savedFolder;
         }
 
         private async Task<bool> IsExistsOnDb(string folderName, Guid userId)

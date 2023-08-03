@@ -29,6 +29,8 @@ namespace Presentation.Controllers
                 await m_userLoginService.Login(userLoginDTO);
 
                 var tokenDto = m_userLoginService.CreateToken();
+
+                m_userLoginService.WriteTokenToDb("Bearer " + tokenDto, userLoginDTO.Username);
                 
                 return Ok(new ResponseMessage(true, "login operation is successful!", new UserSuccesfulLoginDto(userLoginDTO.Username, tokenDto)));
             }

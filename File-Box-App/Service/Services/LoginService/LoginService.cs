@@ -130,13 +130,17 @@ namespace FileBoxService.Service
                 Directory.CreateDirectory(dirName);
                 user.FileboxFolders.Add(new FileboxFolder(null, userId, username, username));
                 m_userRepositoryDal.Update(user);
+                m_userRepositoryDal.SaveChanges();
             }
             else
             {
-                var rootFolder = m_folderRepositoryDal.FindByFilter(folder => folder.UserId == user.UserId).FirstOrDefault();
+                var rootFolder = (await m_folderRepositoryDal.FindByFilterAsync(folder => folder.UserId == user.UserId)).FirstOrDefault();
 
                 if (rootFolder is null)
-                    m_folderRepositoryDal.Save(new FileboxFolder(null, userId, username, username));
+                {
+                    await m_folderRepositoryDal.Save(new FileboxFolder(null, userId, username, username));
+                    await m_folderRepositoryDal.SaveChangesAsync();
+                }
             }
         }
 
@@ -160,6 +164,32 @@ namespace FileBoxService.Service
                 throw new ServiceException("Username or password is invalid!");
 
             CreateDirectoryIfNotExists(user.Username, user.UserId, user);
+            
+        }
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Write Last token to database 
+         * 
+         * 
+         */
+        public async void WriteTokenToDb(string tokenDto, string username)
+        {
+            if (!string.IsNullOrEmpty(tokenDto))
+            {
+                var user = await m_userRepositoryDal.FindUserByUsername(username);
+
+                user.LastToken = tokenDto;
+
+                m_userRepositoryDal.Update(user);
+
+                await m_userRepositoryDal.SaveChangesAsync();
+            }
         }
     }
 }

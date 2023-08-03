@@ -34,6 +34,7 @@ namespace Service.Services.ForgottenInformationService
             user.Password = Util.HashPassword(newPassword);
 
             m_userRepositoryDal.Update(user);
+            m_userRepositoryDal.SaveChanges();
 
             return (user.Email, user.Username);
         }

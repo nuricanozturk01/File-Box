@@ -1,15 +1,14 @@
-﻿using RepositoryLib.Dal;
-using RepositoryLib.Repository.Impl;
+﻿using FileBoxService.Service;
+using RepositoryLib.Dal;
 using RepositoryLib.Repository;
-using FileBoxService.Service;
 using Service.Services.DownloadService;
+using Service.Services.EmailService;
 using Service.Services.FileServicePath;
 using Service.Services.FolderService;
-using Service.Services.ScanService;
-using Service.Services.UploadService;
 using Service.Services.ForgottenInformationService;
 using Service.Services.PasswordGenerator;
-using Service.Services.EmailService;
+using Service.Services.ScanService;
+using Service.Services.UploadService;
 
 namespace File_Box_App.Configuration
 {
@@ -35,10 +34,11 @@ namespace File_Box_App.Configuration
             services.AddSingleton<FolderRepositoryDal>();
             services.AddSingleton<FileRepositoryDal>();
 
+
+
             // Repositories
-            services.AddSingleton<IUserRepository, UserRepository>();
-            services.AddSingleton<IFileRepository, FileRepository>();
-            services.AddSingleton<IFolderRepository, FolderRepository>();
+
+            services.AddSingleton(typeof(IGenericRepository<,>), typeof(CrudRepository<,>));
         }
 
     }

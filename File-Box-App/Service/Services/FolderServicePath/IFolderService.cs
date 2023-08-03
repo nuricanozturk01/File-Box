@@ -75,5 +75,19 @@ namespace Service.Services.FolderService
          * 
          */
         Task<FolderViewDto> FindRootFolder(Guid guid);
+
+
+
+
+
+
+        /*
+         * 
+         * 
+         * View folder with files
+         * 
+         * 
+         */
+        Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid);
     }
 }

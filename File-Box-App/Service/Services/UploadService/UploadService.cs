@@ -57,6 +57,7 @@ namespace Service.Services.UploadService
                     await m_fileRepositoryDal.SaveAsync(new FileboxFile(folderId, ff.FileName,
                                                              Path.Combine(folder.FolderPath, ff.FileName),
                                                              fileInfo.Extension, fileInfo.Length));
+                    await m_fileRepositoryDal.SaveChangesAsync();
                 }
 
                 return (Path.Combine(folder.FolderPath), Util.ByteToMB(totalBytes));
@@ -103,7 +104,8 @@ namespace Service.Services.UploadService
             {
                 Directory.CreateDirectory(expectedCreatingDirectory); // directory created.
                 var folderBox = new FileboxFolder(folderId, uid, targetFolderName, folder.FolderPath + "\\" + targetFolderName);
-                m_folderRepositoryDal.Save(folderBox);
+                await m_folderRepositoryDal.Save(folderBox);
+                await m_folderRepositoryDal.SaveChangesAsync();
             }
 
 
@@ -146,10 +148,11 @@ namespace Service.Services.UploadService
                 }
 
                 var fp = m_folderRepositoryDal.FindByFilterAsync(f => f.FolderPath == folderPath).Result.FirstOrDefault();
-                
-                await m_fileRepositoryDal.SaveAsync(new FileboxFile(fp.FolderId, Path.GetFileName(file),
+
+                await m_fileRepositoryDal.Save(new FileboxFile(fp.FolderId, Path.GetFileName(file),
                                                          Path.Combine(folderPath, Path.GetFileName(file)),
                                                          Path.GetExtension(file), new FileInfo(file).Length));
+                await m_fileRepositoryDal.SaveChangesAsync();
             }
 
             foreach (var subdirectory in Directory.GetDirectories(sourcePath))
@@ -162,7 +165,8 @@ namespace Service.Services.UploadService
                 {
                     Directory.CreateDirectory(subdirectoryTargetPath);
                     var folderBox = new FileboxFolder(folderId, uid, subdirectoryName, subdirectoryFolderPath);
-                    FileboxFolder? newFolder = m_folderRepositoryDal.Save(folderBox);
+                    await m_folderRepositoryDal.Save(folderBox);
+                    await m_folderRepositoryDal.SaveChangesAsync();
                 }
 
 
@@ -261,10 +265,10 @@ namespace Service.Services.UploadService
 
                 var fileInfo = new FileInfo(targetPath);
 
-                m_fileRepositoryDal.Save(new FileboxFile(folderId, formFile.FileName,
+               await m_fileRepositoryDal.Save(new FileboxFile(folderId, formFile.FileName,
                                                          Path.Combine(folder.FolderPath, formFile.FileName),
                                                          fileInfo.Extension, fileInfo.Length));
-
+                await m_fileRepositoryDal.SaveChangesAsync();
                 return (Path.Combine(folder.FolderPath, formFile.FileName), Util.ByteToMB(formFile.Length));
             }
             catch (Exception ex)

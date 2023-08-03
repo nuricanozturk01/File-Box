@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using Service.Exceptions;
 using Service.Services.FolderService;
@@ -12,10 +14,11 @@ namespace Presentation.Controllers
     public class FolderController : ControllerBase
     {
         private readonly IFolderService m_folderService;
-
-        public FolderController(IFolderService folderService)
+        private readonly UserRepositoryDal m_userRepositoryDal;
+        public FolderController(IFolderService folderService, UserRepositoryDal userRepositoryDal)
         {
             m_folderService = folderService;
+            m_userRepositoryDal = userRepositoryDal;
         }
 
 
@@ -161,6 +164,41 @@ namespace Presentation.Controllers
                 {
                     removed_folder_name = removedFolder
                 }));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Find Folders given user id
+         * 
+         */
+        [HttpGet("find/all/folderfiles")]
+        public async Task<IActionResult> FindFoldersWithFiles([FromQuery(Name = "id")] Guid id)
+        {
+            try
+            {
+                
+
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var user = await m_userRepositoryDal.FindByIdAsyncUser(id);
+
+
+                if (token != user.LastToken)
+                    throw new ServiceException("You cannot access these files!");
+
+                var folders = await m_folderService.FindFolderWithFiles(id);
+                return Ok(new ResponseMessage(true, $"{folders.Count()} folder found!", folders));
             }
             catch (ServiceException ex)
             {

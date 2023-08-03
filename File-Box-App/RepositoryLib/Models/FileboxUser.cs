@@ -17,5 +17,7 @@ public partial class FileboxUser
 
     public string Password { get; set; } = null!;
 
+    public string? LastToken { get; set; }
+
     public virtual ICollection<FileboxFolder> FileboxFolders { get; set; } = new List<FileboxFolder>();
 }

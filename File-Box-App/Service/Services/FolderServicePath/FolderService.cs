@@ -66,20 +66,20 @@ namespace Service.Services.FolderService
 
             var fileBoxFolder = new FileboxFolder(GetParentFolderId(folderSaveDto.currentFolderPath), userUID, folderNameWithoutPath, userFolderPath);
 
-            m_folderDal.Save(fileBoxFolder);
-
+            await m_folderDal.Save(fileBoxFolder);
+            await m_folderDal.SaveChangesAsync();
             if (!Directory.Exists(fullName))
                 Directory.CreateDirectory(fullName);
 
             return true;
         }
-        
 
 
 
 
 
-    
+
+
         /*
          * 
          * 
@@ -111,7 +111,7 @@ namespace Service.Services.FolderService
             var dir = await m_folderDal.FindByIdAsync(folderId);
 
             CheckFolderAndPermits(dir, userID);
-            
+
             var deletedFolderWithSubFolders = await GetAllSubFolders(dir);
 
             CheckFolderExistsIfNotRemoveIt(deletedFolderWithSubFolders);
@@ -122,7 +122,7 @@ namespace Service.Services.FolderService
 
                 deletedFolderWithSubFolders.ToList().ForEach(f => Directory.Delete(Util.DIRECTORY_BASE + f.FolderPath, true));
             }
-          
+
             return dir.FolderPath;
         }
 
@@ -133,7 +133,10 @@ namespace Service.Services.FolderService
                 var fullPathOnSystem = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
 
                 if (!Directory.Exists(fullPathOnSystem))
+                {
                     m_folderDal.Delete(folder);
+                    m_folderDal.SaveChanges();
+                }
             }
         }
 
@@ -151,7 +154,7 @@ namespace Service.Services.FolderService
          */
         public async Task<IEnumerable<FolderViewDto>> GetFoldersByUserIdAsync(Guid userId)
         {
-            var folders = m_folderDal.AllFolders.Where(x => x.UserId == userId).ToList();
+            var folders = (await m_folderDal.FindAllAsync()).Where(x => x.UserId == userId).ToList();
 
             if (folders is null)
                 throw new ServiceException("Folders are null!");
@@ -177,7 +180,7 @@ namespace Service.Services.FolderService
         {
             try
             {
-                
+
 
                 var folder = await m_folderDal.FindByIdAsync(folderId); // find folder by id
 
@@ -202,22 +205,22 @@ namespace Service.Services.FolderService
                 folder.UpdatedDate = DateTime.Now;
 
                 m_folderDal.Update(folder);
-
+                m_folderDal.SaveChanges();
                 var newFullPathOnSystem = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
 
                 // Update files of parent folder
                 var files = (await m_fileRepositoryDal.FindAllAsync()).Where(file => file.FilePath.Contains(oldFolderPathStartsWithRoot)).ToList();
-                
+
                 files.ForEach(file => file.FilePath = file.FilePath.Replace(oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot));
-                
+
                 await m_fileRepositoryDal.UpdateAll(files);
 
                 var folders = (await m_folderDal.FindAllAsync()).Where(f => f.FolderPath.Contains(oldFolderPathStartsWithRoot)).ToList();
-                
+
                 folders.ForEach(f => f.FolderPath = f.FolderPath.Replace(oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot));
 
                 await m_folderDal.UpdateAll(folders);
-               
+
 
                 return (oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot);
             }
@@ -304,6 +307,26 @@ namespace Service.Services.FolderService
 
             if (folder.UserId != userId)
                 throw new ServiceException("You cannot access this folder!");
+        }
+
+        public async Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid)
+        {
+            var folders = await m_folderDal.FindFoldersByUserId(guid); // IEnumerableFileboxFolder
+            
+            var folderWithFiles = new List<FoldersWithFilesDto>();
+
+            foreach (var folder in folders)
+            {
+               
+                var files = await m_fileRepositoryDal.FindFilesByFolderId(folder.FolderId); // files on folder
+
+                var dto = new FoldersWithFilesDto(folder.FolderName, folder.FolderPath, folder.CreationDate, folder.FolderId, folder.UserId.ToString(), folder.ParentFolderId, files.Select(f => new FileViewDto(f.FileName, f.FileType, f.FileSize, f.FilePath, f.CreatedDate, f.UpdatedDate)).ToList());
+
+                folderWithFiles.Add(dto);
+            }
+
+            return folderWithFiles;
+            
         }
     }
 }
