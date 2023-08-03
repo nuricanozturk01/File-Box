@@ -1,4 +1,4 @@
-﻿namespace Service.PasswordGenerator
+﻿namespace Service.Services.PasswordGenerator
 {
     public interface IPasswordGenerator
     {

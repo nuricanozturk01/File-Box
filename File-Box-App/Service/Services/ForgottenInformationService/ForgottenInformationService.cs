@@ -1,7 +1,7 @@
 ﻿using RepositoryLib.Dal;
-using Service.EmailService;
 using Service.Exceptions;
-using Service.PasswordGenerator;
+using Service.Services.EmailService;
+using Service.Services.PasswordGenerator;
 
 namespace Service.Services.ForgottenInformationService
 {

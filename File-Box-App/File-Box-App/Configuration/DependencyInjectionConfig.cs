@@ -8,8 +8,8 @@ using Service.Services.FolderService;
 using Service.Services.ScanService;
 using Service.Services.UploadService;
 using Service.Services.ForgottenInformationService;
-using Service.PasswordGenerator;
-using Service.EmailService;
+using Service.Services.PasswordGenerator;
+using Service.Services.EmailService;
 
 namespace File_Box_App.Configuration
 {

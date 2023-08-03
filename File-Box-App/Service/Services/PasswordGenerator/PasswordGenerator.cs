@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Service.PasswordGenerator
+namespace Service.Services.PasswordGenerator
 {
     public class PasswordGenerator : IPasswordGenerator
     {
@@ -15,7 +15,7 @@ namespace Service.PasswordGenerator
         public string Generate()
         {
             const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-_=+[]{}|;:,.<>?";
-            
+
             var password = new StringBuilder();
 
             for (int i = 0; i < m_random.Next(MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH); i++)
