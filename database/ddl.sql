@@ -11,7 +11,7 @@ GO
 
 
 
-/*
+
 use FileBoxDb;
 go
 
@@ -20,7 +20,7 @@ drop table filebox_folder;
 drop table filebox_user;
 go
 
-*/
+
 
 -- Create the filebox_user Table
 CREATE TABLE filebox_user
@@ -64,7 +64,10 @@ CREATE TABLE filebox_file
     FOREIGN KEY (folder_id) REFERENCES filebox_folder(folder_id) ON DELETE CASCADE on update cascade
 );
 
-
+exec filebox_insert_user  'Nuri Can', 'OZTURK', 'nuricanozturk', 'canozturk309@gmail.com', '12345'
+select * from filebox_file;
+select * from filebox_folder;
+select * from filebox_user;
 
 
 
@@ -375,9 +378,7 @@ exec filebox_folder_deleteById 6, "5C69A30A-0B56-4A4D-A777-6B3656B14264";
 exec filebox_user_deleteByUsername 'janesmith';
 go
 -- ----------------------------------------------------- EXAMPLES -----------------------------------------------------
-select * from filebox_file;
-select * from filebox_folder;
-select * from filebox_user;
+
 
 delete filebox_file from filebox_file where filebox_file.file_name = 'image1.jpg';
 delete filebox_folder from filebox_folder where filebox_folder.folder_id = 2;

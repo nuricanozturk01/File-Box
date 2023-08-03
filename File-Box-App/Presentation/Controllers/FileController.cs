@@ -57,11 +57,11 @@ namespace Presentation.Controllers
          */
 
         [HttpDelete("remove")]
-        public async Task<IActionResult> RemoveFile([FromQuery(Name = "id")] long fileId)
+        public async Task<IActionResult> RemoveFile([FromQuery(Name = "id")] long fileId, [FromQuery(Name = "uid")] string uid)
         {
             try
             {
-                var removedFileName = await m_fileService.DeleteFile(fileId);
+                var removedFileName = await m_fileService.DeleteFile(fileId, Guid.Parse(uid));
 
                 return Ok(new ResponseMessage(true, "file removed successfully!", new FileDeleteSuccessResponse(removedFileName)));
             }

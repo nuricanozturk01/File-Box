@@ -1,0 +1,1298 @@
+{
+	"info": {
+		"_postman_id": "10770881-5f45-43f4-840c-2e4c48c91e25",
+		"name": "File-Box",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21563631"
+	},
+	"item": [
+		{
+			"name": "Login User",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"username\": \"ahmetkoc\",\r\n     \"password\": \"12345\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5299/api/auth/login/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"auth",
+						"login",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Directory",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/folder/remove/dir?id=3&uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"folder",
+						"remove",
+						"dir"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "3"
+						},
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Folder",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n/*\r\n{\r\n    \"new_folder_name\": \"deneme\",\r\n    \"current_folder_path\" : \"nuricanozturk\", \r\n    \"user_id\" : \"8C6D01F9-207E-4479-8025-0F269FE433EA\"\r\n}\r\n*/\r\n{\r\n    \"new_folder_name\": \"nuricanozturk\",\r\n    \"current_folder_path\" : \"ahmetkoc\", \r\n    \"user_id\" : \"4B870D0C-26DB-49D7-ACFE-46F134B606E6\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5299/api/folder/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"folder",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Users Folders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/folder/find/all/id?id={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"folder",
+						"find",
+						"all",
+						"id"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rename Folder",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/folder/rename/dir?id=34&&n=AHMET&&uid={{user_id_a}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"folder",
+						"rename",
+						"dir"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "34"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "n",
+							"value": "AHMET"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "uid",
+							"value": "{{user_id_a}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Trying rename other users folder",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5299/api/folder/rename/dir?id=17&&n=YAGMUR&&uid={{user_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5299",
+							"path": [
+								"api",
+								"folder",
+								"rename",
+								"dir"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "17"
+								},
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "n",
+									"value": "YAGMUR"
+								},
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "uid",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 03 Aug 2023 05:14:52 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Kestrel"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"message\": \"You cannot access this folder!\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Create File",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"file_name\" : \"dene.c\",\r\n    \"file_type\" : \".c\",\r\n    \"folder_id\" : 14,\r\n    \"user_id\" : {{user_id_y}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5299/api/file/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"file",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rename File",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/file/rename?fid=19&&n=HW1.pdf&&uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"file",
+						"rename"
+					],
+					"query": [
+						{
+							"key": "fid",
+							"value": "19"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "n",
+							"value": "HW1.pdf"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove File",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/file/remove?id=20&&uid={{user_id_y}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"file",
+						"remove"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "20"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "uid",
+							"value": "{{user_id_y}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Remove File By File Id",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5299/api/file/remove?id=20&&uid={{user_id_y}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5299",
+							"path": [
+								"api",
+								"file",
+								"remove"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "20"
+								},
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "uid",
+									"value": "{{user_id_y}}"
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 03 Aug 2023 05:31:18 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Kestrel"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"message\": \"You cannot access this folder!\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Files User Id and Folder Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/file/find/all/folder?fid=3000&&uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"file",
+						"find",
+						"all",
+						"folder"
+					],
+					"query": [
+						{
+							"key": "fid",
+							"value": "3000"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Scan",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/scan/uid?id=BFE833FF-C029-4FD9-9671-98BA9C822777",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"scan",
+						"uid"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "BFE833FF-C029-4FD9-9671-98BA9C822777"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Files",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "formFile",
+							"type": "file",
+							"src": [
+								"/C:/Users/hp/Desktop/a.html",
+								"/C:/Users/hp/Desktop/AAAAA.txt",
+								"/C:/Users/hp/Desktop/aspnet-core-aspnetcore-7.0.pdf",
+								"/C:/Users/hp/Desktop/bi.sql"
+							]
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:5299/api/upload/files?uid={{user_id}}&fid=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"upload",
+						"files"
+					],
+					"query": [
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						},
+						{
+							"key": "fid",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Upload Single File",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "formFile",
+									"type": "file",
+									"src": [
+										"/C:/Users/hp/Desktop/a.html",
+										"/C:/Users/hp/Desktop/AAAAA.txt",
+										"/C:/Users/hp/Desktop/aspnet-core-aspnetcore-7.0.pdf",
+										"/C:/Users/hp/Desktop/bi.sql"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5299/api/upload/files?uid={{user_id}}&fid=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5299",
+							"path": [
+								"api",
+								"upload",
+								"files"
+							],
+							"query": [
+								{
+									"key": "uid",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "fid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 03 Aug 2023 05:33:14 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Kestrel"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"File Uploaded Successfully!\",\n    \"data\": {\n        \"target_path\": \"nuricanozturk\",\n        \"file_length\": \"167 MB\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Upload Folder",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n   /* {\r\n        \"source_file_name\" : \"D:\\\\filess\"\r\n    }*/\r\n\r\n    {\r\n        \"source_file_name\" : \"D:\\\\1gb_deneme\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5299/api/upload/folders?uid={{user_id}}&&fid=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"upload",
+						"folders"
+					],
+					"query": [
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "fid",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "SLOW!",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n   /* {\r\n        \"source_file_name\" : \"D:\\\\filess\"\r\n    }*/\r\n\r\n    {\r\n        \"source_file_name\" : \"D:\\\\angular-demo\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5299/api/upload/folders?uid={{user_id}}&&fid=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5299",
+							"path": [
+								"api",
+								"upload",
+								"folders"
+							],
+							"query": [
+								{
+									"key": "uid",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": null,
+									"value": null,
+									"description": "26 minute!"
+								},
+								{
+									"key": "fid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 03 Aug 2023 06:01:31 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Kestrel"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Files Uploaded Successfully!\",\n    \"data\": {\n        \"target_path\": [\n            \"D:\\\\angular-demo\"\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Upload Folders",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n\r\n    {\r\n        \"source_file_name\" : \"D:\\\\staj\\\\File Reporter\"\r\n    },\r\n    {\r\n        \"source_file_name\" : \"D:\\\\1gb_deneme\\\\New folder\"\r\n    },\r\n    {\r\n        \"source_file_name\" : \"D:\\\\DotnetCore-JS-WebProg-Aug-2021\\\\homework\\\\Dotnet\"\r\n    }\r\n\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5299/api/upload/folder?uid={{user_id_a}}&&fid=37",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"upload",
+						"folder"
+					],
+					"query": [
+						{
+							"key": "uid",
+							"value": "{{user_id_a}}"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "fid",
+							"value": "37"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download File",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/download/file?fid=50&&uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"download",
+						"file"
+					],
+					"query": [
+						{
+							"key": "fid",
+							"value": "50"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download Multiple Files",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"file_id\": 18\r\n    },\r\n    {\r\n        \"file_id\": 19\r\n    },\r\n    {\r\n        \"file_id\": 20\r\n    }\r\n    ,\r\n    {\r\n        \"file_id\": 21\r\n    }\r\n]\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5299/api/download/files?uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"download",
+						"files"
+					],
+					"query": [
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download Folder",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/download/folder?fid=3&&uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"download",
+						"folder"
+					],
+					"query": [
+						{
+							"key": "fid",
+							"value": "3",
+							"description": "downloading folder id"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download Folders",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"folder_id\": 7\r\n    },\r\n    {\r\n        \"folder_id\": 8\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5299/api/download/folders?uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"download",
+						"folders"
+					],
+					"query": [
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Files By Extension",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/file/find/all/extension?fid=7&&ext=.pdf&uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"file",
+						"find",
+						"all",
+						"extension"
+					],
+					"query": [
+						{
+							"key": "fid",
+							"value": "7"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "ext",
+							"value": ".pdf"
+						},
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Allowed Access Own Files",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5299/api/file/find/all/extension?fid=8&&ext=.pdf&uid={{user_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5299",
+							"path": [
+								"api",
+								"file",
+								"find",
+								"all",
+								"extension"
+							],
+							"query": [
+								{
+									"key": "fid",
+									"value": "8"
+								},
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "ext",
+									"value": ".pdf"
+								},
+								{
+									"key": "uid",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Aug 2023 20:01:34 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Kestrel"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Found 2 items.\",\n    \"data\": {\n        \"files\": [\n            {\n                \"file_name\": \"Homework-001.pdf\",\n                \"file_type\": \".pdf\",\n                \"file_byte\": 96968,\n                \"file_path\": \"yagmur\\\\Dotnet\\\\Homework-001.pdf\",\n                \"created_date\": \"02/08/2023 22:56:45\",\n                \"updated_date\": \"02/08/2023 22:56:45\"\n            },\n            {\n                \"file_name\": \"Homework-002.pdf\",\n                \"file_type\": \".pdf\",\n                \"file_byte\": 131640,\n                \"file_path\": \"yagmur\\\\Dotnet\\\\Homework-002.pdf\",\n                \"created_date\": \"02/08/2023 22:56:45\",\n                \"updated_date\": \"02/08/2023 22:56:45\"\n            }\n        ]\n    }\n}"
+				},
+				{
+					"name": "Not Allowed Access Other's files",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5299/api/file/find/all/extension?fid=2&&ext=.pdf&uid={{user_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5299",
+							"path": [
+								"api",
+								"file",
+								"find",
+								"all",
+								"extension"
+							],
+							"query": [
+								{
+									"key": "fid",
+									"value": "2"
+								},
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "ext",
+									"value": ".pdf"
+								},
+								{
+									"key": "uid",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Aug 2023 20:02:13 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Kestrel"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"message\": \"You cannot access this folder!\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Sort Files By FileByte",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/file/sort/byte?fid=8&&uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"file",
+						"sort",
+						"byte"
+					],
+					"query": [
+						{
+							"key": "fid",
+							"value": "8"
+						},
+						{
+							"key": null,
+							"value": null
+						},
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Not Allowed Access Other User's files",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5299/api/file/sort/byte?fid=3&&uid={{user_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5299",
+							"path": [
+								"api",
+								"file",
+								"sort",
+								"byte"
+							],
+							"query": [
+								{
+									"key": "fid",
+									"value": "3"
+								},
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "uid",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Aug 2023 19:54:05 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Kestrel"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"message\": \"You cannot access this folder!\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "Allowed Access owner user files",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5299/api/file/sort/byte?fid=7&&uid={{user_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5299",
+							"path": [
+								"api",
+								"file",
+								"sort",
+								"byte"
+							],
+							"query": [
+								{
+									"key": "fid",
+									"value": "7"
+								},
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "uid",
+									"value": "{{user_id}}"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Aug 2023 20:00:50 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Kestrel"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Found 1 items.\",\n    \"data\": {\n        \"files\": [\n            {\n                \"file_name\": \"New Text Document.txt\",\n                \"file_type\": \".txt\",\n                \"file_byte\": 0,\n                \"file_path\": \"yagmur\\\\New folder\\\\New Text Document.txt\",\n                \"created_date\": \"02/08/2023 22:56:45\",\n                \"updated_date\": \"02/08/2023 22:56:45\"\n            }\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Find Root Folder With User Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5299/api/folder/find/root/uuid?uid={{user_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5299",
+					"path": [
+						"api",
+						"folder",
+						"find",
+						"root",
+						"uuid"
+					],
+					"query": [
+						{
+							"key": "uid",
+							"value": "{{user_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_id",
+			"value": "D82C30DE-EACB-4F2C-BE49-BA2639BE1741",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTEwNDMzODMsImlzcyI6ImZpbGUtYm94IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1Mjk5In0.-G_PCbr5EsxGyNH3iC5rwm6XZaXr2kx0mX8bmHH1OCM",
+			"type": "string"
+		},
+		{
+			"key": "user_id_y",
+			"value": "AD9E9B0A-6CC2-4F32-AF67-6062D9183935",
+			"type": "string"
+		},
+		{
+			"key": "user_id_a",
+			"value": "4B870D0C-26DB-49D7-ACFE-46F134B606E6",
+			"type": "string"
+		}
+	]
+}

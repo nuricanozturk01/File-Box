@@ -32,7 +32,7 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        Task<string> DeleteFile(long folderId);
+        Task<string> DeleteFile(long folderId, Guid guid);
 
 
 

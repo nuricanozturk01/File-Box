@@ -65,12 +65,13 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        public async Task<string> DeleteFile(long fileId)
+        public async Task<string> DeleteFile(long fileId, Guid guid)
         {
             try
             {
                 var file = await m_fileDal.FindByIdAsync(fileId);
-
+                var folder = await m_folderDal.FindByIdAsync(file.FolderId);
+                CheckFolderAndPermits(folder, guid);
                 File.Delete(Util.DIRECTORY_BASE + file.FilePath);
                 m_fileDal.DeleteById(fileId);
 
