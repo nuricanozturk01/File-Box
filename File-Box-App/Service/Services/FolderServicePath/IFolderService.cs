@@ -83,11 +83,21 @@ namespace Service.Services.FolderService
 
         /*
          * 
-         * 
-         * View folder with files
-         * 
+         * Find all Folder and files with given user id
          * 
          */
         Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid);
+
+
+
+
+
+
+        /*
+         * 
+         * Find all Folder and files with given user id and folder id
+         * 
+         */
+        Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid, long folderId);
     }
 }

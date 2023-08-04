@@ -309,6 +309,15 @@ namespace Service.Services.FolderService
                 throw new ServiceException("You cannot access this folder!");
         }
 
+
+
+
+
+        /*
+         * 
+         * Find all Folder and files with given user id
+         * 
+         */
         public async Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid)
         {
             var folders = await m_folderDal.FindFoldersByUserId(guid); // IEnumerableFileboxFolder
@@ -327,6 +336,39 @@ namespace Service.Services.FolderService
 
             return folderWithFiles;
             
+        }
+
+
+
+
+
+        /*
+         * 
+         * Find all Folder and files with given user id and folder id
+         * 
+         */
+        public async Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid, long folderId)
+        {
+            var folderRoot = await m_folderDal.FindByIdAsync(folderId);
+
+            var folders = (await m_folderDal.FindByFilterAsync(f => f.ParentFolderId == folderId)).ToList();
+
+            folders.Add(folderRoot);
+            
+            var folderWithFiles = new List<FoldersWithFilesDto>();
+
+            foreach (var folder in folders)
+            {
+
+                var files = await m_fileRepositoryDal.FindFilesByFolderId(folder.FolderId); // files on folder
+
+                var dto = new FoldersWithFilesDto(folder.FolderName, folder.FolderPath, folder.CreationDate, folder.FolderId, folder.UserId.ToString(), folder.ParentFolderId, files.Select(f => new FileViewDto(f.FileName, f.FileType, f.FileSize, f.FilePath, f.CreatedDate, f.UpdatedDate)).ToList());
+
+                folderWithFiles.Add(dto);
+            }
+
+            return folderWithFiles;
+
         }
     }
 }

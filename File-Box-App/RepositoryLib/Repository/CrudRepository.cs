@@ -20,23 +20,48 @@ namespace RepositoryLib.Repository
             return await m_dbSet.ToListAsync();
         }
 
+
+
+
+
+
         public async Task<IEnumerable<T>> FindByFilterAsync(Expression<Func<T, bool>> predicate)
         {
             return await m_dbSet.Where(predicate).ToListAsync();
         }
-        public async Task<T> FindByPredicate(Expression<Func<T, bool>> predicate)
+
+
+
+
+
+        public async Task<T> FindByPredicateAsync(Expression<Func<T, bool>> predicate)
         {
             return await m_dbSet.FirstOrDefaultAsync(predicate);
         }
+
+
+
+
+
         public async Task<T> FindById(object id)
         {
             return await m_dbSet.FindAsync(id);
         }
 
+
+
+
+
+
         public async Task<T> SaveAsync(T entity)
         {
             return (await m_dbSet.AddAsync(entity)).Entity;
         }
+
+
+
+
+
 
         public T Update(T entity)
         {
@@ -44,6 +69,11 @@ namespace RepositoryLib.Repository
             m_dbContext.Entry(entity).State = EntityState.Modified;
             return entity;
         }
+
+
+
+
+
 
         public async Task DeleteByIdAsync(object id)
         {
@@ -54,24 +84,49 @@ namespace RepositoryLib.Repository
             }
         }
 
+
+
+
+
+
         public async Task SaveChangesAsync()
         {
             await m_dbContext.SaveChangesAsync();
         }
+
+
+
+
+
         public void SaveChanges()
         {
             m_dbContext.SaveChanges();
         }
+
+
+
+
+
 
         public async Task<T> FindByIdAsync(ID id)
         {
             return await m_dbSet.FindAsync(id);
         }
 
+
+
+
+
+
         public async Task<bool> ExistsByIdAsync(ID id)
         {
             return await m_dbSet.FindAsync(id) != null;
         }
+
+
+
+
+
 
         public async Task<IEnumerable<T>> SaveAllAsync(IEnumerable<T> entities)
         {
@@ -80,17 +135,32 @@ namespace RepositoryLib.Repository
             return entities;
         }
 
+
+
+
+
+
         public async Task DeleteByIdAsync(ID id)
         {
             var obj = await m_dbSet.FindAsync(id);
             await Delete(obj);
         }
 
+
+
+
+
+
         public async Task Delete(T obj)
         {
-            
+
             await Task.Run(() => m_dbSet.Remove(obj));
         }
+
+
+
+
+
 
         public async Task RemoveAllAsync(IEnumerable<T> entities)
         {
@@ -98,12 +168,27 @@ namespace RepositoryLib.Repository
             await SaveChangesAsync();
         }
 
+
+
+
+
+
         public async Task UpdateAll(IEnumerable<T> folders)
         {
             foreach (var folder in folders)
                 m_dbSet.Update(folder);
 
             await m_dbContext.SaveChangesAsync();
+        }
+
+
+
+
+
+
+        public T FindByPredicate(Expression<Func<T, bool>> predicate)
+        {
+            return m_dbSet.FirstOrDefault(predicate);
         }
     }
 }

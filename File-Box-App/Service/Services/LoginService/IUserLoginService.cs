@@ -17,7 +17,7 @@ namespace FileBoxService.Service
          * returns the status of login operation
          * 
          */
-        Task Login(UserLoginDTO userLoginDTO);
+        Task<string?> Login(UserLoginDTO userLoginDTO);
 
 
 
@@ -32,20 +32,5 @@ namespace FileBoxService.Service
          * 
          */
         bool Logout(string username);
-
-
-
-
-
-
-        /*
-         * 
-         * 
-         * Create jwt token and return it
-         * 
-         * 
-         */
-        string CreateToken();
-        void WriteTokenToDb(string tokenDto, string username);
     }
 }

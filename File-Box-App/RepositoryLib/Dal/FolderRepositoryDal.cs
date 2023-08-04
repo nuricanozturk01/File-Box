@@ -22,18 +22,28 @@ namespace RepositoryLib.Dal
         }
 
 
+
+
+
+
         public void Delete(FileboxFolder t)
         {
             m_folderRepository.Delete(t);
         }
 
 
-    
+
+
+
 
         public async Task<IEnumerable<FileboxFolder>> FindAllAsync()
         {
             return await m_folderRepository.FindAllAsync();
         }
+
+
+
+
 
 
         public async Task<IEnumerable<FileboxFolder>> FindByFilterAsync(Expression<Func<FileboxFolder, bool>> predicate)
@@ -43,10 +53,17 @@ namespace RepositoryLib.Dal
 
 
 
+
+
+
         public async Task<FileboxFolder> FindByIdAsync(long id)
         {
             return await m_folderRepository.FindByIdAsync(id);
         }
+
+
+
+
 
 
         public async Task<IEnumerable<FileboxFolder>> FindByIdsAsync(IEnumerable<long> ids)
@@ -55,35 +72,68 @@ namespace RepositoryLib.Dal
         }
 
 
+
+
+
+
         public async Task<FileboxFolder> Save(FileboxFolder t)
         {
             return await m_folderRepository.SaveAsync(t);
         }
+
+
+
+
+
         public async Task UpdateAll(IEnumerable<FileboxFolder> folders)
         {
             await m_folderRepository.UpdateAll(folders);
         }
 
-      
+
+
+
+
+
         public void RemoveAll(IEnumerable<FileboxFolder> folders)
         {
             m_folderRepository.RemoveAllAsync(folders);
-            
+
         }
+
+
+
+
+
         public FileboxFolder Update(FileboxFolder folder)
         {
             return m_folderRepository.Update(folder);
         }
+
+
+
+
+
 
         public void SaveChanges()
         {
             m_folderRepository.SaveChanges();
         }
 
+
+
+
+
+
         public async Task SaveChangesAsync()
         {
             await m_folderRepository.SaveChangesAsync();
         }
+
+
+
+
+
 
         public async Task<IEnumerable<FileboxFolder>> FindFoldersByUserId(Guid guid)
         {

@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
@@ -95,7 +94,7 @@ namespace Presentation.Controllers
             try
             {
                 var folder = await m_folderService.FindRootFolder(Guid.Parse(uid));
-                
+
                 return Ok(new ResponseMessage(true, "Root folder is found!", new
                 { // I use anonymous class.
                     folder_name = folder.folderName,
@@ -137,9 +136,6 @@ namespace Presentation.Controllers
             {
                 return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
             }
-            
-
-            return Ok();
         }
 
 
@@ -187,7 +183,7 @@ namespace Presentation.Controllers
         {
             try
             {
-                
+
 
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
 
@@ -198,6 +194,38 @@ namespace Presentation.Controllers
                     throw new ServiceException("You cannot access these files!");
 
                 var folders = await m_folderService.FindFolderWithFiles(id);
+                return Ok(new ResponseMessage(true, $"{folders.Count()} folder found!", folders));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Find Folders given user id but ont one folder
+         * 
+         */
+        [HttpGet("find/all/folder")]
+        public async Task<IActionResult> FindFoldersWithFilesOnlySelected([FromQuery(Name = "id")] Guid id, [FromQuery(Name = "fid")] long folderId)
+        {
+            try
+            {
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var user = await m_userRepositoryDal.FindByIdAsyncUser(id);
+
+                if (user == null || token != user.LastToken)
+                    throw new ServiceException("You cannot access these files!");
+
+                var folders = await m_folderService.FindFolderWithFiles(id, folderId);
+
                 return Ok(new ResponseMessage(true, $"{folders.Count()} folder found!", folders));
             }
             catch (ServiceException ex)

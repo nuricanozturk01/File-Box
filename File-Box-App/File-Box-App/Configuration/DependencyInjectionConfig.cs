@@ -6,8 +6,8 @@ using Service.Services.EmailService;
 using Service.Services.FileServicePath;
 using Service.Services.FolderService;
 using Service.Services.ForgottenInformationService;
-using Service.Services.PasswordGenerator;
 using Service.Services.ScanService;
+using Service.Services.TokenService;
 using Service.Services.UploadService;
 
 namespace File_Box_App.Configuration
@@ -23,9 +23,14 @@ namespace File_Box_App.Configuration
             services.AddScoped<IUploadService, UploadService>();
             services.AddScoped<IDownloadService, DownloadService>();
             services.AddScoped<IForgottenInformationService, ForgottenInformationService>();
-            services.AddScoped<IPasswordGenerator, PasswordGenerator>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ITokenService, TokenService>();
         }
+
+
+
+
+
 
         public static void ConfigureRepositoriesAndHelpers(this IServiceCollection services)
         {
@@ -35,9 +40,7 @@ namespace File_Box_App.Configuration
             services.AddSingleton<FileRepositoryDal>();
 
 
-
             // Repositories
-
             services.AddSingleton(typeof(IGenericRepository<,>), typeof(CrudRepository<,>));
         }
 

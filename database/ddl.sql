@@ -31,7 +31,8 @@ CREATE TABLE filebox_user
     email varchar(100) NOT NULL UNIQUE, -- unique
     username varchar(45) NOT NULL UNIQUE, -- unique
     password varchar(128) NOT NULL, -- encrypted on api
-	last_token varchar(256)
+	last_token varchar(256),
+	reset_password_token varchar(256)
 );
 
 -- Create the filebox_folder Table

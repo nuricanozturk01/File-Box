@@ -10,12 +10,22 @@ namespace File_Box_App.Configuration
 {
     public static class ServiceConfig
     {
+
+
+
+
+
         public static void ConfigureMaxRequest(this IServiceCollection services)
         {
             services.Configure<IISServerOptions>(options => options.MaxRequestBodySize = int.MaxValue);
             services.Configure<KestrelServerOptions>(options => options.Limits.MaxRequestBodySize = int.MaxValue);
             services.Configure<KestrelServerOptions>(options => options.Limits.MaxResponseBufferSize = 1024 * 1024 * 999);
         }
+
+
+
+
+
 
         public static void ConfigureFormOptionMaxValues(this IServiceCollection services)
         {
@@ -25,10 +35,20 @@ namespace File_Box_App.Configuration
                 x.MultipartBodyLengthLimit = int.MaxValue;
             });
         }
+
+
+
+
+
         public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<FileBoxDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("sqlConnection")));
         }
+
+
+
+
+
 
         public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {

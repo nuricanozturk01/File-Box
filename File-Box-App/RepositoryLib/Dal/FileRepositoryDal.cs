@@ -20,45 +20,89 @@ namespace RepositoryLib.Dal
             m_fileRepository = fileRepository;
         }
 
+
+
+
+
         public void Delete(FileboxFile t)
         {
             m_fileRepository.Delete(t);
         }
+
+
+
+
+
 
         public void DeleteById(long id)
         {
             m_fileRepository.DeleteByIdAsync(id);
         }
 
+
+
+
+
+
         public async Task<IEnumerable<FileboxFile>> FindAllAsync()
         {
             return await m_fileRepository.FindAllAsync();
         }
+
+
+
+
+
 
         public async Task<IEnumerable<FileboxFile>> FindByFilterAsync(Expression<Func<FileboxFile, bool>> predicate)
         {
             return await m_fileRepository.FindByFilterAsync(predicate);
         }
 
+
+
+
+
+
         public async Task<FileboxFile> FindById(long id)
         {
             return await m_fileRepository.FindByIdAsync(id);
         }
+
+
+
+
+
 
         public async Task<FileboxFile> FindByIdAsync(long id)
         {
             return await m_fileRepository.FindByIdAsync(id);
         }
 
+
+
+
+
+
         public async Task<IEnumerable<FileboxFile>> FindByIdsAsync(IEnumerable<long> ids)
         {
             return await m_fileRepository.FindByFilterAsync(f => ids.Contains(f.FileId));
         }
 
+
+
+
+
+
         public async Task<IEnumerable<FileboxFile>> FindFilesByFolderId(long folderId)
         {
             return await FindByFilterAsync(f => f.FolderId == folderId);
         }
+
+
+
+
+
 
         public async Task<FileboxFile> Save(FileboxFile t)
         {
@@ -70,6 +114,9 @@ namespace RepositoryLib.Dal
 
 
 
+
+
+
         public async Task<FileboxFile> SaveAsync(FileboxFile t)
         {
             var extension = string.IsNullOrEmpty(t.FileType) ? "N/A" : t.FileType;
@@ -78,15 +125,30 @@ namespace RepositoryLib.Dal
             return await m_fileRepository.SaveAsync(t);
         }
 
+
+
+
+
+
         public async Task SaveChangesAsync()
         {
             await m_fileRepository.SaveChangesAsync();
         }
 
+
+
+
+
+
         public FileboxFile Update(FileboxFile file)
         {
             return m_fileRepository.Update(file);
         }
+
+
+
+
+
 
         public async Task UpdateAll(IEnumerable<FileboxFile> files)
         {

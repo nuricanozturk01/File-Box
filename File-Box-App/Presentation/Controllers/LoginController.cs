@@ -13,7 +13,10 @@ namespace Presentation.Controllers
     {
         private readonly IUserLoginService m_userLoginService;
 
-        public LoginController(IUserLoginService userLoginService) => m_userLoginService = userLoginService;
+        public LoginController(IUserLoginService userLoginService)
+        {
+            m_userLoginService = userLoginService;
+        }
 
         /*
          * 
@@ -26,18 +29,15 @@ namespace Presentation.Controllers
 
             try
             {
-                await m_userLoginService.Login(userLoginDTO);
+                var token = await m_userLoginService.Login(userLoginDTO);
 
-                var tokenDto = m_userLoginService.CreateToken();
-
-                m_userLoginService.WriteTokenToDb("Bearer " + tokenDto, userLoginDTO.Username);
-                
-                return Ok(new ResponseMessage(true, "login operation is successful!", new UserSuccesfulLoginDto(userLoginDTO.Username, tokenDto)));
+                return Ok(new ResponseMessage(true, "login operation is successful!", new UserSuccesfulLoginDto(userLoginDTO.Username, token)));
             }
             catch (ServiceException ex)
             {
                 return Unauthorized(new ResponseMessage(false, ex.GetMessage, null));
             }
+
         }
 
 

@@ -18,10 +18,20 @@ namespace RepositoryLib.Dal
             m_userRepository = userRepository;
         }
 
+
+
+
+
+
         public async Task<IEnumerable<FileboxUser>> FindByFilterAsyncUser(Expression<Func<FileboxUser, bool>> predicate)
         {
             return await Task.Run(() => m_userRepository.FindByFilterAsync(predicate));
         }
+
+
+
+
+
 
         public async Task<FileboxUser> FindByIdAsyncUser(Guid id)
         {
@@ -29,25 +39,51 @@ namespace RepositoryLib.Dal
         }
 
 
+
+
+
+
+
         public async Task<FileboxUser> FindUserByEmailAsync(string email)
         {
             return (await m_userRepository.FindByFilterAsync(user => user.Email == email)).FirstOrDefault();
         }
+
+
+
+
+
 
         public void SaveChanges()
         {
             m_userRepository.SaveChanges();
         }
 
+
+
+
+
+
         public FileboxUser Update(FileboxUser user)
         {
            return m_userRepository.Update(user);
         }
 
-        public async Task<FileboxUser> FindUserByUsername(string username)
+
+
+
+
+
+        public async Task<FileboxUser?> FindUserByUsername(string username)
         {
-            return await m_userRepository.FindByPredicate(user => user.Username == username);
+            return m_userRepository.FindByPredicate(user => user.Username == username);
+            
         }
+
+
+
+
+
 
         public async Task SaveChangesAsync()
         {

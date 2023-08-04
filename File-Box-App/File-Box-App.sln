@@ -7,11 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileBoxApp", "File-Box-App\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepositoryLib", "RepositoryLib\RepositoryLib.csproj", "{C09A603E-E5AD-42A1-B9C1-A38E49F8822E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{4E3E2ED2-F148-4520-8743-A634E148CD00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{4E3E2ED2-F148-4520-8743-A634E148CD00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation", "Presentation\Presentation.csproj", "{A4A75294-FBB0-4850-9CD6-9FBDDD2B3A34}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileOperationLib", "FileOperationLib\FileOperationLib.csproj", "{F477EF89-7795-48E9-A082-B99972AFC5BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Presentation", "Presentation\Presentation.csproj", "{A4A75294-FBB0-4850-9CD6-9FBDDD2B3A34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{A4A75294-FBB0-4850-9CD6-9FBDDD2B3A34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4A75294-FBB0-4850-9CD6-9FBDDD2B3A34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4A75294-FBB0-4850-9CD6-9FBDDD2B3A34}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F477EF89-7795-48E9-A082-B99972AFC5BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F477EF89-7795-48E9-A082-B99972AFC5BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F477EF89-7795-48E9-A082-B99972AFC5BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F477EF89-7795-48E9-A082-B99972AFC5BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

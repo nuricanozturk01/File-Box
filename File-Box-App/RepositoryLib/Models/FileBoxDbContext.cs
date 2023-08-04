@@ -133,6 +133,10 @@ public partial class FileBoxDbContext : DbContext
                 .HasMaxLength(256)
                 .IsUnicode(false)
                 .HasColumnName("last_token");
+            entity.Property(e => e.ResetPasswordToken)
+                .HasMaxLength(256)
+                .IsUnicode(false)
+                .HasColumnName("reset_password_token");
         });
 
 
