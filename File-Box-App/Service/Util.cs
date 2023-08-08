@@ -2,7 +2,7 @@
 {
     public class Util
     {
-        public static readonly string DIRECTORY_BASE = @"C:\Users\hp\Desktop\file_box\";
+        public static readonly string DIRECTORY_BASE = @"C:\Users\hp\WebstormProjects\filebox\src\components\file_box\";
         public static readonly long MAX_BYTE_UPLOAD_SINGLE_FILE = 1_073_741_824;
         public static readonly long MAX_BYTE_UPLOAD_MULTIPLE_FILE = 2_000_000_000;
 

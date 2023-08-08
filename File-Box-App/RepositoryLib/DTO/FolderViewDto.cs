@@ -10,7 +10,7 @@ namespace RepositoryLib.DTO
 
         public DateTime creationDate { get; set; }
 
-        [JsonIgnore]
+        
         public long folderId { get; set; }
 
         [JsonIgnore]

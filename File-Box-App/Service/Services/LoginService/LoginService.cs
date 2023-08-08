@@ -86,7 +86,7 @@ namespace FileBoxService.Service
          * returns the status of login operation
          * 
          */
-        public async Task<string?> Login(UserLoginDTO userLoginDTO)
+        public async Task<(string? token, string uid)> Login(UserLoginDTO userLoginDTO)
         {
             var user = (await m_userRepositoryDal.FindByFilterAsyncUser(user => user.Username == userLoginDTO.Username)).FirstOrDefault();
 
@@ -99,7 +99,20 @@ namespace FileBoxService.Service
             user.LastToken = "Bearer " + token;
             await m_userRepositoryDal.SaveChangesAsync();
 
-            return token;
+            return (token, user.UserId.ToString());
+        }
+
+        public async Task<FileboxUser> FindUserByResetPasswordToken(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+                throw new ServiceException("Token is not found!");
+
+            var user = await m_userRepositoryDal.FindUserByToken(token);
+            
+            if (user is null)
+                throw new ServiceException("User Not found!");
+            
+            return user;
         }
     }
 }

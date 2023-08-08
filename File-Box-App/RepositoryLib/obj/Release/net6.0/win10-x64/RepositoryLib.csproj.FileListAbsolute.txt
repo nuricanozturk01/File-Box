@@ -1,0 +1,14 @@
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\bin\Release\net6.0\win10-x64\RepositoryLib.deps.json
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\bin\Release\net6.0\win10-x64\RepositoryLib.runtimeconfig.json
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\bin\Release\net6.0\win10-x64\RepositoryLib.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\bin\Release\net6.0\win10-x64\RepositoryLib.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\RepositoryLib.csproj.AssemblyReference.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\RepositoryLib.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\RepositoryLib.AssemblyInfoInputs.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\RepositoryLib.AssemblyInfo.cs
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\RepositoryLib.csproj.CoreCompileInputs.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\RepositoryLib.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\refint\RepositoryLib.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\RepositoryLib.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\RepositoryLib.genruntimeconfig.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\RepositoryLib\obj\Release\net6.0\win10-x64\ref\RepositoryLib.dll

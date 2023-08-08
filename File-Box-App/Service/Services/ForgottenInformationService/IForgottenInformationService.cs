@@ -11,7 +11,7 @@ namespace Service.Services.ForgottenInformationService
          * Send email reset password link to user
          * 
          */
-        Task<(string email, string username)> SendEmailForChangePassword(string email);
+        Task<(string email, string username, string token)> SendEmailForChangePassword(string email);
 
 
 

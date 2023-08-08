@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using Service.Exceptions;
 using Service.Services.FolderService;
+using System.IO;
 
 namespace Presentation.Controllers
 {
@@ -185,13 +187,14 @@ namespace Presentation.Controllers
             {
 
 
-                var token = HttpContext.Request.Headers["Authorization"].ToString();
-
+               // var token = HttpContext.Request.Headers["Authorization"].ToString();
+                
                 var user = await m_userRepositoryDal.FindByIdAsyncUser(id);
 
 
-                if (token != user.LastToken)
-                    throw new ServiceException("You cannot access these files!");
+               /* if (token != user.LastToken)
+                    throw new ServiceException("You cannot access these files!");*/
+
 
                 var folders = await m_folderService.FindFolderWithFiles(id);
                 return Ok(new ResponseMessage(true, $"{folders.Count()} folder found!", folders));

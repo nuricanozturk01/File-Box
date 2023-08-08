@@ -11,7 +11,8 @@ namespace Service.Services.ForgottenInformationService
         private readonly ITokenService m_tokenService;
         private readonly IEmailService m_emailService;
 
-        private readonly string FORGOT_PASSWORD_LINK = "http://localhost:5299/api/change/reset-request?token={0}";
+        //private readonly string FORGOT_PASSWORD_LINK = "http://localhost:5299/api/change/reset-request?token={0}";
+        private readonly string FORGOT_PASSWORD_LINK = "http://localhost:3000/reset-password-request?token={0}";
 
 
 
@@ -34,7 +35,7 @@ namespace Service.Services.ForgottenInformationService
          * Send email reset password link to user
          * 
          */
-        public async Task<(string email, string username)> SendEmailForChangePassword(string email)
+        public async Task<(string email, string username, string token)> SendEmailForChangePassword(string email)
         {
             var user = await m_userRepositoryDal.FindUserByEmailAsync(email);
 
@@ -50,7 +51,7 @@ namespace Service.Services.ForgottenInformationService
             m_userRepositoryDal.Update(user);
             m_userRepositoryDal.SaveChanges();
 
-            return (user.Email, user.Username);
+            return (user.Email, user.Username, token);
         }
 
 

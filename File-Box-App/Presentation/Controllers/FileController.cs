@@ -100,9 +100,6 @@ namespace Presentation.Controllers
 
 
 
-
-
-
         /*
          * 
          * Get all files from db with given folder ıd, user ıd and file extension parameter

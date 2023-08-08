@@ -31,11 +31,12 @@ namespace Presentation.Controllers
             try
             {
                 var userInfo = await m_forgottenInformationService.SendEmailForChangePassword(email);
-
+                
                 return Ok(new ResponseMessage(true, "Password Change link sent to email!", new
                 {
                     username = userInfo.username,
-                    user_email = userInfo.email
+                    user_email = userInfo.email,
+                    user_token = userInfo.token
                 }));
             }
             catch (ServiceException ex)

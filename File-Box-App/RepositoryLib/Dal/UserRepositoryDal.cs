@@ -89,5 +89,10 @@ namespace RepositoryLib.Dal
         {
             await m_userRepository.SaveChangesAsync();
         }
+
+        public async Task<FileboxUser> FindUserByToken(string token)
+        {
+            return await m_userRepository.FindByPredicateAsync(usr => usr.ResetPasswordToken == token);
+        }
     }
 }

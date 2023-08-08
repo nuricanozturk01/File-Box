@@ -1,0 +1,15 @@
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\bin\Release\net6.0\win10-x64\Service.deps.json
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\bin\Release\net6.0\win10-x64\Service.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\bin\Release\net6.0\win10-x64\Service.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\bin\Release\net6.0\win10-x64\RepositoryLib.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\bin\Release\net6.0\win10-x64\RepositoryLib.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\Service.csproj.AssemblyReference.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\Service.AssemblyInfoInputs.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\Service.AssemblyInfo.cs
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\Service.csproj.CoreCompileInputs.cache
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\Service.csproj.CopyComplete
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\Service.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\refint\Service.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\Service.pdb
+C:\Users\hp\source\repos\File-Box\File-Box-App\Service\obj\Release\net6.0\win10-x64\ref\Service.dll

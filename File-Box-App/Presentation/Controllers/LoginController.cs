@@ -26,12 +26,16 @@ namespace Presentation.Controllers
         [HttpPost("login/user")]
         public async Task<IActionResult> Login([FromBody] UserLoginDTO userLoginDTO)
         {
-
             try
             {
-                var token = await m_userLoginService.Login(userLoginDTO);
+                var userIdAndToken = await m_userLoginService.Login(userLoginDTO);
 
-                return Ok(new ResponseMessage(true, "login operation is successful!", new UserSuccesfulLoginDto(userLoginDTO.Username, token)));
+                return Ok(new ResponseMessage(true, "login operation is successful!", new
+                {
+                    username = userLoginDTO.Username,
+                    user_id = userIdAndToken.uid,
+                    token = userIdAndToken.token
+                }));
             }
             catch (ServiceException ex)
             {
@@ -43,6 +47,32 @@ namespace Presentation.Controllers
 
 
 
+        /*
+         * 
+         * 
+         * Find User with given reset password token
+         * 
+         */     
+        [HttpGet("find/user/token")]
+        public async Task<IActionResult> FindUserByResetPasswordToken([FromQuery(Name = "token")] string token)
+        {
+
+            try
+            {
+                var user = await m_userLoginService.FindUserByResetPasswordToken(token);
+               
+                return Ok(new ResponseMessage(true, "login operation is successful!", new
+                {
+                    username = user.Username,
+                    token = user.ResetPasswordToken
+                }));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(404, new ResponseMessage(false, ex.GetMessage, null));
+            }
+           
+        }
 
 
         /*

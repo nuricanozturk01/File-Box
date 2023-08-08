@@ -4,6 +4,7 @@ using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
 using Service.Exceptions;
+using System.Collections.Concurrent;
 
 namespace Service.Services.FolderService
 {
@@ -353,7 +354,7 @@ namespace Service.Services.FolderService
 
             var folders = (await m_folderDal.FindByFilterAsync(f => f.ParentFolderId == folderId)).ToList();
 
-            folders.Add(folderRoot);
+            //folders.Add(folderRoot);
             
             var folderWithFiles = new List<FoldersWithFilesDto>();
 
@@ -370,5 +371,39 @@ namespace Service.Services.FolderService
             return folderWithFiles;
 
         }
+
+
+
+
+
+
+        /*
+         * 
+         * Find all Folder and files with given user id and folder id
+         * 
+         */
+ /*       public async Task<IEnumerable<FoldersWithFilesDto>> FindFoldersAndFilesWithoutSubfolderFiles(Guid guid, long folderId)
+        {
+            var folderRoot = await m_folderDal.FindByIdAsync(folderId);
+
+            var folders = (await m_folderDal.FindByFilterAsync(f => f.ParentFolderId == folderId)).ToList();
+
+            folders.Add(folderRoot);
+
+            var folderWithFiles = new List<FoldersWithFilesDto>();
+
+            foreach (var folder in folders)
+            {
+
+                var files = await m_fileRepositoryDal.FindFilesByFolderId(folder.FolderId); // files on folder
+
+                var dto = new FoldersWithFilesDto(folder.FolderName, folder.FolderPath, folder.CreationDate, folder.FolderId, folder.UserId.ToString(), folder.ParentFolderId, files.Select(f => new FileViewDto(f.FileName, f.FileType, f.FileSize, f.FilePath, f.CreatedDate, f.UpdatedDate)).ToList());
+
+                folderWithFiles.Add(dto);
+            }
+
+            return folderWithFiles;
+
+        }*/
     }
 }

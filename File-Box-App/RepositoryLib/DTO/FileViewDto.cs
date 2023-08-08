@@ -22,7 +22,7 @@ namespace RepositoryLib.DTO
         [JsonPropertyName("updated_date")]
         public string UpdateDate { get; }
 
-        [JsonIgnore]
+        [JsonPropertyName("real_path")]
         public string RealMachinePath { get; } //"C:\\Users\\hp\\Desktop\\file_box\\ahmetkoc\\files\\deneme.docx"
 
         public FileViewDto(string fileName, string fileType, long fileSize, string filePath, DateTime? createdDate, DateTime? updatedDate) 
@@ -33,7 +33,7 @@ namespace RepositoryLib.DTO
             FilePath = filePath;
             UpdateDate = updatedDate?.ToString("dd/MM/yyyy HH:mm:ss");
             CreatedDate = createdDate?.ToString("dd/MM/yyyy HH:mm:ss");
-            RealMachinePath = @"C:\Users\hp\Desktop\file_box\" + FilePath;
+            RealMachinePath = @"C:\Users\hp\WebstormProjects\filebox\src\components\file_box\" + FilePath;
         }
     }
 }
