@@ -35,13 +35,13 @@ namespace File_Box_App.Configuration
         public static void ConfigureRepositoriesAndHelpers(this IServiceCollection services)
         {
             // helper classes
-            services.AddSingleton<UserRepositoryDal>();
-            services.AddSingleton<FolderRepositoryDal>();
-            services.AddSingleton<FileRepositoryDal>();
+            services.AddScoped<UserRepositoryDal>();
+            services.AddScoped<FolderRepositoryDal>();
+            services.AddScoped<FileRepositoryDal>();
 
 
             // Repositories
-            services.AddSingleton(typeof(IGenericRepository<,>), typeof(CrudRepository<,>));
+            services.AddScoped(typeof(IGenericRepository<,>), typeof(CrudRepository<,>));
         }
 
     }

@@ -39,9 +39,9 @@ namespace Presentation.Controllers
         {
             try
             {
-                await m_folderService.CreateFolder(folderSaveDTO);
+               var response =  await m_folderService.CreateFolder(folderSaveDTO);
 
-                return Ok(new ResponseMessage(true, "folder created succesfully!", new FolderCreatedResponseDto(folderSaveDTO.currentFolderPath, folderSaveDTO.newFolderName)));
+                return Ok(new ResponseMessage(true, "folder created succesfully!", new FolderCreatedResponseDto(response.folderPath, response.folderId, folderSaveDTO.newFolderName)));
             }
             catch (Exception ex)
             {
@@ -91,6 +91,7 @@ namespace Presentation.Controllers
          * 
          */
         [HttpGet("find/root/uuid")]
+        [AllowAnonymous]
         public async Task<IActionResult> FindRootFolderByUserId([FromQuery(Name = "uid")] string uid)
         {
             try
@@ -220,12 +221,12 @@ namespace Presentation.Controllers
         {
             try
             {
-                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                //var token = HttpContext.Request.Headers["Authorization"].ToString();
 
                 var user = await m_userRepositoryDal.FindByIdAsyncUser(id);
 
-                if (user == null || token != user.LastToken)
-                    throw new ServiceException("You cannot access these files!");
+                /*if (user == null || token != user.LastToken)
+                    throw new ServiceException("You cannot access these files!");*/
 
                 var folders = await m_folderService.FindFolderWithFiles(id, folderId);
 

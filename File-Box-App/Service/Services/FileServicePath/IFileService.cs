@@ -84,5 +84,16 @@ namespace Service.Services.FileServicePath
          * 
          */
         Task<IEnumerable<FileViewDto>> SortFilesByFileBytesAsync(long folderId, Guid userId);
+
+
+
+
+        /*
+         * 
+         * Sort files with given folder ıd and user ıd about creation date
+         * 
+         * 
+         */
+        Task<IEnumerable<FileViewDto>> SortFilesByCreationDateAsync(long folderId, Guid userId);
     }
 }

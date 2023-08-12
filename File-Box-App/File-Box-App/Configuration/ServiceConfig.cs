@@ -42,7 +42,7 @@ namespace File_Box_App.Configuration
 
         public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<FileBoxDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("sqlConnection")), ServiceLifetime.Singleton);
+            services.AddDbContext<FileBoxDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("sqlConnection")), ServiceLifetime.Transient);
         }
 
 

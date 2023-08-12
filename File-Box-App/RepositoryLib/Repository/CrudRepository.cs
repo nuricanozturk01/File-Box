@@ -12,6 +12,7 @@ namespace RepositoryLib.Repository
         public CrudRepository(FileBoxDbContext context)
         {
             m_dbContext = context ?? throw new ArgumentNullException(nameof(context));
+            m_dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             m_dbSet = m_dbContext.Set<T>();
         }
 
@@ -27,7 +28,11 @@ namespace RepositoryLib.Repository
 
         public async Task<IEnumerable<T>> FindByFilterAsync(Expression<Func<T, bool>> predicate)
         {
-            return await m_dbSet.Where(predicate).ToListAsync();
+            using(var context = new FileBoxDbContext())
+            {
+                return await context.Set<T>().Where(predicate).ToListAsync();
+            }
+            
         }
 
 
@@ -153,7 +158,6 @@ namespace RepositoryLib.Repository
 
         public async Task Delete(T obj)
         {
-
             await Task.Run(() => m_dbSet.Remove(obj));
         }
 
@@ -162,11 +166,17 @@ namespace RepositoryLib.Repository
 
 
 
-        public async Task RemoveAllAsync(IEnumerable<T> entities)
+        public async Task RemoveAll(IEnumerable<T> entities)
         {
-            await Task.Run(() => m_dbSet.RemoveRange(entities));
-            await SaveChangesAsync();
+            foreach (var entity in entities)
+            {
+                m_dbSet.Remove(entity);
+            }
+
+           
         }
+
+
 
 
 

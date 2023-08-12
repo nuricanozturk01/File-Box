@@ -68,7 +68,7 @@ namespace Service.Services.UploadService
             }
             catch (Exception ex)
             {
-                throw new ServiceException("Something wrong on upload files!");
+                throw new ServiceException(ex.Message);
             }
         }
 

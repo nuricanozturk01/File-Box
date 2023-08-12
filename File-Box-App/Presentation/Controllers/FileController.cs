@@ -83,7 +83,7 @@ namespace Presentation.Controllers
          * 
          */
 
-        [HttpPut("rename")]
+        [HttpPost("rename")]
         public async Task<IActionResult> RenameFile([FromQuery(Name = "fid")] long fileId, [FromQuery(Name = "n")] string newFileName, [FromQuery(Name = "uid")] string userId)
         {
             try
@@ -164,6 +164,31 @@ namespace Presentation.Controllers
             try
             {
                 var filesOnFolders = await m_fileService.SortFilesByFileBytesAsync(folderId, Guid.Parse(userId));
+                return Ok(new ResponseMessage(true, $"Found {filesOnFolders.Count()} items.", new FileResponseFileList(filesOnFolders)));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+      /*
+       * 
+       * Sort files with given folder ıd, user ıd and file extension parameter
+       * 
+       * 
+       */
+        [HttpGet("sort/date/creation")]
+        public async Task<IActionResult> SortFilesByCreationDateAsync([FromQuery(Name = "fid")] long folderId,
+                                                                   [FromQuery(Name = "uid")] string userId)
+        {
+            try
+            {
+                var filesOnFolders = await m_fileService.SortFilesByCreationDateAsync(folderId, Guid.Parse(userId));
                 return Ok(new ResponseMessage(true, $"Found {filesOnFolders.Count()} items.", new FileResponseFileList(filesOnFolders)));
             }
             catch (ServiceException ex)

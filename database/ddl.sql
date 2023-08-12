@@ -66,7 +66,7 @@ CREATE TABLE filebox_file
     FOREIGN KEY (folder_id) REFERENCES filebox_folder(folder_id) ON DELETE CASCADE on update cascade
 );
 
-exec filebox_insert_user  'Omer', 'Ertas', 'omerertas', 'nuricanozturk01@gmail.com', '12345'
+exec filebox_insert_user  'Ahmet', 'KOÇ', 'ahmetkoc', 'aahhmmeett_00@hotmail.com', '12345'
 select * from filebox_file;
 select * from filebox_folder;
 select * from filebox_user;
@@ -75,7 +75,7 @@ select * from filebox_user;
 update filebox_user set email = 'lkjj93670@gmail.com' where username = 'ahmetkoc';
 
 
-
+select * from filebox_file where file_name = 'CVCVCV.pdf'
 
 -- ----------------------------------------------------- STORED PROCEDURES-----------------------------------------------------
 

@@ -36,7 +36,7 @@ namespace Presentation.Controllers
                     user_id = userIdAndToken.uid,
                     token = userIdAndToken.token
                 }));
-            }
+            }   
             catch (ServiceException ex)
             {
                 return Unauthorized(new ResponseMessage(false, ex.GetMessage, null));

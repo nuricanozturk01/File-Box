@@ -52,27 +52,27 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        public async Task<bool> CreateFolder(FolderSaveDTO folderSaveDto)
+        public async Task<(string folderPath, long folderId)> CreateFolder(FolderSaveDTO folderSaveDto)
         {
             var userUID = Guid.Parse(folderSaveDto.userId); // user uuid
-
+            var folder = await m_folderDal.FindByIdAsync(folderSaveDto.currentFolderId);
             var folderNameWithoutPath = folderSaveDto.newFolderName; // just folder name
 
 
-            var parentFolderPath = Util.DIRECTORY_BASE + folderSaveDto.currentFolderPath;
+            var parentFolderPath = Util.DIRECTORY_BASE + folder.FolderPath;
 
-            var userFolderPath = folderSaveDto.currentFolderPath + "\\" + folderSaveDto.newFolderName;
+            var userFolderPath = folder.FolderPath + "\\" + folderSaveDto.newFolderName;
 
             var fullName = parentFolderPath + "\\" + folderSaveDto.newFolderName;
 
-            var fileBoxFolder = new FileboxFolder(GetParentFolderId(folderSaveDto.currentFolderPath), userUID, folderNameWithoutPath, userFolderPath);
+            var fileBoxFolder = new FileboxFolder(GetParentFolderId(folder.FolderPath), userUID, folderNameWithoutPath, userFolderPath);
 
             await m_folderDal.Save(fileBoxFolder);
             await m_folderDal.SaveChangesAsync();
             if (!Directory.Exists(fullName))
                 Directory.CreateDirectory(fullName);
 
-            return true;
+            return (fileBoxFolder.FolderPath, fileBoxFolder.FolderId);
         }
 
 
@@ -115,19 +115,19 @@ namespace Service.Services.FolderService
 
             var deletedFolderWithSubFolders = await GetAllSubFolders(dir);
 
-            CheckFolderExistsIfNotRemoveIt(deletedFolderWithSubFolders);
+            await CheckFolderExistsIfNotRemoveIt(deletedFolderWithSubFolders);
 
             if (!deletedFolderWithSubFolders.IsNullOrEmpty())
             {
-                m_folderDal.RemoveAll(deletedFolderWithSubFolders);
-
+                await m_folderDal.RemoveAll(deletedFolderWithSubFolders);
+                await m_folderDal.SaveChangesAsync();
                 deletedFolderWithSubFolders.ToList().ForEach(f => Directory.Delete(Util.DIRECTORY_BASE + f.FolderPath, true));
             }
 
             return dir.FolderPath;
         }
 
-        private void CheckFolderExistsIfNotRemoveIt(IEnumerable<FileboxFolder> deletedFolderWithSubFolders)
+        private async Task CheckFolderExistsIfNotRemoveIt(IEnumerable<FileboxFolder> deletedFolderWithSubFolders)
         {
             foreach (var folder in deletedFolderWithSubFolders)
             {
@@ -135,7 +135,7 @@ namespace Service.Services.FolderService
 
                 if (!Directory.Exists(fullPathOnSystem))
                 {
-                    m_folderDal.Delete(folder);
+                    await m_folderDal.Delete(folder);
                     m_folderDal.SaveChanges();
                 }
             }
@@ -330,7 +330,7 @@ namespace Service.Services.FolderService
                
                 var files = await m_fileRepositoryDal.FindFilesByFolderId(folder.FolderId); // files on folder
 
-                var dto = new FoldersWithFilesDto(folder.FolderName, folder.FolderPath, folder.CreationDate, folder.FolderId, folder.UserId.ToString(), folder.ParentFolderId, files.Select(f => new FileViewDto(f.FileName, f.FileType, f.FileSize, f.FilePath, f.CreatedDate, f.UpdatedDate)).ToList());
+                var dto = new FoldersWithFilesDto(folder.FolderName, folder.FolderPath, folder.CreationDate, folder.FolderId, folder.UserId.ToString(), folder.ParentFolderId, files.Select(f => new FileViewDto(f.FileId, f.FileName, f.FileType, f.FileSize, f.FilePath, f.CreatedDate, f.UpdatedDate)).ToList());
 
                 folderWithFiles.Add(dto);
             }
@@ -363,7 +363,7 @@ namespace Service.Services.FolderService
 
                 var files = await m_fileRepositoryDal.FindFilesByFolderId(folder.FolderId); // files on folder
 
-                var dto = new FoldersWithFilesDto(folder.FolderName, folder.FolderPath, folder.CreationDate, folder.FolderId, folder.UserId.ToString(), folder.ParentFolderId, files.Select(f => new FileViewDto(f.FileName, f.FileType, f.FileSize, f.FilePath, f.CreatedDate, f.UpdatedDate)).ToList());
+                var dto = new FoldersWithFilesDto(folder.FolderName, folder.FolderPath, folder.CreationDate, folder.FolderId, folder.UserId.ToString(), folder.ParentFolderId, files.Select(f => new FileViewDto(f.FileId, f.FileName, f.FileType, f.FileSize, f.FilePath, f.CreatedDate, f.UpdatedDate)).ToList());
 
                 folderWithFiles.Add(dto);
             }

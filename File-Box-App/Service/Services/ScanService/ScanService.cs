@@ -42,7 +42,7 @@ namespace Service.Services.ScanService
                 // if folder does not exists remove it
                 if (folderInfo is null || !folderInfo.Exists)
                 {
-                    m_folderRepositoryDal.Delete(folder);
+                    await m_folderRepositoryDal.Delete(folder);
                     m_folderRepositoryDal.SaveChanges();
                     affectedFolderCount++;
                 }

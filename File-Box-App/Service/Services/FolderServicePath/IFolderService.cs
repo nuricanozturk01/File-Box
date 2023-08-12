@@ -32,7 +32,7 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        Task<bool> CreateFolder(FolderSaveDTO folderSaveDto);
+        Task<(string folderPath, long folderId)> CreateFolder(FolderSaveDTO folderSaveDto);
 
 
 

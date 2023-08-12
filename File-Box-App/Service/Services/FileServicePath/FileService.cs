@@ -244,5 +244,27 @@ namespace Service.Services.FileServicePath
 
             return sortedFiles.Select(file => m_mapper.Map<FileViewDto>(file));
         }
+
+
+
+
+
+      /*
+       * 
+       * Sort files with given folder ıd and user about creation date
+       * 
+       * 
+       */
+        public async Task<IEnumerable<FileViewDto>> SortFilesByCreationDateAsync(long folderId, Guid userId)
+        {
+            var folder = await m_folderDal.FindByIdAsync(folderId);
+
+            CheckFolderAndPermits(folder, userId);
+
+            var files = await m_fileDal.FindByFilterAsync(file => file.FolderId == folderId);
+            var sortedFiles = await Task.Run(() => files.OrderByDescending(file => file.CreatedDate));
+
+            return sortedFiles.Select(file => m_mapper.Map<FileViewDto>(file));
+        }
     }
 }

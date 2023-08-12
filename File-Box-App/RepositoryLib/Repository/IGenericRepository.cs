@@ -88,7 +88,7 @@ namespace RepositoryLib.Repository
 
 
 
-        Task RemoveAllAsync(IEnumerable<T> entities);
+        Task RemoveAll(IEnumerable<T> entities);
 
 
 
