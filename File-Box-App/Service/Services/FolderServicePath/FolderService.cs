@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
@@ -12,13 +13,15 @@ namespace Service.Services.FolderService
     {
         private readonly FolderRepositoryDal m_folderDal;
         private readonly FileRepositoryDal m_fileRepositoryDal;
+        private readonly FileBoxDbContext m_dbContext;
         private readonly IMapper m_mapper;
 
-        public FolderService(FolderRepositoryDal folderDal, IMapper mapper, FileRepositoryDal fileRepositoryDal)
+        public FolderService(FolderRepositoryDal folderDal, IMapper mapper, FileRepositoryDal fileRepositoryDal, FileBoxDbContext dbContext)
         {
             m_folderDal = folderDal;
             m_mapper = mapper;
             m_fileRepositoryDal = fileRepositoryDal;
+            m_dbContext = dbContext;
         }
 
 
@@ -69,6 +72,7 @@ namespace Service.Services.FolderService
 
             await m_folderDal.Save(fileBoxFolder);
             await m_folderDal.SaveChangesAsync();
+
             if (!Directory.Exists(fullName))
                 Directory.CreateDirectory(fullName);
 
@@ -115,28 +119,41 @@ namespace Service.Services.FolderService
 
             var deletedFolderWithSubFolders = await GetAllSubFolders(dir);
 
-            await CheckFolderExistsIfNotRemoveIt(deletedFolderWithSubFolders);
+            await CheckAndRemoveNonExistentFolders(deletedFolderWithSubFolders);
 
             if (!deletedFolderWithSubFolders.IsNullOrEmpty())
             {
                 await m_folderDal.RemoveAll(deletedFolderWithSubFolders);
                 await m_folderDal.SaveChangesAsync();
-                deletedFolderWithSubFolders.ToList().ForEach(f => Directory.Delete(Util.DIRECTORY_BASE + f.FolderPath, true));
+
+                await Task.Run(() =>
+                {
+                    foreach (var folder in deletedFolderWithSubFolders)
+                    {
+                        var fullPathOnSystem = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
+                        Directory.Delete(fullPathOnSystem, true);
+                    }
+                });
             }
 
             return dir.FolderPath;
         }
 
-        private async Task CheckFolderExistsIfNotRemoveIt(IEnumerable<FileboxFolder> deletedFolderWithSubFolders)
+
+
+
+
+
+        private async Task CheckAndRemoveNonExistentFolders(IEnumerable<FileboxFolder> folders)
         {
-            foreach (var folder in deletedFolderWithSubFolders)
+            foreach (var folder in folders)
             {
                 var fullPathOnSystem = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
 
                 if (!Directory.Exists(fullPathOnSystem))
                 {
+                    m_dbContext.Entry(folder).State = EntityState.Detached;
                     await m_folderDal.Delete(folder);
-                    m_folderDal.SaveChanges();
                 }
             }
         }
@@ -177,7 +194,7 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        public async Task<(string oldPath, string newPath)> RenameFolder(long folderId, string newFolderName, Guid userId)
+        public async Task<FolderViewDto> RenameFolder(long folderId, string newFolderName, Guid userId)
         {
             try
             {
@@ -223,7 +240,7 @@ namespace Service.Services.FolderService
                 await m_folderDal.UpdateAll(folders);
 
 
-                return (oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot);
+                return m_mapper.Map<FolderViewDto>(folder);
             }
             catch (DirectoryNotFoundException ex)
             {

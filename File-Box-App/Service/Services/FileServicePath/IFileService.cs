@@ -1,5 +1,4 @@
 ﻿using RepositoryLib.DTO;
-using RepositoryLib.Models;
 
 namespace Service.Services.FileServicePath
 {
@@ -46,7 +45,7 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        Task<string> RenameFile(long fileId, string newFileName, Guid userId);
+        Task<FileViewDto> RenameFile(long fileId, string newFileName, Guid userId);
 
 
 

@@ -60,7 +60,7 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        Task<(string oldPath, string newPath)> RenameFolder(long folderId, string newFolderName, Guid userId);
+        Task<FolderViewDto> RenameFolder(long folderId, string newFolderName, Guid userId);
 
 
 

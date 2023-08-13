@@ -72,7 +72,10 @@ namespace Presentation.Controllers
             {
                 var uploadResult = await m_uploadService.UploadMultipleFiles(formFiles, folderId, Guid.Parse(uid));
 
-                return Ok(new ResponseMessage(true, "File Uploaded Successfully!", new UploadSingleFileResponse(uploadResult.path, uploadResult.totalLength + " MB")));
+                return Ok(new ResponseMessage(true, "File Uploaded Successfully!", new
+                {
+                    files = uploadResult
+                }));
             }
             catch (ServiceException ex)
             {

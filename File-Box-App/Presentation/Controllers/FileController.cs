@@ -88,15 +88,21 @@ namespace Presentation.Controllers
         {
             try
             {
-                var oldFileName = await m_fileService.RenameFile(fileId, newFileName, Guid.Parse(userId));
+                var oldFile = await m_fileService.RenameFile(fileId, newFileName, Guid.Parse(userId));
 
-                return Ok(new ResponseMessage(true, "Rename operation is successful!", new FileResponseSuccessRename(oldFileName, newFileName)));
+                return Ok(new ResponseMessage(true, "Rename operation is successful!", new
+                {
+                    file = oldFile
+                }));
             }
             catch (ServiceException ex)
             {
                 return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
             }
         }
+
+
+
 
 
 

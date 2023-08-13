@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
@@ -10,10 +11,12 @@ namespace Service.Services.UploadService
     {
         private readonly FolderRepositoryDal m_folderRepositoryDal;
         private readonly FileRepositoryDal m_fileRepositoryDal;
-        public UploadService(FolderRepositoryDal folderRepositoryDal, FileRepositoryDal fileRepositoryDal)
+        private readonly IMapper m_mapper;
+        public UploadService(FolderRepositoryDal folderRepositoryDal, FileRepositoryDal fileRepositoryDal, IMapper mapper)
         {
             m_folderRepositoryDal = folderRepositoryDal;
             m_fileRepositoryDal = fileRepositoryDal;
+            m_mapper = mapper;
         }
 
 
@@ -27,10 +30,11 @@ namespace Service.Services.UploadService
          * returns the boolean value that if success return true else return false
          * 
          */
-        public async Task<(string path, long totalLength)> UploadMultipleFiles(List<IFormFile> formFiles, long folderId, Guid uid)
+        public async Task<List<FileViewDto>> UploadMultipleFiles(List<IFormFile> formFiles, long folderId, Guid uid)
         {
             try
             {
+                var fileList = new List<FileViewDto>();
                 var totalBytes = formFiles.Select(ff => ff.Length).Sum();
 
                 if (totalBytes > Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE)
@@ -54,13 +58,15 @@ namespace Service.Services.UploadService
                     var fileInfo = new FileInfo(targetPath);
 
 
-                    await m_fileRepositoryDal.SaveAsync(new FileboxFile(folderId, ff.FileName,
-                                                             Path.Combine(folder.FolderPath, ff.FileName),
-                                                             fileInfo.Extension, fileInfo.Length));
+                    var savedFile = new FileboxFile(folderId, ff.FileName, Path.Combine(folder.FolderPath, ff.FileName),fileInfo.Extension, fileInfo.Length);
+
+                    await m_fileRepositoryDal.SaveAsync(savedFile);
                     await m_fileRepositoryDal.SaveChangesAsync();
+
+                    fileList.Add(m_mapper.Map<FileViewDto>(savedFile));
                 }
 
-                return (Path.Combine(folder.FolderPath), Util.ByteToMB(totalBytes));
+                return fileList;
             }
             catch (ServiceException ex)
             {
@@ -168,8 +174,6 @@ namespace Service.Services.UploadService
                     await m_folderRepositoryDal.Save(folderBox);
                     await m_folderRepositoryDal.SaveChangesAsync();
                 }
-
-
 
                 await UploadFilesAndSubFolders(subdirectory, subdirectoryTargetPath, folderId, subdirectoryFolderPath, uid);
             }

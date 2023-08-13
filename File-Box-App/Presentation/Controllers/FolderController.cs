@@ -131,8 +131,7 @@ namespace Presentation.Controllers
 
                 return Ok(new ResponseMessage(true, "Folder rename operation is successful!", new
                 {
-                    folder_old_path = renameFolder.oldPath,
-                    folder_new_path = renameFolder.newPath
+                    folder = renameFolder
                 }));
             }
             catch (ServiceException ex)

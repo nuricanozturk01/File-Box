@@ -116,7 +116,7 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        public async Task<string> RenameFile(long fileId, string newFileName, Guid userId)
+        public async Task<FileViewDto> RenameFile(long fileId, string newFileName, Guid userId)
         {
 
             try
@@ -143,7 +143,7 @@ namespace Service.Services.FileServicePath
 
                 m_fileDal.Update(fileObj);
                 await m_fileDal.SaveChangesAsync();
-                return oldFileName;
+                return m_mapper.Map<FileViewDto>(fileObj);
             }
             catch (FileNotFoundException ex) 
             {
@@ -262,7 +262,7 @@ namespace Service.Services.FileServicePath
             CheckFolderAndPermits(folder, userId);
 
             var files = await m_fileDal.FindByFilterAsync(file => file.FolderId == folderId);
-            var sortedFiles = await Task.Run(() => files.OrderByDescending(file => file.CreatedDate));
+            var sortedFiles = await Task.Run(() => files.OrderBy(file => file.CreatedDate));
 
             return sortedFiles.Select(file => m_mapper.Map<FileViewDto>(file));
         }

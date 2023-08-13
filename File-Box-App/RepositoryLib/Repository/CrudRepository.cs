@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using RepositoryLib.Models;
 using System.Linq.Expressions;
 
@@ -12,7 +13,7 @@ namespace RepositoryLib.Repository
         public CrudRepository(FileBoxDbContext context)
         {
             m_dbContext = context ?? throw new ArgumentNullException(nameof(context));
-            m_dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            m_dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
             m_dbSet = m_dbContext.Set<T>();
         }
 
@@ -30,7 +31,7 @@ namespace RepositoryLib.Repository
         {
             using(var context = new FileBoxDbContext())
             {
-                return await context.Set<T>().Where(predicate).ToListAsync();
+                return await context.Set<T>().Where(predicate).AsNoTracking().ToListAsync();
             }
             
         }
@@ -148,19 +149,19 @@ namespace RepositoryLib.Repository
         public async Task DeleteByIdAsync(ID id)
         {
             var obj = await m_dbSet.FindAsync(id);
-            await Delete(obj);
+
+            if (obj != null)
+            {
+                m_dbSet.Remove(obj);
+                await SaveChangesAsync();
+            }
         }
-
-
-
-
-
 
         public async Task Delete(T obj)
         {
-            await Task.Run(() => m_dbSet.Remove(obj));
+            m_dbSet.Remove(obj);
+            await SaveChangesAsync();
         }
-
 
 
 
@@ -172,8 +173,6 @@ namespace RepositoryLib.Repository
             {
                 m_dbSet.Remove(entity);
             }
-
-           
         }
 
 
