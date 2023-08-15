@@ -113,53 +113,31 @@ namespace Service.Services.FolderService
          */
         public async Task<string> DeleteFolder(long folderId, Guid userID)
         {
-            var dir = await m_folderDal.FindByIdAsync(folderId);
+            var dir = await m_folderDal.FindByIdAsync(folderId); // given folder 
 
             CheckFolderAndPermits(dir, userID);
 
-            var deletedFolderWithSubFolders = await GetAllSubFolders(dir);
+            var deletedFolderWithSubFolders = await GetAllSubFolders(dir); // subfolders
 
-            await CheckAndRemoveNonExistentFolders(deletedFolderWithSubFolders);
-
-            if (!deletedFolderWithSubFolders.IsNullOrEmpty())
+            // Remove all subfiles from db
+            var context = new FileBoxDbContext();
+            using (var transaction = context.Database.BeginTransaction())
             {
-                await m_folderDal.RemoveAll(deletedFolderWithSubFolders);
-                await m_folderDal.SaveChangesAsync();
-
-                await Task.Run(() =>
+                foreach (var folder in deletedFolderWithSubFolders)
                 {
-                    foreach (var folder in deletedFolderWithSubFolders)
-                    {
-                        var fullPathOnSystem = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
-                        Directory.Delete(fullPathOnSystem, true);
-                    }
-                });
+                    var files = await m_fileRepositoryDal.FindFilesByFolderId(folder.FolderId);
+                    foreach (var file in files)
+                        context.FileboxFiles.Remove(file);
+                }
+                context.FileboxFolders.RemoveRange(deletedFolderWithSubFolders);
+                await context.SaveChangesAsync();
+                transaction.Commit();
+
             }
+            Directory.Delete(Path.Combine(Util.DIRECTORY_BASE, dir.FolderPath), true);         
 
             return dir.FolderPath;
         }
-
-
-
-
-
-
-        private async Task CheckAndRemoveNonExistentFolders(IEnumerable<FileboxFolder> folders)
-        {
-            foreach (var folder in folders)
-            {
-                var fullPathOnSystem = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
-
-                if (!Directory.Exists(fullPathOnSystem))
-                {
-                    m_dbContext.Entry(folder).State = EntityState.Detached;
-                    await m_folderDal.Delete(folder);
-                }
-            }
-        }
-
-
-
 
 
 
@@ -223,7 +201,7 @@ namespace Service.Services.FolderService
                 folder.UpdatedDate = DateTime.Now;
 
                 m_folderDal.Update(folder);
-              //  m_folderDal.SaveChanges();
+                //  m_folderDal.SaveChanges();
                 var newFullPathOnSystem = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
 
                 // Update files of parent folder
@@ -232,14 +210,14 @@ namespace Service.Services.FolderService
                 files.ForEach(file => file.FilePath = file.FilePath.Replace(oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot));
 
                 await m_fileRepositoryDal.UpdateAll(files);
-    
+
                 var folders = (await m_folderDal.FindAllAsync()).Where(f => f.FolderPath.Contains(oldFolderPathStartsWithRoot)).ToList();
 
                 folders.ForEach(f => f.FolderPath = f.FolderPath.Replace(oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot));
 
                 await m_folderDal.UpdateAll(folders);
 
-                return m_mapper.Map<FolderViewDto>(folder); 
+                return m_mapper.Map<FolderViewDto>(folder);
             }
             catch (DirectoryNotFoundException ex)
             {
@@ -262,6 +240,7 @@ namespace Service.Services.FolderService
                 throw new ServiceException(ex.GetMessage);
             }
         }
+
 
 
 

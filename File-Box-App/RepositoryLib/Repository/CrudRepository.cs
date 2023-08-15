@@ -46,7 +46,7 @@ namespace RepositoryLib.Repository
             {
                 return await context.Set<T>().FirstOrDefaultAsync(predicate);
             }
-            
+
         }
 
 
@@ -83,7 +83,7 @@ namespace RepositoryLib.Repository
                 context.SaveChanges();
                 return entry.Entity;
             }
-          
+
         }
 
 

@@ -24,9 +24,9 @@ namespace RepositoryLib.Dal
 
 
 
-        public void Delete(FileboxFile t)
+        public async Task Delete(FileboxFile t)
         {
-            m_fileRepository.Delete(t);
+            await m_fileRepository.Delete(t);
         }
 
 
@@ -70,7 +70,10 @@ namespace RepositoryLib.Dal
         }
 
 
-
+        public async Task RemoveAll(IEnumerable<FileboxFile> files)
+        {
+            await m_fileRepository.RemoveAll(files);
+        }
 
 
 
