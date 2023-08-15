@@ -49,7 +49,7 @@ namespace Service.Services.ForgottenInformationService
             user.ResetPasswordToken = token;
 
             m_userRepositoryDal.Update(user);
-            m_userRepositoryDal.SaveChanges();
+            //m_userRepositoryDal.SaveChanges();
 
             return (user.Email, user.Username, token);
         }
@@ -98,7 +98,7 @@ namespace Service.Services.ForgottenInformationService
             user.Password = Util.HashPassword(newPassword);
 
             m_userRepositoryDal.Update(user);
-            m_userRepositoryDal.SaveChanges();
+            //m_userRepositoryDal.SaveChanges();
 
             return (user.Email, user.Username);
         }

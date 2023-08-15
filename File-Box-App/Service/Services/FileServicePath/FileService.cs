@@ -142,7 +142,7 @@ namespace Service.Services.FileServicePath
                 fileObj.UpdatedDate = DateTime.Now;
 
                 m_fileDal.Update(fileObj);
-                await m_fileDal.SaveChangesAsync();
+                //await m_fileDal.SaveChangesAsync();
                 return m_mapper.Map<FileViewDto>(fileObj);
             }
             catch (FileNotFoundException ex) 

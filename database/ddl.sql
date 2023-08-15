@@ -66,7 +66,7 @@ CREATE TABLE filebox_file
     FOREIGN KEY (folder_id) REFERENCES filebox_folder(folder_id) ON DELETE CASCADE on update cascade
 );
 
-exec filebox_insert_user  'Ahmet', 'KOÇ', 'ahmetkoc', 'aahhmmeett_00@hotmail.com', '12345'
+exec filebox_insert_user  'Ahmet', 'KOÇ', 'ahmetkoc', 'nuricanozturk01@gmail.com', '12345'
 select * from filebox_file;
 select * from filebox_folder;
 select * from filebox_user;

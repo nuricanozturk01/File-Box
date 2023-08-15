@@ -60,7 +60,7 @@ namespace FileBoxService.Service
                 Directory.CreateDirectory(dirName);
                 user.FileboxFolders.Add(new FileboxFolder(null, userId, username, username));
                 m_userRepositoryDal.Update(user);
-                m_userRepositoryDal.SaveChanges();
+                //m_userRepositoryDal.SaveChanges();
             }
             else
             {

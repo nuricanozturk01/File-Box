@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using RepositoryLib.Models;
+using System;
 using System.Linq.Expressions;
 
 namespace RepositoryLib.Repository
@@ -13,7 +14,7 @@ namespace RepositoryLib.Repository
         public CrudRepository(FileBoxDbContext context)
         {
             m_dbContext = context ?? throw new ArgumentNullException(nameof(context));
-            m_dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
+            //m_dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             m_dbSet = m_dbContext.Set<T>();
         }
 
@@ -29,11 +30,10 @@ namespace RepositoryLib.Repository
 
         public async Task<IEnumerable<T>> FindByFilterAsync(Expression<Func<T, bool>> predicate)
         {
-            using(var context = new FileBoxDbContext())
+            using (var context = new FileBoxDbContext())
             {
                 return await context.Set<T>().Where(predicate).AsNoTracking().ToListAsync();
             }
-            
         }
 
 
@@ -42,7 +42,11 @@ namespace RepositoryLib.Repository
 
         public async Task<T> FindByPredicateAsync(Expression<Func<T, bool>> predicate)
         {
-            return await m_dbSet.FirstOrDefaultAsync(predicate);
+            using (var context = new FileBoxDbContext())
+            {
+                return await context.Set<T>().FirstOrDefaultAsync(predicate);
+            }
+            
         }
 
 
@@ -51,6 +55,7 @@ namespace RepositoryLib.Repository
 
         public async Task<T> FindById(object id)
         {
+
             return await m_dbSet.FindAsync(id);
         }
 
@@ -61,7 +66,8 @@ namespace RepositoryLib.Repository
 
         public async Task<T> SaveAsync(T entity)
         {
-            return (await m_dbSet.AddAsync(entity)).Entity;
+            return (await m_dbContext.AddAsync(entity)).Entity;
+
         }
 
 
@@ -71,9 +77,13 @@ namespace RepositoryLib.Repository
 
         public T Update(T entity)
         {
-            m_dbSet.Attach(entity);
-            m_dbContext.Entry(entity).State = EntityState.Modified;
-            return entity;
+            using (var context = new FileBoxDbContext())
+            {
+                var entry = context.Update(entity);
+                context.SaveChanges();
+                return entry.Entity;
+            }
+          
         }
 
 
@@ -169,10 +179,8 @@ namespace RepositoryLib.Repository
 
         public async Task RemoveAll(IEnumerable<T> entities)
         {
-            foreach (var entity in entities)
-            {
-                m_dbSet.Remove(entity);
-            }
+            m_dbSet.RemoveRange(entities);
+            await SaveChangesAsync();
         }
 
 
@@ -184,10 +192,8 @@ namespace RepositoryLib.Repository
 
         public async Task UpdateAll(IEnumerable<T> folders)
         {
-            foreach (var folder in folders)
-                m_dbSet.Update(folder);
-
-            await m_dbContext.SaveChangesAsync();
+            m_dbSet.UpdateRange(folders);
+            await SaveChangesAsync();
         }
 
 

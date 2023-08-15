@@ -121,7 +121,7 @@ namespace Service.Services.ScanService
             folder.FileboxFiles.Add(fileBox);
 
             m_folderRepositoryDal.Update(folder);
-            m_folderRepositoryDal.SaveChanges();
+          //  m_folderRepositoryDal.SaveChanges();
         }
 
         private async Task<bool> IsExistFileOnDirectory(FileboxFolder dir, FileInfo file, Guid userId)

@@ -99,5 +99,16 @@ namespace Service.Services.FolderService
          * 
          */
         Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid, long folderId);
+
+
+
+
+
+        /*
+         * 
+         * Find Folder with folder id and user id
+         * 
+         */
+        Task<FolderViewDto> FindFolderWithFolderId(Guid guid, long folderId);
     }
 }

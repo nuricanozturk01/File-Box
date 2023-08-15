@@ -236,5 +236,33 @@ namespace Presentation.Controllers
                 return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
             }
         }
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Find Folders given user id but ont one folder
+         * 
+         */
+        [HttpGet("find/folder")]
+        public async Task<IActionResult> FindFoldersWithFolderId([FromQuery(Name = "id")] Guid id, [FromQuery(Name = "fid")] long folderId)
+        {
+            try
+            {
+                var folder = await m_folderService.FindFolderWithFolderId(id, folderId);               
+
+                return Ok(new ResponseMessage(true, "Folder is found!", new
+                {
+                    folder = folder
+                }));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
     }
 }
