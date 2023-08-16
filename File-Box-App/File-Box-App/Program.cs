@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-
 builder.Services.AddSingleton<FileBoxDbContext>();
 
 builder.Services.AddScoped<IUserLoginService, LoginService>();
@@ -23,7 +22,7 @@ builder.Services.AddScoped<IUserLoginService, LoginService>();
  */
 
 // Repositories and Helper Classes
-builder.Services.ConfigureRepositoriesAndHelpers();
+builder.Services.ConfigureRepositoriesAndHelpers(builder.Configuration);
 
 // Services
 builder.Services.ConfigureServices();

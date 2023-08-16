@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
 using Service.Exceptions;
+using Service.Services.RedisService;
 
 namespace Service.Services.FileServicePath
 {
@@ -11,12 +13,15 @@ namespace Service.Services.FileServicePath
         private readonly FolderRepositoryDal m_folderDal;
         private readonly FileRepositoryDal m_fileDal;
         private readonly IMapper m_mapper;
-
-        public FileService(FileRepositoryDal fileDal, FolderRepositoryDal folderDal, IMapper mapper)
+        private readonly IRedisService m_redisService;
+        private readonly UserRepositoryDal m_userRepositoryDal;
+        public FileService(FileRepositoryDal fileDal, FolderRepositoryDal folderDal, IMapper mapper, IRedisService redisService, UserRepositoryDal userRepositoryDal)
         {
             m_fileDal = fileDal;
             m_folderDal = folderDal;
             m_mapper = mapper;
+            m_redisService = redisService;
+            m_userRepositoryDal = userRepositoryDal;
         }
 
 
@@ -164,8 +169,9 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        public async Task<IEnumerable<FileViewDto>> GetFilesByFolderIdAsync(long folderId, Guid userId)
+        public async Task<IEnumerable<FileViewDto>> GetFilesByFolderIdAsync(long folderId, Guid userId, string currentToken)
         {
+            //CheckIsTokenInBlacklist(userId, currentToken);
             var folder = await m_folderDal.FindByIdAsync(folderId);
 
             CheckFolderAndPermits(folder, userId);
@@ -176,6 +182,18 @@ namespace Service.Services.FileServicePath
                 throw new ServiceException("Folder does not have any file!");
 
             return filteredFiles.Select(file => m_mapper.Map<FileViewDto>(file));
+        }
+
+        private async void CheckIsTokenInBlacklist(Guid userId, string currentToken)
+        {
+            var user = await m_userRepositoryDal.FindByIdAsyncUser(userId);
+            if (user is null)
+                throw new ServiceException("User Not Found!"); //Unexpected situation
+            
+            var blackListToken = await m_redisService.GetValueAsync(user.Username);
+            File.WriteAllText("C:\\Users\\hp\\Desktop\\deneme.txt", blackListToken);
+            if (blackListToken is not null && blackListToken == currentToken)
+                throw new ServiceException("session expired!");
         }
 
 

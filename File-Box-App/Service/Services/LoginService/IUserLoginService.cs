@@ -45,6 +45,6 @@ namespace FileBoxService.Service
          * 
          * 
          */
-        bool Logout(string username);
+        Task<bool> Logout(string username, string token);
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RepositoryLib.Models;
+using StackExchange.Redis;
 using System.Text;
 
 namespace File_Box_App.Configuration
@@ -35,9 +36,6 @@ namespace File_Box_App.Configuration
                 x.MultipartBodyLengthLimit = int.MaxValue;
             });
         }
-
-
-
 
 
         public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)

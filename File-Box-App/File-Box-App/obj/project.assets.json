@@ -101,6 +101,29 @@
           }
         }
       },
+      "JsonConverter.Abstractions/0.4.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/JsonConverter.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/JsonConverter.Abstractions.dll": {}
+        }
+      },
+      "JsonConverter.Newtonsoft.Json/0.4.0": {
+        "type": "package",
+        "dependencies": {
+          "JsonConverter.Abstractions": "0.4.0",
+          "Newtonsoft.Json": "13.0.1",
+          "Stef.Validation": "0.1.1"
+        },
+        "compile": {
+          "lib/net6.0/JsonConverter.Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/JsonConverter.Newtonsoft.Json.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.Antiforgery/2.2.0": {
         "type": "package",
         "dependencies": {
@@ -1850,6 +1873,34 @@
           }
         }
       },
+      "NRedisStack/0.8.0": {
+        "type": "package",
+        "dependencies": {
+          "StackExchange.Redis": "2.6.96"
+        },
+        "compile": {
+          "lib/net6.0/NRedisStack.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/NRedisStack.dll": {}
+        }
+      },
+      "Pipelines.Sockets.Unofficial/2.2.2": {
+        "type": "package",
+        "dependencies": {
+          "System.IO.Pipelines": "5.0.1"
+        },
+        "compile": {
+          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
         "type": "package",
         "runtimeTargets": {
@@ -2019,6 +2070,31 @@
             "assetType": "native",
             "rid": "ubuntu.16.10-x64"
           }
+        }
+      },
+      "StackExchange.Redis/2.6.96": {
+        "type": "package",
+        "dependencies": {
+          "Pipelines.Sockets.Unofficial": "2.2.2"
+        },
+        "compile": {
+          "lib/net5.0/StackExchange.Redis.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net5.0/StackExchange.Redis.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Stef.Validation/0.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Stef.Validation.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/Stef.Validation.dll": {}
         }
       },
       "System.AppContext/4.3.0": {
@@ -2491,6 +2567,19 @@
         },
         "runtime": {
           "lib/netstandard1.3/System.IO.FileSystem.Primitives.dll": {}
+        }
+      },
+      "System.IO.Pipelines/5.0.1": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.0/System.IO.Pipelines.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/System.IO.Pipelines.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Linq/4.3.0": {
@@ -3656,7 +3745,8 @@
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "7.0.9",
-          "Microsoft.EntityFrameworkCore.SqlServer": "7.0.9"
+          "Microsoft.EntityFrameworkCore.SqlServer": "7.0.9",
+          "NRedisStack": "0.8.0"
         },
         "compile": {
           "bin/placeholder/RepositoryLib.dll": {}
@@ -3671,6 +3761,7 @@
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.1",
           "BCrypt.Net-Next": "4.0.3",
+          "JsonConverter.Newtonsoft.Json": "0.4.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.0",
           "RepositoryLib": "1.0.0",
           "System.IdentityModel.Tokens.Jwt": "6.32.1"
@@ -3799,6 +3890,42 @@
         "lib/netstandard2.0/Humanizer.dll",
         "lib/netstandard2.0/Humanizer.xml",
         "logo.png"
+      ]
+    },
+    "JsonConverter.Abstractions/0.4.0": {
+      "sha512": "4OwfevHdmsqOmXKPKasKZw//mEpiL2pqPX3vuKsZQ7jRD8y36M32UvP4Ex4gReXKIHdRQA/a6zhyu9CGV4WF7Q==",
+      "type": "package",
+      "path": "jsonconverter.abstractions/0.4.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "jsonconverter.abstractions.0.4.0.nupkg.sha512",
+        "jsonconverter.abstractions.nuspec",
+        "lib/net35/JsonConverter.Abstractions.dll",
+        "lib/net40/JsonConverter.Abstractions.dll",
+        "lib/net45/JsonConverter.Abstractions.dll",
+        "lib/net461/JsonConverter.Abstractions.dll",
+        "lib/netstandard1.3/JsonConverter.Abstractions.dll",
+        "lib/netstandard2.0/JsonConverter.Abstractions.dll",
+        "lib/netstandard2.1/JsonConverter.Abstractions.dll"
+      ]
+    },
+    "JsonConverter.Newtonsoft.Json/0.4.0": {
+      "sha512": "ddT2lEl7ICDR7iBiTstKTd26gzrX86AIzwZu5eiXktNt9BSkZnV3iiLeR1sInYV9SPlcIGgsvub9xrCIqmZ1CQ==",
+      "type": "package",
+      "path": "jsonconverter.newtonsoft.json/0.4.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "jsonconverter.newtonsoft.json.0.4.0.nupkg.sha512",
+        "jsonconverter.newtonsoft.json.nuspec",
+        "lib/net35/JsonConverter.Newtonsoft.Json.dll",
+        "lib/net40/JsonConverter.Newtonsoft.Json.dll",
+        "lib/net45/JsonConverter.Newtonsoft.Json.dll",
+        "lib/net6.0/JsonConverter.Newtonsoft.Json.dll",
+        "lib/netstandard1.3/JsonConverter.Newtonsoft.Json.dll",
+        "lib/netstandard2.0/JsonConverter.Newtonsoft.Json.dll",
+        "lib/netstandard2.1/JsonConverter.Newtonsoft.Json.dll"
       ]
     },
     "Microsoft.AspNetCore.Antiforgery/2.2.0": {
@@ -5650,6 +5777,44 @@
         "newtonsoft.json.bson.nuspec"
       ]
     },
+    "NRedisStack/0.8.0": {
+      "sha512": "ihL7s/nQ7ooj1bfTyhC6hOiwc+nl/ZeKcfHuTyvblUGGklY0XKbTFbWaP/KVFYxbUOWcf8I+RZrl9JvIeOonjA==",
+      "type": "package",
+      "path": "nredisstack/0.8.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net6.0/NRedisStack.dll",
+        "lib/net7.0/NRedisStack.dll",
+        "lib/netstandard2.0/NRedisStack.dll",
+        "nredisstack.0.8.0.nupkg.sha512",
+        "nredisstack.nuspec"
+      ]
+    },
+    "Pipelines.Sockets.Unofficial/2.2.2": {
+      "sha512": "Bhk0FWxH1paI+18zr1g5cTL+ebeuDcBCR+rRFO+fKEhretgjs7MF2Mc1P64FGLecWp4zKCUOPzngBNrqVyY7Zg==",
+      "type": "package",
+      "path": "pipelines.sockets.unofficial/2.2.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net461/Pipelines.Sockets.Unofficial.dll",
+        "lib/net461/Pipelines.Sockets.Unofficial.xml",
+        "lib/net472/Pipelines.Sockets.Unofficial.dll",
+        "lib/net472/Pipelines.Sockets.Unofficial.xml",
+        "lib/net5.0/Pipelines.Sockets.Unofficial.dll",
+        "lib/net5.0/Pipelines.Sockets.Unofficial.xml",
+        "lib/netcoreapp3.1/Pipelines.Sockets.Unofficial.dll",
+        "lib/netcoreapp3.1/Pipelines.Sockets.Unofficial.xml",
+        "lib/netstandard2.0/Pipelines.Sockets.Unofficial.dll",
+        "lib/netstandard2.0/Pipelines.Sockets.Unofficial.xml",
+        "lib/netstandard2.1/Pipelines.Sockets.Unofficial.dll",
+        "lib/netstandard2.1/Pipelines.Sockets.Unofficial.xml",
+        "pipelines.sockets.unofficial.2.2.2.nupkg.sha512",
+        "pipelines.sockets.unofficial.nuspec"
+      ]
+    },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "sha512": "HdSSp5MnJSsg08KMfZThpuLPJpPwE5hBXvHwoKWosyHHfe8Mh5WKT0ylEOf6yNzX6Ngjxe4Whkafh5q7Ymac4Q==",
       "type": "package",
@@ -5872,6 +6037,48 @@
         "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
         "runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.nuspec",
         "runtimes/ubuntu.16.10-x64/native/System.Security.Cryptography.Native.OpenSsl.so"
+      ]
+    },
+    "StackExchange.Redis/2.6.96": {
+      "sha512": "JDj94bTwBZ6zA1vknEYJppRXRejTnl5u2z6cRBQ0DJ+Uy94qvn0XsQZ2M+1/VkqtxQ+LUU1h4JZWwcvVojGiQg==",
+      "type": "package",
+      "path": "stackexchange.redis/2.6.96",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net461/StackExchange.Redis.dll",
+        "lib/net461/StackExchange.Redis.xml",
+        "lib/net472/StackExchange.Redis.dll",
+        "lib/net472/StackExchange.Redis.xml",
+        "lib/net5.0/StackExchange.Redis.dll",
+        "lib/net5.0/StackExchange.Redis.xml",
+        "lib/netcoreapp3.1/StackExchange.Redis.dll",
+        "lib/netcoreapp3.1/StackExchange.Redis.xml",
+        "lib/netstandard2.0/StackExchange.Redis.dll",
+        "lib/netstandard2.0/StackExchange.Redis.xml",
+        "stackexchange.redis.2.6.96.nupkg.sha512",
+        "stackexchange.redis.nuspec"
+      ]
+    },
+    "Stef.Validation/0.1.1": {
+      "sha512": "Qecz9CHwt32dAU7MYWINU6QCRZ1B0/anPxzyEJGos9osyMhjrv6C+OZIl3Wl3kLtllu9cGaptTD6nOhW1rMlZw==",
+      "type": "package",
+      "path": "stef.validation/0.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net20/Stef.Validation.dll",
+        "lib/net35/Stef.Validation.dll",
+        "lib/net40/Stef.Validation.dll",
+        "lib/net5.0/Stef.Validation.dll",
+        "lib/net6.0/Stef.Validation.dll",
+        "lib/netcoreapp3.1/Stef.Validation.dll",
+        "lib/netstandard1.0/Stef.Validation.dll",
+        "lib/netstandard1.3/Stef.Validation.dll",
+        "lib/netstandard2.0/Stef.Validation.dll",
+        "lib/netstandard2.1/Stef.Validation.dll",
+        "stef.validation.0.1.1.nupkg.sha512",
+        "stef.validation.nuspec"
       ]
     },
     "System.AppContext/4.3.0": {
@@ -7179,6 +7386,32 @@
         "ref/xamarinwatchos10/_._",
         "system.io.filesystem.primitives.4.3.0.nupkg.sha512",
         "system.io.filesystem.primitives.nuspec"
+      ]
+    },
+    "System.IO.Pipelines/5.0.1": {
+      "sha512": "qEePWsaq9LoEEIqhbGe6D5J8c9IqQOUuTzzV6wn1POlfdLkJliZY3OlB0j0f17uMWlqZYjH7txj+2YbyrIA8Yg==",
+      "type": "package",
+      "path": "system.io.pipelines/5.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.IO.Pipelines.dll",
+        "lib/net461/System.IO.Pipelines.xml",
+        "lib/netcoreapp3.0/System.IO.Pipelines.dll",
+        "lib/netcoreapp3.0/System.IO.Pipelines.xml",
+        "lib/netstandard1.3/System.IO.Pipelines.dll",
+        "lib/netstandard1.3/System.IO.Pipelines.xml",
+        "lib/netstandard2.0/System.IO.Pipelines.dll",
+        "lib/netstandard2.0/System.IO.Pipelines.xml",
+        "ref/netcoreapp2.0/System.IO.Pipelines.dll",
+        "ref/netcoreapp2.0/System.IO.Pipelines.xml",
+        "system.io.pipelines.5.0.1.nupkg.sha512",
+        "system.io.pipelines.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
       ]
     },
     "System.Linq/4.3.0": {
@@ -10138,6 +10371,7 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
+      "JsonConverter.Newtonsoft.Json >= 0.4.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 6.0.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 6.0.0",
       "Microsoft.AspNetCore.JsonPatch >= 7.0.9",
@@ -10203,6 +10437,10 @@
       "net6.0": {
         "targetAlias": "net6.0",
         "dependencies": {
+          "JsonConverter.Newtonsoft.Json": {
+            "target": "Package",
+            "version": "[0.4.0, )"
+          },
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
             "target": "Package",
             "version": "[6.0.0, )"

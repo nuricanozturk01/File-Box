@@ -94,3 +94,9 @@ C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Ser
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Presentation.pdb
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Service.pdb
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\BCrypt.Net-Next.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\NRedisStack.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\StackExchange.Redis.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\JsonConverter.Abstractions.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\JsonConverter.Newtonsoft.Json.dll
+C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\Stef.Validation.dll

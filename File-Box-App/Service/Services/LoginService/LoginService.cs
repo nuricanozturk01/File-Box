@@ -3,6 +3,7 @@ using RepositoryLib.DTO;
 using RepositoryLib.Models;
 using Service;
 using Service.Exceptions;
+using Service.Services.RedisService;
 using Service.Services.TokenService;
 
 
@@ -13,13 +14,14 @@ namespace FileBoxService.Service
         private readonly UserRepositoryDal m_userRepositoryDal;
         private readonly FolderRepositoryDal m_folderRepositoryDal;
         private readonly ITokenService m_tokenService;
+        private readonly IRedisService m_redisService;
 
-
-        public LoginService(UserRepositoryDal userRepositoryDal, FolderRepositoryDal folderRepositoryDal, ITokenService tokenService)
+        public LoginService(UserRepositoryDal userRepositoryDal, FolderRepositoryDal folderRepositoryDal, ITokenService tokenService, IRedisService redisService)
         {
             m_userRepositoryDal = userRepositoryDal;
             m_folderRepositoryDal = folderRepositoryDal;
             m_tokenService = tokenService;
+            m_redisService = redisService;
         }
 
 
@@ -34,9 +36,19 @@ namespace FileBoxService.Service
          * 
          * 
          */
-        public bool Logout(string username)
+        public async Task<bool> Logout(string username, string token)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await m_redisService.SetValueAsync(username, token);
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                throw new ServiceException(ex.Message);
+            }
+
         }
 
 
@@ -60,7 +72,6 @@ namespace FileBoxService.Service
                 Directory.CreateDirectory(dirName);
                 user.FileboxFolders.Add(new FileboxFolder(null, userId, username, username));
                 m_userRepositoryDal.Update(user);
-                //m_userRepositoryDal.SaveChanges();
             }
             else
             {
@@ -98,7 +109,7 @@ namespace FileBoxService.Service
             await CreateDirectoryIfNotExists(user.Username, user.UserId, user);
             user.LastToken = "Bearer " + token;
             await m_userRepositoryDal.SaveChangesAsync();
-
+            
             return (token, user.UserId.ToString());
         }
 

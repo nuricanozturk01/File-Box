@@ -58,7 +58,7 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        Task<IEnumerable<FileViewDto>> GetFilesByFolderIdAsync(long folderId, Guid userId);
+        Task<IEnumerable<FileViewDto>> GetFilesByFolderIdAsync(long folderId, Guid userId, string currentToken);
 
 
 

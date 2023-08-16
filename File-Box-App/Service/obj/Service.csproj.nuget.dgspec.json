@@ -59,6 +59,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[7.0.9, )"
+            },
+            "NRedisStack": {
+              "target": "Package",
+              "version": "[0.8.0, )"
             }
           },
           "imports": [
@@ -128,6 +132,10 @@
             "BCrypt.Net-Next": {
               "target": "Package",
               "version": "[4.0.3, )"
+            },
+            "JsonConverter.Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[0.4.0, )"
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",

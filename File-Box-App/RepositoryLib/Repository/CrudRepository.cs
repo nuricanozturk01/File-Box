@@ -192,8 +192,11 @@ namespace RepositoryLib.Repository
 
         public async Task UpdateAll(IEnumerable<T> folders)
         {
-            m_dbSet.UpdateRange(folders);
-            await SaveChangesAsync();
+            using (var context = new FileBoxDbContext())
+            {
+                context.Set<T>().UpdateRange(folders);
+                await SaveChangesAsync();
+            }
         }
 
 

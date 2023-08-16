@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RepositoryLib.DTO;
 using Service.Exceptions;
 using Service.Services.FileServicePath;
+using Service.Services.RedisService;
 
 namespace Presentation.Controllers
 {
@@ -12,10 +13,11 @@ namespace Presentation.Controllers
     public class FileController : ControllerBase
     {
         private readonly IFileService m_fileService;
-
-        public FileController(IFileService fileService)
+        private readonly IRedisService m_redisService;
+        public FileController(IFileService fileService, IRedisService redisService)
         {
             m_fileService = fileService;
+            m_redisService = redisService;
         }
 
 
@@ -34,6 +36,7 @@ namespace Presentation.Controllers
         {
             try
             {
+              
                 await m_fileService.CreateFile(fileSaveDto);
 
                 return Ok(new ResponseMessage(true, "file created successfully!", new FileResponseSuccessWithFileNameAndOwner(fileSaveDto.fileName, fileSaveDto.userId)));
@@ -117,7 +120,8 @@ namespace Presentation.Controllers
         {
             try
             {
-                var filesOnFolders = await m_fileService.GetFilesByFolderIdAsync(folderId, Guid.Parse(userId));
+                var currentToken = HttpContext.Request.Headers["Authorization"].ToString();                
+                var filesOnFolders = await m_fileService.GetFilesByFolderIdAsync(folderId, Guid.Parse(userId), currentToken);
                 return Ok(new ResponseMessage(true, $"Found {filesOnFolders.Count()} items.", new FileResponseFileList(filesOnFolders)));
             }
             catch (ServiceException ex)
