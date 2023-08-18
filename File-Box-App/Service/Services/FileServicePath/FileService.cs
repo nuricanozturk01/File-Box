@@ -13,18 +13,18 @@ namespace Service.Services.FileServicePath
         private readonly FolderRepositoryDal m_folderDal;
         private readonly FileRepositoryDal m_fileDal;
         private readonly IMapper m_mapper;
-        private readonly IRedisService m_redisService;
+        //private readonly IRedisService m_redisService;
         private readonly UserRepositoryDal m_userRepositoryDal;
         public FileService(FileRepositoryDal fileDal, 
                            FolderRepositoryDal folderDal, 
                            IMapper mapper, 
-                           IRedisService redisService, 
+          //                 IRedisService redisService, 
                            UserRepositoryDal userRepositoryDal)
         {
             m_fileDal = fileDal;
             m_folderDal = folderDal;
             m_mapper = mapper;
-            m_redisService = redisService;
+            //m_redisService = redisService;
             m_userRepositoryDal = userRepositoryDal;
         }
 
@@ -83,7 +83,7 @@ namespace Service.Services.FileServicePath
                 CheckFolderAndPermits(folder, guid);
                 File.Delete(Util.DIRECTORY_BASE + file.FilePath);
                 m_fileDal.DeleteById(fileId);
-                await m_fileDal.SaveChangesAsync();
+  
                 return file.FileName;
             }
             catch (ArgumentNullException ex)
@@ -194,10 +194,10 @@ namespace Service.Services.FileServicePath
             if (user is null)
                 throw new ServiceException("User Not Found!"); //Unexpected situation
             
-            var blackListToken = await m_redisService.GetValueAsync(user.Username);
-            File.WriteAllText("C:\\Users\\hp\\Desktop\\deneme.txt", blackListToken);
-            if (blackListToken is not null && blackListToken == currentToken)
-                throw new ServiceException("session expired!");
+            //var blackListToken = await m_redisService.GetValueAsync(user.Username);
+           // File.WriteAllText("C:\\Users\\hp\\Desktop\\deneme.txt", blackListToken);
+            /*if (blackListToken is not null && blackListToken == currentToken)
+                throw new ServiceException("session expired!");*/
         }
 
 

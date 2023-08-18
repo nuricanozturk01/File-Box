@@ -38,7 +38,7 @@ namespace Service.Services.UploadService
                 var totalBytes = formFiles.Select(ff => ff.Length).Sum();
 
                 if (totalBytes > Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE)
-                    throw new ServiceException("Maximum Uplodaed single file limit is " + Util.ByteToMB(Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE) + " MB");
+                    throw new ServiceException("Maximum Uploaded single file limit is " + Util.ByteToMB(Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE) + " MB");
 
                 var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
 
@@ -84,15 +84,17 @@ namespace Service.Services.UploadService
 
                             await context.FileboxFiles.AddAsync(savedFile);
                             await context.SaveChangesAsync();
-                            await transaction.CommitAsync();
+                            
 
                             fileList.Add(m_mapper.Map<FileViewDto>(savedFile));
                         }
                         catch (Exception ex)
                         {
                             await transaction.RollbackAsync();
-                        }
+                        }        
+                       
                     }
+                    await transaction.CommitAsync();
                 }
 
                 return fileList;

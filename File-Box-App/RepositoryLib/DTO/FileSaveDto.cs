@@ -23,5 +23,7 @@ namespace RepositoryLib.DTO
             this.folderId = folderId;
             this.userId = userId;
         }
+
+        public FileSaveDto() { }
     }
 }

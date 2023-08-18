@@ -13,11 +13,10 @@ namespace Presentation.Controllers
     public class FileController : ControllerBase
     {
         private readonly IFileService m_fileService;
-        private readonly IRedisService m_redisService;
-        public FileController(IFileService fileService, IRedisService redisService)
+       
+        public FileController(IFileService fileService)
         {
-            m_fileService = fileService;
-            m_redisService = redisService;
+            m_fileService = fileService;            
         }
 
 

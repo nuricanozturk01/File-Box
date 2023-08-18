@@ -9,16 +9,14 @@ namespace Service.Services.FolderService
     public class FolderService : IFolderService
     {
         private readonly FolderRepositoryDal m_folderDal;
-        private readonly FileRepositoryDal m_fileRepositoryDal;
-        private readonly FileBoxDbContext m_dbContext;
+        private readonly FileRepositoryDal m_fileRepositoryDal;        
         private readonly IMapper m_mapper;
 
-        public FolderService(FolderRepositoryDal folderDal, IMapper mapper, FileRepositoryDal fileRepositoryDal, FileBoxDbContext dbContext)
+        public FolderService(FolderRepositoryDal folderDal, IMapper mapper, FileRepositoryDal fileRepositoryDal)
         {
             m_folderDal = folderDal;
             m_mapper = mapper;
             m_fileRepositoryDal = fileRepositoryDal;
-            m_dbContext = dbContext;
         }
 
 
@@ -56,6 +54,10 @@ namespace Service.Services.FolderService
         {
             var userUID = Guid.Parse(folderSaveDto.userId); // user uuid
             var folder = await m_folderDal.FindByIdAsync(folderSaveDto.currentFolderId);
+
+            if (folder.UserId != userUID)
+                throw new ServiceException("Folder owner not this user!");
+
             var folderNameWithoutPath = folderSaveDto.newFolderName; // just folder name
 
 
@@ -420,7 +422,7 @@ namespace Service.Services.FolderService
          * 
          */
         public async Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid)
-        {
+        {            
             var folders = await m_folderDal.FindFoldersByUserId(guid); // IEnumerableFileboxFolder
             
             var folderWithFiles = new List<FoldersWithFilesDto>();

@@ -11,12 +11,7 @@ namespace Service.Services.ForgottenInformationService
         private readonly ITokenService m_tokenService;
         private readonly IEmailService m_emailService;
 
-        //private readonly string FORGOT_PASSWORD_LINK = "http://localhost:5299/api/change/reset-request?token={0}";
         private readonly string FORGOT_PASSWORD_LINK = "http://localhost:3000/reset-password-request?token={0}";
-
-
-
-
 
 
         public ForgottenInformationService(UserRepositoryDal userRepositoryDal, IEmailService emailService, ITokenService tokenService)
@@ -49,7 +44,6 @@ namespace Service.Services.ForgottenInformationService
             user.ResetPasswordToken = token;
 
             m_userRepositoryDal.Update(user);
-            //m_userRepositoryDal.SaveChanges();
 
             return (user.Email, user.Username, token);
         }
@@ -97,8 +91,7 @@ namespace Service.Services.ForgottenInformationService
 
             user.Password = Util.HashPassword(newPassword);
 
-            m_userRepositoryDal.Update(user);
-            //m_userRepositoryDal.SaveChanges();
+            m_userRepositoryDal.Update(user);            
 
             return (user.Email, user.Username);
         }
