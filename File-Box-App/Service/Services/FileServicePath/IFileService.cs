@@ -94,5 +94,15 @@ namespace Service.Services.FileServicePath
          * 
          */
         Task<IEnumerable<FileViewDto>> SortFilesByCreationDateAsync(long folderId, Guid userId);
+
+
+
+
+        /*
+         * 
+         * Find File with given parameter is file id and user id 
+         * 
+         */
+        Task<FileViewDto> FindFileByFileId(long fileId, Guid userId);
     }
 }

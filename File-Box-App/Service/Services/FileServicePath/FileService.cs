@@ -288,5 +288,23 @@ namespace Service.Services.FileServicePath
 
             return sortedFiles.Select(file => m_mapper.Map<FileViewDto>(file));
         }
+
+
+
+
+        /*
+         * 
+         * Find File with given parameter is file id and user id 
+         * 
+         */
+        public async Task<FileViewDto> FindFileByFileId(long fileId, Guid userId)
+        {
+            var file = await m_fileDal.FindById(fileId);
+            var folder = await m_folderDal.FindByIdAsync(file.FolderId);
+
+            CheckFolderAndPermits(folder, userId);
+
+            return m_mapper.Map<FileViewDto>(file);
+        }
     }
 }

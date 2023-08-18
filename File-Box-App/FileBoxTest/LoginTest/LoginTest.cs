@@ -13,6 +13,13 @@ namespace FileBoxTest.LoginTest
 {
     public class LoginTest
     {
+
+        private readonly IUserLoginService m_loginService;
+        private readonly LoginController m_loginController;
+
+
+
+
         private readonly UserLoginDTO m_successfullLoginDto = new UserLoginDTO
         {
             Username = "nuricanozturk",
@@ -33,8 +40,6 @@ namespace FileBoxTest.LoginTest
             Password = "12345"
         };
 
-        private readonly IUserLoginService m_loginService;
-        private readonly LoginController m_loginController;
 
 
 
