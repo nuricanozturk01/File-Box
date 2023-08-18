@@ -15,7 +15,11 @@ namespace Service.Services.FileServicePath
         private readonly IMapper m_mapper;
         private readonly IRedisService m_redisService;
         private readonly UserRepositoryDal m_userRepositoryDal;
-        public FileService(FileRepositoryDal fileDal, FolderRepositoryDal folderDal, IMapper mapper, IRedisService redisService, UserRepositoryDal userRepositoryDal)
+        public FileService(FileRepositoryDal fileDal, 
+                           FolderRepositoryDal folderDal, 
+                           IMapper mapper, 
+                           IRedisService redisService, 
+                           UserRepositoryDal userRepositoryDal)
         {
             m_fileDal = fileDal;
             m_folderDal = folderDal;

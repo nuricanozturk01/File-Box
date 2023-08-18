@@ -3,7 +3,6 @@ using RepositoryLib.DTO;
 using RepositoryLib.Models;
 using Service;
 using Service.Exceptions;
-using Service.Services.RedisService;
 using Service.Services.TokenService;
 
 
@@ -14,14 +13,16 @@ namespace FileBoxService.Service
         private readonly UserRepositoryDal m_userRepositoryDal;
         private readonly FolderRepositoryDal m_folderRepositoryDal;
         private readonly ITokenService m_tokenService;
-        private readonly IRedisService m_redisService;
 
-        public LoginService(UserRepositoryDal userRepositoryDal, FolderRepositoryDal folderRepositoryDal, ITokenService tokenService, IRedisService redisService)
+
+        public LoginService(UserRepositoryDal userRepositoryDal, 
+                            FolderRepositoryDal folderRepositoryDal, 
+                            ITokenService tokenService)
         {
             m_userRepositoryDal = userRepositoryDal;
             m_folderRepositoryDal = folderRepositoryDal;
             m_tokenService = tokenService;
-            m_redisService = redisService;
+
         }
 
 
@@ -40,7 +41,7 @@ namespace FileBoxService.Service
         {
             try
             {
-                await m_redisService.SetValueAsync(username, token);
+              //  await m_redisService.SetValueAsync(username, token);
                 return true;
             }
 

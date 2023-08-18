@@ -1,3 +1,4 @@
+using ElmahCore.Mvc;
 using File_Box_App.Configuration;
 using FileBoxService.Service;
 using RepositoryLib.Models;
@@ -23,10 +24,8 @@ builder.Services.AddScoped<IUserLoginService, LoginService>();
 
 // Repositories and Helper Classes
 builder.Services.ConfigureRepositoriesAndHelpers(builder.Configuration);
-
 // Services
 builder.Services.ConfigureServices();
-
 // Mapper
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -42,13 +41,10 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 //JWT
 builder.Services.ConfigureJwt(builder.Configuration);
-
 // Max Request Configuration extension methods
 builder.Services.ConfigureMaxRequest();
-
 // Configure the file byte limits
 builder.Services.ConfigureFormOptionMaxValues();
-
 // Endpoint configures
 builder.Services.AddControllers().AddApplicationPart(typeof(Presentation.Controllers.AssemblyReference).Assembly);
 builder.Services.AddEndpointsApiExplorer();
@@ -62,13 +58,12 @@ builder.Services.AddEndpointsApiExplorer();
  * 
  * 
  */
-
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseElmah();
 app.MapControllers();
 app.ConfigurationCorsOptions();
-
 app.Run();

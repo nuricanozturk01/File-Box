@@ -131,7 +131,6 @@ namespace Service.Services.FolderService
                 context.FileboxFolders.RemoveRange(deletedFolderWithSubFolders);
                 await context.SaveChangesAsync();
                 transaction.Commit();
-
             }
             Directory.Delete(Path.Combine(Util.DIRECTORY_BASE, dir.FolderPath), true);         
 
@@ -192,10 +191,10 @@ namespace Service.Services.FolderService
 
                 // Rename folder
                 var oldFullPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
-                var newFullPath = Path.Combine(Util.DIRECTORY_BASE, newFolderPathStartsWithRoot);
+                var newFullPath = Path.Combine(Util.DIRECTORY_BASE, newFolderPathStartsWithRoot);               
 
                 await MoveFilesToTarget(folder, oldFullPath, newFullPath);
-                
+
                 // Remove old directory after copy operation
                 Directory.Delete(oldFullPath, true);
 
@@ -231,6 +230,7 @@ namespace Service.Services.FolderService
 
                         await context.SaveChangesAsync();
                         await transaction.CommitAsync();
+                        
                     }
                     catch (Exception ex)
                     {
@@ -238,7 +238,7 @@ namespace Service.Services.FolderService
                     }
 
                 }
-                   
+                
                 return m_mapper.Map<FolderViewDto>(folder);
             }
             catch (DirectoryNotFoundException ex)

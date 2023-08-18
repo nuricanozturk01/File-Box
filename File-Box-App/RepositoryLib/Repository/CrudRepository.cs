@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using RepositoryLib.Models;
 using System;
 using System.Linq.Expressions;
@@ -20,7 +19,10 @@ namespace RepositoryLib.Repository
 
         public async Task<IEnumerable<T>> FindAllAsync()
         {
-            return await m_dbSet.ToListAsync();
+            using(var context = new FileBoxDbContext())
+            {
+                return await m_dbSet.ToListAsync();
+            }
         }
 
 
@@ -107,7 +109,10 @@ namespace RepositoryLib.Repository
 
         public async Task SaveChangesAsync()
         {
-            await m_dbContext.SaveChangesAsync();
+            using (var context = new FileBoxDbContext())
+            {
+                await m_dbContext.SaveChangesAsync();
+            }
         }
 
 
@@ -116,7 +121,11 @@ namespace RepositoryLib.Repository
 
         public void SaveChanges()
         {
-            m_dbContext.SaveChanges();
+            using (var context = new FileBoxDbContext())
+            {
+                m_dbContext.SaveChanges();
+            }
+            
         }
 
 

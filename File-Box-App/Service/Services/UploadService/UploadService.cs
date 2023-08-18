@@ -39,31 +39,60 @@ namespace Service.Services.UploadService
 
                 if (totalBytes > Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE)
                     throw new ServiceException("Maximum Uplodaed single file limit is " + Util.ByteToMB(Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE) + " MB");
-                
+
                 var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
 
                 CheckFolderAndPermits(folder, uid);
+                
+                var currentFilesOnFolder = await m_fileRepositoryDal.FindFilesByFolderId(folderId);
 
-                foreach (var ff in formFiles)
+                var newFormFiles = formFiles.ToList();
+                var context = new FileBoxDbContext();
+
+                using (var transaction = context.Database.BeginTransaction())
                 {
-                    var sourcePath = ff.OpenReadStream();
-
-                    string targetPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, ff.FileName);
-
-                    using (var destinationStream = new FileStream(targetPath, FileMode.Create))
+                    foreach (var ff in newFormFiles)
                     {
-                        await sourcePath.CopyToAsync(destinationStream);
+                        try
+                        {
+                            
+                            var sourcePath = ff.OpenReadStream();
+
+                            var SameFileListByName = currentFilesOnFolder.Where(f => f.FileName.Contains(Path.GetFileNameWithoutExtension(ff.FileName))).ToList();
+                            string newFileName = Path.GetFileNameWithoutExtension(ff.FileName);
+
+                            if (SameFileListByName.Count != 0) // If exists same file
+                            {
+                                var count = SameFileListByName.Count;
+
+                                newFileName += $"({count})";
+                            }
+                            newFileName += Path.GetExtension(ff.FileName);
+
+                            string targetPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, newFileName);
+
+                            using (var destinationStream = new FileStream(targetPath, FileMode.Create))
+                            {
+                                await sourcePath.CopyToAsync(destinationStream);
+                            }
+
+                            var fileInfo = new FileInfo(targetPath);
+
+                            
+                            
+                            var savedFile = new FileboxFile(folderId, newFileName, Path.Combine(folder.FolderPath, newFileName), fileInfo.Extension, fileInfo.Length);
+
+                            await context.FileboxFiles.AddAsync(savedFile);
+                            await context.SaveChangesAsync();
+                            await transaction.CommitAsync();
+
+                            fileList.Add(m_mapper.Map<FileViewDto>(savedFile));
+                        }
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync();
+                        }
                     }
-
-                    var fileInfo = new FileInfo(targetPath);
-
-
-                    var savedFile = new FileboxFile(folderId, ff.FileName, Path.Combine(folder.FolderPath, ff.FileName),fileInfo.Extension, fileInfo.Length);
-
-                    await m_fileRepositoryDal.SaveAsync(savedFile);
-                    await m_fileRepositoryDal.SaveChangesAsync();
-
-                    fileList.Add(m_mapper.Map<FileViewDto>(savedFile));
                 }
 
                 return fileList;
@@ -259,7 +288,7 @@ namespace Service.Services.UploadService
                 CheckFolderAndPermits(folder, uid);
 
                 var sourcePath = formFile.OpenReadStream();
-                
+
                 string targetPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, formFile.FileName);
 
                 using (var destinationStream = new FileStream(targetPath, FileMode.Create))
@@ -269,9 +298,9 @@ namespace Service.Services.UploadService
 
                 var fileInfo = new FileInfo(targetPath);
 
-               await m_fileRepositoryDal.Save(new FileboxFile(folderId, formFile.FileName,
-                                                         Path.Combine(folder.FolderPath, formFile.FileName),
-                                                         fileInfo.Extension, fileInfo.Length));
+                await m_fileRepositoryDal.Save(new FileboxFile(folderId, formFile.FileName,
+                                                          Path.Combine(folder.FolderPath, formFile.FileName),
+                                                          fileInfo.Extension, fileInfo.Length));
                 await m_fileRepositoryDal.SaveChangesAsync();
                 return (Path.Combine(folder.FolderPath, formFile.FileName), Util.ByteToMB(formFile.Length));
             }

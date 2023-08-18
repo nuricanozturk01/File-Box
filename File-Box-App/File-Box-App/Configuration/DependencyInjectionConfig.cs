@@ -1,5 +1,8 @@
-﻿using FileBoxService.Service;
+﻿using ElmahCore.Mvc;
+using FileBoxService.Service;
+using FileBoxTest.LoginTest;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using RepositoryLib.Dal;
 using RepositoryLib.Repository;
 using Service.Services.DownloadService;
@@ -29,6 +32,7 @@ namespace File_Box_App.Configuration
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddSingleton<IRedisService, RedisService>();
+            services.AddSingleton<LoginTest>();
         }
 
 
@@ -42,7 +46,8 @@ namespace File_Box_App.Configuration
             services.AddScoped<UserRepositoryDal>();
             services.AddScoped<FolderRepositoryDal>();
             services.AddScoped<FileRepositoryDal>();
-
+            services.AddElmah();
+            services.AddHttpContextAccessor();
 
             // Repositories
             services.AddScoped(typeof(IGenericRepository<,>), typeof(CrudRepository<,>));
