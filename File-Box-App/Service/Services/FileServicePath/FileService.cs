@@ -302,5 +302,95 @@ namespace Service.Services.FileServicePath
 
             return m_mapper.Map<FileViewDto>(file);
         }
+
+
+
+
+
+        public async Task<FileViewDto> CopyFileToAnotherFolder(long fileId, long targetFolderId, Guid userId)
+        {
+            var file = await m_fileDal.FindByIdAsync(fileId);
+            var currentFolder = await m_folderDal.FindByIdAsync(file.FolderId);
+            var targetFolder = await m_folderDal.FindByIdAsync(targetFolderId);
+
+            CheckFolderAndPermits(currentFolder, userId);
+            CheckFolderAndPermits(targetFolder, userId);
+
+            var copiedFile = new FileboxFile(targetFolderId, file.FileName, Path.Combine(targetFolder.FolderPath, file.FileName),file.FileType, file.FileSize);
+
+            using(var context = new FileBoxDbContext())
+            using (var transaction = await context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Add to database
+                    context.FileboxFiles.Add(copiedFile);
+                    
+                    var sourcePath = new FileInfo(Path.Combine(Util.DIRECTORY_BASE, file.FilePath));
+                    
+                    using (var sourceStream = sourcePath.OpenRead())
+                    using (var destinationStream = new FileStream(Path.Combine(Util.DIRECTORY_BASE, targetFolder.FolderPath, copiedFile.FileName), FileMode.Create))
+                    {
+                        await sourceStream.CopyToAsync(destinationStream);
+                    }
+
+                    await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch 
+                { 
+                    await transaction.RollbackAsync();
+                    throw;
+                } 
+            }
+
+            return m_mapper.Map<FileViewDto>(copiedFile);
+        }
+
+
+
+
+
+        public async Task<FileViewDto> MoveFileToAnotherFolder(long fileId, long targetFolderId, Guid userId)
+        {
+           
+
+            using (var context = new FileBoxDbContext())
+            using (var transaction = await context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var file = await context.Set<FileboxFile>().Where(f => f.FileId == fileId).SingleAsync();
+                    var currentFolder = await context.Set<FileboxFolder>().Where(f => f.FolderId == file.FolderId).SingleAsync();
+                    var targetFolder = await context.Set<FileboxFolder>().Where(f => f.FolderId == targetFolderId).SingleAsync();
+
+                    CheckFolderAndPermits(currentFolder, userId);
+                    CheckFolderAndPermits(targetFolder, userId);
+
+                    var copiedFile = new FileboxFile(targetFolderId, file.FileName, Path.Combine(targetFolder.FolderPath, file.FileName), file.FileType, file.FileSize);
+
+                    // Add to database
+                    context.FileboxFiles.Add(copiedFile);
+                    var sourcePath = Path.Combine(Util.DIRECTORY_BASE, file.FilePath);
+                    var targetPath = Path.Combine(Util.DIRECTORY_BASE, targetFolder.FolderPath, copiedFile.FileName);
+                    
+                    var task = new Task(() => File.Move(sourcePath, targetPath));
+                    task.Start();
+                    await Task.WhenAll(task);
+
+                    context.FileboxFiles.Remove(file);
+                    await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return m_mapper.Map<FileViewDto>(copiedFile);
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+
+            
+        }
     }
 }

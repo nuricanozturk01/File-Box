@@ -45,5 +45,10 @@ namespace Service.Services.UploadService
          * 
          */
         Task<List<FolderUploadDto>> UploadMultipleFolder(List<FolderUploadDto> sourcePaths, long folderId, Guid uid);
+
+
+
+
+
     }
 }

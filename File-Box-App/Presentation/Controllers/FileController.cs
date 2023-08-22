@@ -205,5 +205,65 @@ namespace Presentation.Controllers
                 return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
             }
         }
+
+
+
+
+
+        /*
+         * 
+         * Copy file to another path
+         * 
+         * 
+         */
+        [HttpPost("copy")]
+        public async Task<IActionResult> CopyFileToAnotherFolder(
+                                                                   [FromQuery(Name = "file_id")] long fileId,
+                                                                   [FromQuery(Name = "folder_id")] long folderId,
+                                                                   [FromQuery(Name = "uid")] string userId)
+        {
+            try
+            {
+                var filesOnFolders = await m_fileService.CopyFileToAnotherFolder(fileId, folderId, Guid.Parse(userId));
+                return Ok(new ResponseMessage(true, "File copied to another folder successfully!", new
+                {
+                    new_file = filesOnFolders
+                }));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+        /*
+         * 
+         * Copy file to another path
+         * 
+         * 
+         */
+        [HttpPost("move")]
+        public async Task<IActionResult> MoveFileToAnotherFolder(
+                                                                   [FromQuery(Name = "file_id")] long fileId,
+                                                                   [FromQuery(Name = "folder_id")] long folderId,
+                                                                   [FromQuery(Name = "uid")] string userId)
+        {
+            try
+            {
+                var filesOnFolders = await m_fileService.MoveFileToAnotherFolder(fileId, folderId, Guid.Parse(userId));
+                return Ok(new ResponseMessage(true, "File moved to another folder successfully!", new
+                {
+                    new_file = filesOnFolders
+                }));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
     }
 }

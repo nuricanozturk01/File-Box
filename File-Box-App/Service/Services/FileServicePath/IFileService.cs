@@ -104,5 +104,26 @@ namespace Service.Services.FileServicePath
          * 
          */
         Task<FileViewDto> FindFileByFileId(long fileId, Guid userId);
+
+
+
+
+
+        /*
+         * 
+         * Copy file to another folder. 
+         * 
+         */
+        Task<FileViewDto> CopyFileToAnotherFolder(long fileId, long targetFolderId, Guid userId);
+
+
+
+
+        /*
+         * 
+         * Move file to another folder. 
+         * 
+         */
+        Task<FileViewDto> MoveFileToAnotherFolder(long fileId, long targetFolderId, Guid userId);
     }
 }
