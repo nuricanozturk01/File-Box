@@ -4,6 +4,8 @@ using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
 using Service.Exceptions;
+using System.Globalization;
+using System.Text;
 
 namespace Service.Services.UploadService
 {
@@ -22,7 +24,7 @@ namespace Service.Services.UploadService
 
 
 
-
+       
 
         /*
          * 
@@ -32,6 +34,7 @@ namespace Service.Services.UploadService
          */
         public async Task<List<FileViewDto>> UploadMultipleFiles(List<IFormFile> formFiles, long folderId, Guid uid)
         {
+           
             try
             {
                 var fileList = new List<FileViewDto>();
@@ -47,15 +50,15 @@ namespace Service.Services.UploadService
                 var currentFilesOnFolder = await m_fileRepositoryDal.FindFilesByFolderId(folderId);
 
                 var newFormFiles = formFiles.ToList();
-                var context = new FileBoxDbContext();
-
-                using (var transaction = context.Database.BeginTransaction())
+                
+                using (var context = new FileBoxDbContext())
+                using (var transaction = await context.Database.BeginTransactionAsync())
                 {
                     foreach (var ff in newFormFiles)
                     {
                         try
                         {
-                            
+
                             var sourcePath = ff.OpenReadStream();
 
                             var SameFileListByName = currentFilesOnFolder.Where(f => f.FileName.Contains(Path.GetFileNameWithoutExtension(ff.FileName))).ToList();
@@ -69,6 +72,8 @@ namespace Service.Services.UploadService
                             }
                             newFileName += Path.GetExtension(ff.FileName);
 
+                            newFileName = Util.ConvertToEnglishCharacters(newFileName);
+
                             string targetPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, newFileName);
 
                             using (var destinationStream = new FileStream(targetPath, FileMode.Create))
@@ -78,21 +83,21 @@ namespace Service.Services.UploadService
 
                             var fileInfo = new FileInfo(targetPath);
 
-                            
-                            
+
+
                             var savedFile = new FileboxFile(folderId, newFileName, Path.Combine(folder.FolderPath, newFileName), fileInfo.Extension, fileInfo.Length);
 
                             await context.FileboxFiles.AddAsync(savedFile);
                             await context.SaveChangesAsync();
-                            
+
 
                             fileList.Add(m_mapper.Map<FileViewDto>(savedFile));
                         }
                         catch (Exception ex)
                         {
                             await transaction.RollbackAsync();
-                        }        
-                       
+                        }
+
                     }
                     await transaction.CommitAsync();
                 }
@@ -100,7 +105,7 @@ namespace Service.Services.UploadService
                 return fileList;
             }
             catch (ServiceException ex)
-            {
+            {   
                 throw new ServiceException(ex.GetMessage);
             }
             catch (Exception ex)

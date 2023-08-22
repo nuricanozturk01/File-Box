@@ -15,11 +15,11 @@ namespace FileBoxTest.FolderTest
         private readonly IFolderService m_folderService;
         private readonly FolderController m_folderController;
 
-
+        
         private FolderSaveDTO m_successCreateFolderDto = new FolderSaveDTO
         {
-            userId = "D285C5B8-B149-4F1A-8650-74993089E430",
-            currentFolderId = 10, // parent folder user of nuricanozturk
+            userId = Util.USER_ID,
+            currentFolderId = 23, // parent folder user of ahmetkoc
             newFolderName = Guid.NewGuid().ToString()
         };
 
@@ -28,7 +28,7 @@ namespace FileBoxTest.FolderTest
         private FolderSaveDTO m_failCreateFolderDtoInvalidUserId = new FolderSaveDTO
         {
             userId = Guid.NewGuid().ToString(),
-            currentFolderId = 10, // parent folder user of nuricanozturk
+            currentFolderId = 23, // parent folder user of nuricanozturk
             newFolderName = Guid.NewGuid().ToString()
         };
 
@@ -36,8 +36,8 @@ namespace FileBoxTest.FolderTest
         // other user's folder
         private FolderSaveDTO m_failCreateFolderDtoInvalidFolderId = new FolderSaveDTO
         {
-            userId = "D285C5B8-B149-4F1A-8650-74993089E430", //user id is nuricanozturk
-            currentFolderId = 1, // parent folder user of ahmet
+            userId = Util.USER_ID, //user id is ahmet
+            currentFolderId = 1, // parent folder user of nuricanozturk
             newFolderName = Guid.NewGuid().ToString()
         };
 

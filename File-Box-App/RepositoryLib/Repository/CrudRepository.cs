@@ -48,7 +48,6 @@ namespace RepositoryLib.Repository
             {
                 return await context.Set<T>().FirstOrDefaultAsync(predicate);
             }
-
         }
 
 
@@ -179,7 +178,7 @@ namespace RepositoryLib.Repository
         public async Task Delete(T obj)
         {
             m_dbSet.Remove(obj);
-            await SaveChangesAsync();
+            //await SaveChangesAsync();
         }
 
 

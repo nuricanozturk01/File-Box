@@ -75,15 +75,16 @@ CREATE TABLE filebox_file
     FOREIGN KEY (folder_id) REFERENCES filebox_folder(folder_id) ON DELETE CASCADE on update cascade
 );
 
-
-
 exec filebox_insert_user  'Nuri Can', 'OZTURK', 'nuricanozturk', 'canozturk309@gmail.com', '12345'
 exec filebox_insert_user  'Ahmet', 'KOÇ', 'ahmetkoc', 'nuricanozturk01@gmail.com', '12345'
+exec filebox_insert_user  'Halil Can', 'OZTURK', 'halilcanozturk', 'nuricanozturk02@gmail.com', '12345'
+exec filebox_insert_user  'Burak', 'Karaduman', 'burak', 'lkjj93670@gmail.com', '12345'
 select * from filebox_file;
 select * from filebox_folder;
 select * from filebox_user;
 
-
+update filebox_folder set folder_path = 'halilcanozturk\Books PDF' where folder_path = 'halilcanozturk\Books PDF PDF';
+delete from filebox_file where file_id = 18;
 -- ----------------------------------------------------- STORED PROCEDURES-----------------------------------------------------
 
 SET ANSI_NULLS ON

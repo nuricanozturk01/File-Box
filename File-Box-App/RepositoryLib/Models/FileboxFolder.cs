@@ -34,4 +34,13 @@ public partial class FileboxFolder
         CreationDate = DateTime.Now;
         UpdatedDate = DateTime.Now;
     }
+
+    public FileboxFolder(Guid userId, string folderName, string folderPath)
+    {
+        UserId = userId;
+        FolderName = folderName;
+        FolderPath = folderPath;
+        CreationDate = DateTime.Now;
+        UpdatedDate = DateTime.Now;
+    }
 }

@@ -483,3 +483,4 @@ C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\zh-
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\FileBoxTest.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\FileBoxTest.pdb
 C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\obj\Debug\net6.0\MvcTestingAppManifest.json
+C:\Users\hp\source\repos\File-Box\File-Box-App\File-Box-App\bin\Debug\net6.0\appsettings_test.json

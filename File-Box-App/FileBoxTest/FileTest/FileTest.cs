@@ -19,24 +19,24 @@ namespace FileBoxTest.FileTest
         {
             fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".can",
             fileType = ".can",
-            userId = "D285C5B8-B149-4F1A-8650-74993089E430",
-            folderId = 10
+            userId = Util.USER_ID,
+            folderId = 23
         };
 
         private readonly FileSaveDto m_invalidUserIdFileSaveDto = new FileSaveDto
         {
             fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".can",
             fileType = ".can",
-            userId = "B52F1147-ABEA-44B5-A3D7-D2DD38EF0894", //ahmetkoc
-            folderId = 10
+            userId = "A884A7C2-B171-4C01-83CE-7C1CE25FD537", 
+            folderId = 23
         };
 
         private readonly FileSaveDto m_invalidFolderIdFileSaveDto = new FileSaveDto
         {
             fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".can",
             fileType = ".can",
-            userId = "D285C5B8-B149-4F1A-8650-74993089E430", //nuricanozturk
-            folderId = 1
+            userId = Util.USER_ID, //nuricanozturk
+            folderId = 23
         };
         public FileTest()
         {

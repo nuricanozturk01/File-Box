@@ -18,11 +18,11 @@ namespace FileBoxTest.LoginTest
         private readonly LoginController m_loginController;
 
 
-
+        private const string TEST_USER_ID = Util.USER_ID;
 
         private readonly UserLoginDTO m_successfullLoginDto = new UserLoginDTO
         {
-            Username = "nuricanozturk",
+            Username = "ahmetkoc",
             Password = "123"
         };
 
@@ -36,7 +36,7 @@ namespace FileBoxTest.LoginTest
 
         private readonly UserLoginDTO m_unsuccessfullLoginDtoInvalidPassword = new UserLoginDTO
         {
-            Username = "nuricanozturk",
+            Username = "ahmetkoc",
             Password = "12345"
         };
 
@@ -45,7 +45,7 @@ namespace FileBoxTest.LoginTest
 
         public LoginTest()
         {
-            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings_test.json").Build();
 
             var context = new FileBoxDbContext();
             var userRepoDal = new UserRepositoryDal(new CrudRepository<FileboxUser, Guid>(context));
@@ -70,7 +70,7 @@ namespace FileBoxTest.LoginTest
         {            
             var result = await m_loginService.Login(m_successfullLoginDto);
 
-            Assert.Equal("d285c5b8-b149-4f1a-8650-74993089e430", result.uid);
+            Assert.Equal(TEST_USER_ID.ToLower(), result.uid.ToLower());
             
             Assert.NotNull(result.token);
         }

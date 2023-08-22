@@ -1,4 +1,5 @@
-﻿using RepositoryLib.Models;
+﻿using RepositoryLib.DTO;
+using RepositoryLib.Models;
 using RepositoryLib.Repository;
 using System.Linq.Expressions;
 
@@ -156,6 +157,11 @@ namespace RepositoryLib.Dal
         public async Task UpdateAll(IEnumerable<FileboxFile> files)
         {
             await m_fileRepository.UpdateAll(files);
+        }
+
+        public async Task<IEnumerable<FileboxFile>> FindFilesByFolderPath(string oldFolderPathStartsWithRoot)
+        {
+            return await m_fileRepository.FindByFilterAsync(f => f.FilePath == oldFolderPathStartsWithRoot);
         }
     }
 }

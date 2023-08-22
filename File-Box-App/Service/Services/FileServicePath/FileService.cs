@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
@@ -128,36 +129,46 @@ namespace Service.Services.FileServicePath
         public async Task<FileViewDto> RenameFile(long fileId, string newFileName, Guid userId)
         {
 
-            try
+            using (var context = new FileBoxDbContext())
+            using(var transaction = await context.Database.BeginTransactionAsync())
             {
-                var fileObj = await m_fileDal.FindById(fileId);
+                try
+                {
+                    newFileName = Util.ConvertToEnglishCharacters(newFileName);
+                    var fileObj = context.Set<FileboxFile>().Where(f =>  f.FileId == fileId).SingleOrDefault();
 
-                if (fileObj is null)
-                    throw new ServiceException("File not found!");
+                    if (fileObj is null)
+                        throw new ServiceException("File not found!");
+                    
+                    var folder = context.Set<FileboxFolder>().Where(f => f.FolderId == fileObj.FolderId).SingleOrDefault();
 
-                var folder = await m_folderDal.FindByIdAsync(fileObj.FolderId);
+                    CheckFolderAndPermits(folder, userId);
 
-                CheckFolderAndPermits(folder, userId);
+                    var oldFileName = fileObj.FileName;
 
-                var oldFileName = fileObj.FileName;
+                    var pathWithoutFolderName = Path.GetDirectoryName(fileObj.FilePath);
+                    var newFilePath = Path.Combine(pathWithoutFolderName, newFileName);
 
-                var pathWithoutFolderName = Path.GetDirectoryName(fileObj.FilePath);
-                var newFilePath = Path.Combine(pathWithoutFolderName, newFileName);
+                    File.Move(Util.DIRECTORY_BASE + fileObj.FilePath, Util.DIRECTORY_BASE + newFilePath);
 
-                File.Move(Util.DIRECTORY_BASE + fileObj.FilePath, Util.DIRECTORY_BASE + newFilePath);
+                    fileObj.FileName = newFileName;
+                    fileObj.FilePath = newFilePath;
+                    fileObj.UpdatedDate = DateTime.Now;
 
-                fileObj.FileName = newFileName;
-                fileObj.FilePath = newFilePath;
-                fileObj.UpdatedDate = DateTime.Now;
-
-                m_fileDal.Update(fileObj);
-                //await m_fileDal.SaveChangesAsync();
-                return m_mapper.Map<FileViewDto>(fileObj);
+                    context.FileboxFiles.Attach(fileObj);
+                    context.Entry(fileObj).State = EntityState.Modified;
+                    
+                    await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    
+                    return m_mapper.Map<FileViewDto>(fileObj);
+                }
+                catch (FileNotFoundException ex)
+                {
+                    throw new ServiceException("File not found on directory!");
+                }
             }
-            catch (FileNotFoundException ex) 
-            {
-                throw new ServiceException("File not found on directory!");
-            }
+           
         }
 
 

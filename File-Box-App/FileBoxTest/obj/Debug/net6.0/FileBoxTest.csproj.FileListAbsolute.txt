@@ -452,4 +452,4 @@ C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\obj\Debug\net6.0\File
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\obj\Debug\net6.0\FileBoxTest.genruntimeconfig.cache
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\obj\Debug\net6.0\ref\FileBoxTest.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\appsettings.Development.json
-C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\appsettings.json
+C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\appsettings_test.json

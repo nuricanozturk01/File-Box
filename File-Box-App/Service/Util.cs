@@ -1,4 +1,7 @@
-﻿namespace Service
+﻿using System.Globalization;
+using System.Text;
+
+namespace Service
 {
     public class Util
     {
@@ -18,6 +21,23 @@
         public static bool VerifyPassword(string enteredPassword, string hashedPassword)
         {
             return BCrypt.Net.BCrypt.Verify(enteredPassword, hashedPassword);
+        }
+
+        public static string ConvertToEnglishCharacters(string input)
+        {
+            var normalizedString = input.Normalize(NormalizationForm.FormKD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

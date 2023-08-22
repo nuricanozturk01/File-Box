@@ -14,8 +14,8 @@ namespace FileBoxTest.UploadTest
         private IUploadService m_uploadService;
         private IFileService m_fileService;
 
-        private const long TESTED_FOLDER_ID = 10L; // owner is nuricanozturk
-        private readonly Guid TESTED_USER_ID = Guid.Parse("D285C5B8-B149-4F1A-8650-74993089E430");
+        private const long TESTED_FOLDER_ID = 23L; // owner is ahmetkoc
+        private readonly Guid TESTED_USER_ID = Guid.Parse(Util.USER_ID);
 
         public UploadTest()
         {
