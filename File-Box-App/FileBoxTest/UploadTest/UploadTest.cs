@@ -111,8 +111,6 @@ namespace FileBoxTest.UploadTest
         [Fact]
         public async void UploadMultipleFile_WithGivenFormFilesFolderIdAndUserId_ShouldReturnEqual()
         {
-
-
             var uploadedFileList = await m_uploadService.UploadMultipleFiles(CreateFileListMultiple(),TESTED_FOLDER_ID,TESTED_USER_ID);
 
             Assert.NotNull(uploadedFileList);

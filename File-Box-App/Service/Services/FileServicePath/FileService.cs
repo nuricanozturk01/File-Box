@@ -13,19 +13,16 @@ namespace Service.Services.FileServicePath
     {
         private readonly FolderRepositoryDal m_folderDal;
         private readonly FileRepositoryDal m_fileDal;
-        private readonly IMapper m_mapper;
-        //private readonly IRedisService m_redisService;
+        private readonly IMapper m_mapper;        
         private readonly UserRepositoryDal m_userRepositoryDal;
         public FileService(FileRepositoryDal fileDal, 
                            FolderRepositoryDal folderDal, 
-                           IMapper mapper, 
-          //                 IRedisService redisService, 
+                           IMapper mapper,           
                            UserRepositoryDal userRepositoryDal)
         {
             m_fileDal = fileDal;
             m_folderDal = folderDal;
             m_mapper = mapper;
-            //m_redisService = redisService;
             m_userRepositoryDal = userRepositoryDal;
         }
 
@@ -199,17 +196,7 @@ namespace Service.Services.FileServicePath
             return filteredFiles.Select(file => m_mapper.Map<FileViewDto>(file));
         }
 
-        private async void CheckIsTokenInBlacklist(Guid userId, string currentToken)
-        {
-            var user = await m_userRepositoryDal.FindByIdAsyncUser(userId);
-            if (user is null)
-                throw new ServiceException("User Not Found!"); //Unexpected situation
-            
-            //var blackListToken = await m_redisService.GetValueAsync(user.Username);
-           // File.WriteAllText("C:\\Users\\hp\\Desktop\\deneme.txt", blackListToken);
-            /*if (blackListToken is not null && blackListToken == currentToken)
-                throw new ServiceException("session expired!");*/
-        }
+      
 
 
 
@@ -246,12 +233,11 @@ namespace Service.Services.FileServicePath
          */
         public async Task<IEnumerable<FileViewDto>> GetFilesByFileExtensionAndFolderIdAsync(long folderId, string? fileExtension, Guid userId)
         {
-            var folder = await m_folderDal.FindByIdAsync(folderId);
+            var folder = await m_folderDal.FindByIdAsync(folderId); // error on folder id
 
             CheckFolderAndPermits(folder, userId);
 
-            var filteredFiles = await m_fileDal.
-                FindByFilterAsync(file => file.FolderId == folderId && file.FileType.ToLower() == fileExtension.ToLower());
+            var filteredFiles = await m_fileDal.FindByFilterAsync(file => file.FolderId == folderId && file.FileType.ToLower() == fileExtension.ToLower());
 
             return filteredFiles.Select(file => m_mapper.Map<FileViewDto>(file));
         }

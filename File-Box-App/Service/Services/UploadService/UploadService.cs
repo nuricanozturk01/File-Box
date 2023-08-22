@@ -58,7 +58,6 @@ namespace Service.Services.UploadService
                     {
                         try
                         {
-
                             var sourcePath = ff.OpenReadStream();
 
                             var SameFileListByName = currentFilesOnFolder.Where(f => f.FileName.Contains(Path.GetFileNameWithoutExtension(ff.FileName))).ToList();
@@ -84,12 +83,10 @@ namespace Service.Services.UploadService
                             var fileInfo = new FileInfo(targetPath);
 
 
-
                             var savedFile = new FileboxFile(folderId, newFileName, Path.Combine(folder.FolderPath, newFileName), fileInfo.Extension, fileInfo.Length);
 
                             await context.FileboxFiles.AddAsync(savedFile);
                             await context.SaveChangesAsync();
-
 
                             fileList.Add(m_mapper.Map<FileViewDto>(savedFile));
                         }
