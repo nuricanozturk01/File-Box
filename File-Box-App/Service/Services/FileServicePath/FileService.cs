@@ -5,7 +5,6 @@ using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
 using Service.Exceptions;
-using Service.Services.RedisService;
 
 namespace Service.Services.FileServicePath
 {
