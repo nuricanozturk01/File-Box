@@ -83,7 +83,7 @@ select * from filebox_file;
 select * from filebox_folder;
 select * from filebox_user;
 
-update filebox_folder set folder_path = 'halilcanozturk\Books PDF' where folder_path = 'halilcanozturk\Books PDF PDF';
+update filebox_folder set folder_path = 'nuricanozturk\ABC' where folder_path = 'nuricanozturk\ABCC';
 delete from filebox_file where file_id = 18;
 -- ----------------------------------------------------- STORED PROCEDURES-----------------------------------------------------
 

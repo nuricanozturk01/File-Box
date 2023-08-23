@@ -265,5 +265,34 @@ namespace Presentation.Controllers
                 return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
             }
         }
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Remove files with given file ids parameter
+         * 
+         */
+
+        [HttpPost("remove/multiple")]
+        public async Task<IActionResult> RemoveMultipleFile([FromBody] List<long> fileIds, [FromQuery(Name = "uid")] string uid)
+        {
+            try
+            {
+                var deletedFiles = await m_fileService.DeleteMultipleFile(fileIds, Guid.Parse(uid));
+
+                return Ok(new ResponseMessage(true, "file removed successfully!", new
+                {
+                    removed_files = deletedFiles
+                }));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
     }
 }

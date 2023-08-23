@@ -125,5 +125,15 @@ namespace Service.Services.FileServicePath
          * 
          */
         Task<FileViewDto> MoveFileToAnotherFolder(long fileId, long targetFolderId, Guid userId);
+
+
+
+
+        /*
+         * 
+         * Remove multiple files
+         * 
+         */
+        Task<List<FileViewDto>> DeleteMultipleFile(List<long> fileIds, Guid guid);
     }
 }

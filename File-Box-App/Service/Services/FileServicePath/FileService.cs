@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
@@ -12,11 +11,11 @@ namespace Service.Services.FileServicePath
     {
         private readonly FolderRepositoryDal m_folderDal;
         private readonly FileRepositoryDal m_fileDal;
-        private readonly IMapper m_mapper;        
+        private readonly IMapper m_mapper;
         private readonly UserRepositoryDal m_userRepositoryDal;
-        public FileService(FileRepositoryDal fileDal, 
-                           FolderRepositoryDal folderDal, 
-                           IMapper mapper,           
+        public FileService(FileRepositoryDal fileDal,
+                           FolderRepositoryDal folderDal,
+                           IMapper mapper,
                            UserRepositoryDal userRepositoryDal)
         {
             m_fileDal = fileDal;
@@ -80,7 +79,7 @@ namespace Service.Services.FileServicePath
                 CheckFolderAndPermits(folder, guid);
                 File.Delete(Util.DIRECTORY_BASE + file.FilePath);
                 m_fileDal.DeleteById(fileId);
-  
+
                 return file.FileName;
             }
             catch (ArgumentNullException ex)
@@ -113,6 +112,79 @@ namespace Service.Services.FileServicePath
 
 
 
+        /*
+         * 
+         * 
+         * Remove files with given file Ids
+         * 
+         * 
+         */
+        public async Task<List<FileViewDto>> DeleteMultipleFile(List<long> fileIds, Guid guid)
+        {
+            using (var context = new FileBoxDbContext())
+            using(var transaction = await context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var files = await context.Set<FileboxFile>().Where(f => fileIds.Contains(f.FileId)).AsNoTracking().ToListAsync();
+
+                    var folder = await context.Set<FileboxFolder>().Where(f => f.FolderId == files[0].FolderId).SingleAsync();
+
+                    CheckFolderAndPermits(folder, guid);
+
+                    foreach (var file in files)
+                        File.Delete(Util.DIRECTORY_BASE + file.FilePath);
+
+                    context.FileboxFiles.RemoveRange(files);
+
+                    var dtoList = new List<FileViewDto>();
+
+                    foreach (var file in files)
+                        dtoList.Add(m_mapper.Map<FileViewDto>(file));
+
+                    await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return dtoList;
+                }
+                catch (ArgumentNullException ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new ServiceException("Arguments are null!");
+                }
+                catch (ArgumentException ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new ServiceException("Arguments are wrong!");
+                }
+                catch (DirectoryNotFoundException ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new ServiceException("Directory Not Found!");
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new ServiceException("You do not have permits for deleting the file!");
+                }
+                catch (PathTooLongException ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new ServiceException("Path too long! Please attention to path length!");
+                }
+                catch (IOException ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new ServiceException("Files does not deleted!");
+                }
+            }
+            
+        }
+
+
+
+
+
 
 
         /*
@@ -126,16 +198,16 @@ namespace Service.Services.FileServicePath
         {
 
             using (var context = new FileBoxDbContext())
-            using(var transaction = await context.Database.BeginTransactionAsync())
+            using (var transaction = await context.Database.BeginTransactionAsync())
             {
                 try
                 {
                     newFileName = Util.ConvertToEnglishCharacters(newFileName);
-                    var fileObj = context.Set<FileboxFile>().Where(f =>  f.FileId == fileId).SingleOrDefault();
+                    var fileObj = context.Set<FileboxFile>().Where(f => f.FileId == fileId).SingleOrDefault();
 
                     if (fileObj is null)
                         throw new ServiceException("File not found!");
-                    
+
                     var folder = context.Set<FileboxFolder>().Where(f => f.FolderId == fileObj.FolderId).SingleOrDefault();
 
                     CheckFolderAndPermits(folder, userId);
@@ -153,10 +225,10 @@ namespace Service.Services.FileServicePath
 
                     context.FileboxFiles.Attach(fileObj);
                     context.Entry(fileObj).State = EntityState.Modified;
-                    
+
                     await context.SaveChangesAsync();
                     await transaction.CommitAsync();
-                    
+
                     return m_mapper.Map<FileViewDto>(fileObj);
                 }
                 catch (FileNotFoundException ex)
@@ -164,7 +236,7 @@ namespace Service.Services.FileServicePath
                     throw new ServiceException("File not found on directory!");
                 }
             }
-           
+
         }
 
 
@@ -195,7 +267,7 @@ namespace Service.Services.FileServicePath
             return filteredFiles.Select(file => m_mapper.Map<FileViewDto>(file));
         }
 
-      
+
 
 
 
@@ -254,7 +326,7 @@ namespace Service.Services.FileServicePath
         public async Task<IEnumerable<FileViewDto>> SortFilesByFileBytesAsync(long folderId, Guid userId)
         {
             var folder = await m_folderDal.FindByIdAsync(folderId);
-               
+
             CheckFolderAndPermits(folder, userId);
 
             var files = await m_fileDal.FindByFilterAsync(file => file.FolderId == folderId);
@@ -267,12 +339,12 @@ namespace Service.Services.FileServicePath
 
 
 
-      /*
-       * 
-       * Sort files with given folder ıd and user about creation date
-       * 
-       * 
-       */
+        /*
+         * 
+         * Sort files with given folder ıd and user about creation date
+         * 
+         * 
+         */
         public async Task<IEnumerable<FileViewDto>> SortFilesByCreationDateAsync(long folderId, Guid userId)
         {
             var folder = await m_folderDal.FindByIdAsync(folderId);
@@ -304,30 +376,52 @@ namespace Service.Services.FileServicePath
         }
 
 
+        private async Task<string> GetNewFileName(FileboxFolder targetFolder, FileboxFile file)
+        {
+            var currentFilesOnFolder = await m_fileDal.FindFilesByFolderId(targetFolder.FolderId);
 
+            var SameFileListByName = currentFilesOnFolder.Where(f => f.FileName.Contains(Path.GetFileNameWithoutExtension(file.FileName))).ToList();
+
+            string newFileName = Path.GetFileNameWithoutExtension(file.FileName);
+
+            if (SameFileListByName.Count != 0) // If exists same file
+            {
+                var count = SameFileListByName.Count;
+
+                newFileName += $"({count})";
+            }
+            newFileName += Path.GetExtension(file.FileName);
+
+            return Util.ConvertToEnglishCharacters(newFileName);
+        }
 
 
         public async Task<FileViewDto> CopyFileToAnotherFolder(long fileId, long targetFolderId, Guid userId)
         {
-            var file = await m_fileDal.FindByIdAsync(fileId);
-            var currentFolder = await m_folderDal.FindByIdAsync(file.FolderId);
-            var targetFolder = await m_folderDal.FindByIdAsync(targetFolderId);
-
-            CheckFolderAndPermits(currentFolder, userId);
-            CheckFolderAndPermits(targetFolder, userId);
-
-            var copiedFile = new FileboxFile(targetFolderId, file.FileName, Path.Combine(targetFolder.FolderPath, file.FileName),file.FileType, file.FileSize);
-
-            using(var context = new FileBoxDbContext())
+            using (var context = new FileBoxDbContext())
             using (var transaction = await context.Database.BeginTransactionAsync())
             {
                 try
                 {
+
+                    var file = await context.Set<FileboxFile>().Where(f => f.FileId == fileId).SingleAsync();
+                    var currentFolder = await context.Set<FileboxFolder>().Where(f => f.FolderId == file.FolderId).SingleAsync();
+                    var targetFolder = await context.Set<FileboxFolder>().Where(f => f.FolderId == targetFolderId).SingleAsync();
+
+
+                    var newFileName = await GetNewFileName(targetFolder, file);
+
+
+                    CheckFolderAndPermits(currentFolder, userId);
+                    CheckFolderAndPermits(targetFolder, userId);
+
+                    var copiedFile = new FileboxFile(targetFolderId, newFileName, Path.Combine(targetFolder.FolderPath, newFileName), file.FileType, file.FileSize);
+
                     // Add to database
                     context.FileboxFiles.Add(copiedFile);
-                    
+
                     var sourcePath = new FileInfo(Path.Combine(Util.DIRECTORY_BASE, file.FilePath));
-                    
+
                     using (var sourceStream = sourcePath.OpenRead())
                     using (var destinationStream = new FileStream(Path.Combine(Util.DIRECTORY_BASE, targetFolder.FolderPath, copiedFile.FileName), FileMode.Create))
                     {
@@ -336,15 +430,15 @@ namespace Service.Services.FileServicePath
 
                     await context.SaveChangesAsync();
                     await transaction.CommitAsync();
+
+                    return m_mapper.Map<FileViewDto>(copiedFile);
                 }
-                catch 
-                { 
+                catch
+                {
                     await transaction.RollbackAsync();
                     throw;
-                } 
+                }
             }
-
-            return m_mapper.Map<FileViewDto>(copiedFile);
         }
 
 
@@ -353,7 +447,6 @@ namespace Service.Services.FileServicePath
 
         public async Task<FileViewDto> MoveFileToAnotherFolder(long fileId, long targetFolderId, Guid userId)
         {
-           
 
             using (var context = new FileBoxDbContext())
             using (var transaction = await context.Database.BeginTransactionAsync())
@@ -367,13 +460,15 @@ namespace Service.Services.FileServicePath
                     CheckFolderAndPermits(currentFolder, userId);
                     CheckFolderAndPermits(targetFolder, userId);
 
-                    var copiedFile = new FileboxFile(targetFolderId, file.FileName, Path.Combine(targetFolder.FolderPath, file.FileName), file.FileType, file.FileSize);
+                    var newFileName = await GetNewFileName(targetFolder, file);
+                    
+                    var copiedFile = new FileboxFile(targetFolderId, newFileName, Path.Combine(targetFolder.FolderPath, newFileName), file.FileType, file.FileSize);
 
                     // Add to database
                     context.FileboxFiles.Add(copiedFile);
                     var sourcePath = Path.Combine(Util.DIRECTORY_BASE, file.FilePath);
                     var targetPath = Path.Combine(Util.DIRECTORY_BASE, targetFolder.FolderPath, copiedFile.FileName);
-                    
+
                     var task = new Task(() => File.Move(sourcePath, targetPath));
                     task.Start();
                     await Task.WhenAll(task);
@@ -390,7 +485,7 @@ namespace Service.Services.FileServicePath
                 }
             }
 
-            
+
         }
     }
 }

@@ -205,7 +205,7 @@ namespace Service.Services.FolderService
             {
                 try
                 {
-                    var folder = await context.Set<FileboxFolder>().Where(f => f.FolderId == folderId).SingleOrDefaultAsync();
+                    var folder = await context.Set<FileboxFolder>().Where(f => f.FolderId == folderId).SingleAsync();
                     CheckFolderAndPermits(folder, userId);
 
                     if (folder.ParentFolderId == null)
@@ -315,15 +315,36 @@ namespace Service.Services.FolderService
         {
             var mainFiles = await m_fileRepositoryDal.FindFilesByFolderId(folder.FolderId); // Find files in main folder
 
-            // Copy files to target main file           
             foreach (var file in mainFiles)
             {
                 var oldFilePath = Path.Combine(Util.DIRECTORY_BASE, file.FilePath);
                 var newFilePath = Path.Combine(targetFullPath, file.FileName);
 
-                File.Copy(oldFilePath, newFilePath, true);
+                try
+                {
+                    // Ensure the target directory exists
+                    Directory.CreateDirectory(targetFullPath);
+
+                    // Open the source file
+                    using (var sourceStream = new FileStream(oldFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        // Open or create the destination file
+                        using (var destinationStream = new FileStream(newFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            // Copy data from source to destination
+                            await sourceStream.CopyToAsync(destinationStream);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions
+                    Console.WriteLine($"Error copying file: {ex.Message}");
+                    // You can log, rethrow, or handle the exception as appropriate for your application
+                }
             }
         }
+
 
 
 
@@ -338,21 +359,37 @@ namespace Service.Services.FolderService
         {
             foreach (var subfolder in subFolders)
             {
-                // Find files on subfolder
-                var filesOnSubFolders = await m_fileRepositoryDal.FindFilesByFolderId(subfolder.FolderId);
-
-                var oldSubFolderPath = Path.Combine(Util.DIRECTORY_BASE, subfolder.FolderPath);
-                var newSubFolderPath = oldSubFolderPath.Replace(sourceFullPath, targetFullPath);
-
-                foreach (var file in filesOnSubFolders.Reverse())
+                try
                 {
-                    var oldFilePath = Path.Combine(oldSubFolderPath, file.FileName);
-                    var newFilePath = oldFilePath.Replace(oldSubFolderPath, newSubFolderPath);
+                    // Ensure the target subfolder exists
+                    var oldSubFolderPath = Path.Combine(Util.DIRECTORY_BASE, subfolder.FolderPath);
+                    var newSubFolderPath = oldSubFolderPath.Replace(sourceFullPath, targetFullPath);
+                    Directory.CreateDirectory(newSubFolderPath);
 
-                    File.Copy(oldFilePath, newFilePath, true);
+                    // Find files in the subfolder
+                    var filesOnSubFolders = await m_fileRepositoryDal.FindFilesByFolderId(subfolder.FolderId);
+
+                    foreach (var file in filesOnSubFolders.Reverse())
+                    {
+                        var oldFilePath = Path.Combine(oldSubFolderPath, file.FileName);
+                        var newFilePath = Path.Combine(newSubFolderPath, file.FileName);
+
+                        using (var sourceStream = new FileStream(oldFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        using (var destinationStream = new FileStream(newFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            await sourceStream.CopyToAsync(destinationStream);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions
+                    Console.WriteLine($"Error copying subfolder files: {ex.Message}");
+                    // You can log, rethrow, or handle the exception as appropriate for your application
                 }
             }
         }
+
 
 
 
