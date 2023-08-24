@@ -24,7 +24,7 @@ namespace RepositoryLib.DTO
         {
             this.folderName = folderName;
             this.folderPath = folderPath;
-            this.creationDate = creationDate?.ToString("dd/MM/yyyy HH:mm:ss"); ;
+            this.creationDate = creationDate?.ToString("dd/MM/yyyy HH:mm:ss");
             this.folderId = folderId;
             this.userId = userId;
             this.parentFolderId = parentFolderId;

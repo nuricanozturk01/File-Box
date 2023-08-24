@@ -2,5 +2,5 @@
 
 namespace RepositoryLib.DTO
 {
-    public record FolderCreatedResponseDto(string folder_path, long folderId, string folder_name);
+    public record FolderCreatedResponseDto(string folder_path, long folderId, string folder_name, string creation_date);
 }

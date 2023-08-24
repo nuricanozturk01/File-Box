@@ -52,7 +52,7 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        public async Task<(string folderPath, long folderId)> CreateFolder(FolderSaveDTO folderSaveDto)
+        public async Task<(string folderPath, long folderId, string creationDate)> CreateFolder(FolderSaveDTO folderSaveDto)
         {
             using (var context = new FileBoxDbContext())
             using(var transaction = await context.Database.BeginTransactionAsync())
@@ -83,13 +83,13 @@ namespace Service.Services.FolderService
 
                     if (!Directory.Exists(fullName))
                         Directory.CreateDirectory(fullName);
-
-                    return (fileBoxFolder.FolderPath, fileBoxFolder.FolderId);
+                    
+                    return (fileBoxFolder.FolderPath, fileBoxFolder.FolderId, fileBoxFolder.CreationDate?.ToString("dd/MM/yyyy HH:mm:ss"));
                 }
                 catch
                 {
                     await transaction.RollbackAsync();
-                    throw; // Hata yakalayıp tekrar fırlatmak daha fazla hata ayrıntısı sağlar
+                    throw;
                 }
             }
                
@@ -338,9 +338,7 @@ namespace Service.Services.FolderService
                 }
                 catch (Exception ex)
                 {
-                    // Handle exceptions
                     Console.WriteLine($"Error copying file: {ex.Message}");
-                    // You can log, rethrow, or handle the exception as appropriate for your application
                 }
             }
         }

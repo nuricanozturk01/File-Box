@@ -41,7 +41,7 @@ namespace Presentation.Controllers
             {
                var response =  await m_folderService.CreateFolder(folderSaveDTO);
 
-                return Ok(new ResponseMessage(true, "folder created succesfully!", new FolderCreatedResponseDto(response.folderPath, response.folderId, folderSaveDTO.newFolderName)));
+                return Ok(new ResponseMessage(true, "folder created succesfully!", new FolderCreatedResponseDto(response.folderPath, response.folderId, folderSaveDTO.newFolderName, response.creationDate)));
             }
             catch (Exception ex)
             {

@@ -19,12 +19,12 @@ namespace Service.Services.FolderService
          * 
          */
         Task<IEnumerable<FolderViewDto>> GetFoldersByUserIdAsync(Guid userId);
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
         /*
          * 
          * 
@@ -32,7 +32,7 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        Task<(string folderPath, long folderId)> CreateFolder(FolderSaveDTO folderSaveDto);
+        Task<(string folderPath, long folderId, string creationDate)> CreateFolder(FolderSaveDTO folderSaveDto);
 
 
 
