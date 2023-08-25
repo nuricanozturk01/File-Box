@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
-namespace RepositoryLib.Models;
+﻿namespace RepositoryLib.Models;
 
 public partial class FileboxFolder
 {

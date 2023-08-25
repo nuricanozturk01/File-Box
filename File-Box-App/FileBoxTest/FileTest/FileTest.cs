@@ -51,7 +51,8 @@ namespace FileBoxTest.FileTest
                 cfg.CreateMap<FolderViewDto, FileboxFolder>().ReverseMap();
                 cfg.CreateMap<FileboxFile, FileViewDto>().ReverseMap();
             }).CreateMapper();
-            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper);
+            var unitOfWork = new UnitOfWork();
+            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper, unitOfWork);
             m_fileController = new FileController(m_fileService);
         }
 

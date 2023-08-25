@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace RepositoryLib.Models;
+﻿namespace RepositoryLib.Models;
 
 public partial class FileboxUser
 {

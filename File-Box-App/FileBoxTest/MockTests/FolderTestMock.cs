@@ -43,7 +43,7 @@ namespace FileBoxTest.MockTests
             var folderDal = new FolderRepositoryDal(m_folderRepository.Object);
 
             // Act
-            var folderService = new FolderService(folderDal, m_mapper, fileDal);
+            var folderService = new FolderService(folderDal, m_mapper, fileDal, new UnitOfWork());
 
             var rootFolder = await folderService.FindRootFolder(Guid.Parse(Util.USER_ID));
             var expectedUserId = Util.USER_ID.ToLower();
@@ -71,7 +71,7 @@ namespace FileBoxTest.MockTests
             var folderDal = new FolderRepositoryDal(m_folderRepository.Object);
 
             // Act
-            var folderService = new FolderService(folderDal, m_mapper, fileDal);
+            var folderService = new FolderService(folderDal, m_mapper, fileDal, new UnitOfWork());
             var expectedMessage = "Folder is not found!";
             var exception = await Assert.ThrowsAsync<ServiceException>(async () => await folderService.FindRootFolder(Guid.NewGuid()));
             
@@ -104,7 +104,7 @@ namespace FileBoxTest.MockTests
             var folderDal = new FolderRepositoryDal(m_folderRepository.Object);
 
             // Act
-            var folderService = new FolderService(folderDal, m_mapper, fileDal);
+            var folderService = new FolderService(folderDal, m_mapper, fileDal, new UnitOfWork());
 
             var userIds = (await folderService.FindFolderWithFiles(Guid.Parse(Util.USER_ID))).Select(folder => folder.userId);
 
@@ -145,7 +145,7 @@ namespace FileBoxTest.MockTests
             var folderDal = new FolderRepositoryDal(m_folderRepository.Object);
 
             // Act
-            var folderService = new FolderService(folderDal, m_mapper, fileDal);
+            var folderService = new FolderService(folderDal, m_mapper, fileDal, new UnitOfWork());
 
 
             var userId = Guid.Parse(Util.USER_ID);
@@ -190,7 +190,7 @@ namespace FileBoxTest.MockTests
 
             // Act
 
-            var folderService = new FolderService(folderDal, m_mapper, fileDal);
+            var folderService = new FolderService(folderDal, m_mapper, fileDal, new UnitOfWork());
             var userId = Guid.NewGuid();
 
             var userFolders = await folderService.FindFolderWithFiles(Guid.Parse(Util.USER_ID));

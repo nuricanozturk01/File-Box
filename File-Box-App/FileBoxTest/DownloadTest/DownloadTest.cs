@@ -33,10 +33,10 @@ namespace FileBoxTest.DownloadTest
                 cfg.CreateMap<FolderViewDto, FileboxFolder>().ReverseMap();
                 cfg.CreateMap<FileboxFile, FileViewDto>().ReverseMap();
             }).CreateMapper();
-
-            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper);
+            var unitOfWork = new UnitOfWork();
+            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper, unitOfWork);
             m_downloadService = new DownloadService(fileRepoDal, folderRepoDal);
-            m_folderService = new FolderService(folderRepoDal, mapper, fileRepoDal);
+            m_folderService = new FolderService(folderRepoDal, mapper, fileRepoDal, new UnitOfWork());
         }
 
 

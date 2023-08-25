@@ -31,8 +31,10 @@ namespace FileBoxTest.UploadTest
                 cfg.CreateMap<FolderViewDto, FileboxFolder>().ReverseMap();
                 cfg.CreateMap<FileboxFile, FileViewDto>().ReverseMap();
             }).CreateMapper();
-            m_uploadService = new UploadService(folderRepoDal, fileRepoDal, mapper);
-            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper);
+
+            var unitOfWork = new UnitOfWork();
+            m_uploadService = new UploadService(folderRepoDal, fileRepoDal, mapper, unitOfWork);
+            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper, unitOfWork);
         }
 
 

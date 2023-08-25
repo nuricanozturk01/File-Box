@@ -13,13 +13,16 @@ namespace Service.Services.FileServicePath
         private readonly FolderRepositoryDal m_folderDal;
         private readonly FileRepositoryDal m_fileDal;
         private readonly IMapper m_mapper;
+        private readonly UnitOfWork m_unitOfWork;
         public FileService(FileRepositoryDal fileDal,
                            FolderRepositoryDal folderDal,
-                           IMapper mapper)
+                           IMapper mapper,
+                           UnitOfWork unitOfWork)
         {
             m_fileDal = fileDal;
             m_folderDal = folderDal;
             m_mapper = mapper;
+            m_unitOfWork = unitOfWork;
         }
 
 
@@ -119,59 +122,56 @@ namespace Service.Services.FileServicePath
          */
         public async Task<List<FileViewDto>> DeleteMultipleFile(List<long> fileIds, Guid guid)
         {
-            
-            using(var unitOfWork = new UnitOfWork())
+
+
+            try
             {
-                try
-                {
-                    var files = (await unitOfWork.FileRepository.FindByFilterAsync(f => fileIds.Contains(f.FileId))).ToList();
+                var files = (await m_unitOfWork.FileRepository.FindByFilterAsync(f => fileIds.Contains(f.FileId))).ToList();
 
-                    var folder = (await unitOfWork.FolderRepository.FindByFilterAsync(f => f.FolderId == files[0].FolderId)).Single();
+                var folder = (await m_unitOfWork.FolderRepository.FindByFilterAsync(f => f.FolderId == files[0].FolderId)).Single();
 
-                    CheckFolderAndPermits(folder, guid);
+                CheckFolderAndPermits(folder, guid);
 
-                    foreach (var file in files)
-                        File.Delete(Util.DIRECTORY_BASE + file.FilePath);
+                foreach (var file in files)
+                    File.Delete(Util.DIRECTORY_BASE + file.FilePath);
 
-                    await unitOfWork.FileRepository.RemoveAll(files);
+                await m_unitOfWork.FileRepository.RemoveAll(files);
 
-                    var dtoList = new List<FileViewDto>();
+                var dtoList = new List<FileViewDto>();
 
-                    foreach (var file in files)
-                        dtoList.Add(m_mapper.Map<FileViewDto>(file));
+                foreach (var file in files)
+                    dtoList.Add(m_mapper.Map<FileViewDto>(file));
 
 
-                    unitOfWork.Save();
+                m_unitOfWork.Save();
 
-                    return dtoList;
-                }
-                catch (ArgumentNullException ex)
-                {
-                    throw new ServiceException("Arguments are null!");
-                }
-                catch (ArgumentException ex)
-                {
-                    throw new ServiceException("Arguments are wrong!");
-                }
-                catch (DirectoryNotFoundException ex)
-                {
-                    throw new ServiceException("Directory Not Found!");
-                }
-                catch (UnauthorizedAccessException ex)
-                {
-                    throw new ServiceException("You do not have permits for deleting the file!");
-                }
-                catch (PathTooLongException ex)
-                {
-                    throw new ServiceException("Path too long! Please attention to path length!");
-                }
-                catch (IOException ex)
-                {
-                    throw new ServiceException("Files does not deleted!");
-                }
-                finally { unitOfWork.Dispose(); }
+                return dtoList;
             }
-            
+            catch (ArgumentNullException ex)
+            {
+                throw new ServiceException("Arguments are null!");
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ServiceException("Arguments are wrong!");
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                throw new ServiceException("Directory Not Found!");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new ServiceException("You do not have permits for deleting the file!");
+            }
+            catch (PathTooLongException ex)
+            {
+                throw new ServiceException("Path too long! Please attention to path length!");
+            }
+            catch (IOException ex)
+            {
+                throw new ServiceException("Files does not deleted!");
+            }
+
         }
 
 
@@ -189,41 +189,37 @@ namespace Service.Services.FileServicePath
          */
         public async Task<FileViewDto> RenameFile(long fileId, string newFileName, Guid userId)
         {
-            using (var unitOfWork = new UnitOfWork())
+            try
             {
-                try
-                {
-                    newFileName = Util.ConvertToEnglishCharacters(newFileName);
+                newFileName = Util.ConvertToEnglishCharacters(newFileName);
 
-                    var fileObj = await unitOfWork.FileRepository.FindByIdAsync(fileId);
+                var fileObj = await m_unitOfWork.FileRepository.FindByIdAsync(fileId);
 
-                    if (fileObj == null)
-                        throw new ServiceException("File not found!");
+                if (fileObj == null)
+                    throw new ServiceException("File not found!");
 
-                    var folder = await unitOfWork.FolderRepository.FindByIdAsync(fileObj.FolderId);
+                var folder = await m_unitOfWork.FolderRepository.FindByIdAsync(fileObj.FolderId);
 
-                    CheckFolderAndPermits(folder, userId);
+                CheckFolderAndPermits(folder, userId);
 
-                    var oldFileName = fileObj.FileName;
-                    var pathWithoutFolderName = Path.GetDirectoryName(fileObj.FilePath);
-                    var newFilePath = Path.Combine(pathWithoutFolderName, newFileName);
+                var oldFileName = fileObj.FileName;
+                var pathWithoutFolderName = Path.GetDirectoryName(fileObj.FilePath);
+                var newFilePath = Path.Combine(pathWithoutFolderName, newFileName);
 
-                    File.Move(Path.Combine(Util.DIRECTORY_BASE, fileObj.FilePath), Path.Combine(Util.DIRECTORY_BASE, newFilePath));
+                File.Move(Path.Combine(Util.DIRECTORY_BASE, fileObj.FilePath), Path.Combine(Util.DIRECTORY_BASE, newFilePath));
 
-                    fileObj.FileName = newFileName;
-                    fileObj.FilePath = newFilePath;
-                    fileObj.UpdatedDate = DateTime.Now;
+                fileObj.FileName = newFileName;
+                fileObj.FilePath = newFilePath;
+                fileObj.UpdatedDate = DateTime.Now;
 
-                    unitOfWork.FileRepository.Update(fileObj);
-                    unitOfWork.Save();
+                m_unitOfWork.FileRepository.Update(fileObj);
+                m_unitOfWork.Save();
 
-                    return m_mapper.Map<FileViewDto>(fileObj);
-                }
-                catch (FileNotFoundException ex)
-                {
-                    throw new ServiceException("File not found on directory!");
-                }
-                finally { unitOfWork.Dispose(); }
+                return m_mapper.Map<FileViewDto>(fileObj);
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw new ServiceException("File not found on directory!");
             }
         }
 
@@ -386,43 +382,39 @@ namespace Service.Services.FileServicePath
 
         public async Task<FileViewDto> CopyFileToAnotherFolder(long fileId, long targetFolderId, Guid userId)
         {
-            using (var unitOfWork = new UnitOfWork())
+            try
             {
-                try
+                var file = await m_unitOfWork.FileRepository.FindByIdAsync(fileId);
+                var currentFolder = await m_unitOfWork.FolderRepository.FindByIdAsync(file.FolderId);
+                var targetFolder = await m_unitOfWork.FolderRepository.FindByIdAsync(targetFolderId);
+
+
+                var newFileName = await GetNewFileName(m_unitOfWork, targetFolder, file);
+
+
+                CheckFolderAndPermits(currentFolder, userId);
+                CheckFolderAndPermits(targetFolder, userId);
+
+                var copiedFile = new FileboxFile(targetFolderId, newFileName, Path.Combine(targetFolder.FolderPath, newFileName), file.FileType, file.FileSize);
+
+                // Add to database
+                await m_unitOfWork.FileRepository.SaveAsync(copiedFile);
+
+                var sourcePath = new FileInfo(Path.Combine(Util.DIRECTORY_BASE, file.FilePath));
+
+                using (var sourceStream = sourcePath.OpenRead())
+                using (var destinationStream = new FileStream(Path.Combine(Util.DIRECTORY_BASE, targetFolder.FolderPath, copiedFile.FileName), FileMode.Create))
                 {
-                    var file = await unitOfWork.FileRepository.FindByIdAsync(fileId);
-                    var currentFolder = await unitOfWork.FolderRepository.FindByIdAsync(file.FolderId);
-                    var targetFolder = await unitOfWork.FolderRepository.FindByIdAsync(targetFolderId);
-
-
-                    var newFileName = await GetNewFileName(unitOfWork, targetFolder, file);
-
-
-                    CheckFolderAndPermits(currentFolder, userId);
-                    CheckFolderAndPermits(targetFolder, userId);
-
-                    var copiedFile = new FileboxFile(targetFolderId, newFileName, Path.Combine(targetFolder.FolderPath, newFileName), file.FileType, file.FileSize);
-
-                    // Add to database
-                    await unitOfWork.FileRepository.SaveAsync(copiedFile);
-
-                    var sourcePath = new FileInfo(Path.Combine(Util.DIRECTORY_BASE, file.FilePath));
-
-                    using (var sourceStream = sourcePath.OpenRead())
-                    using (var destinationStream = new FileStream(Path.Combine(Util.DIRECTORY_BASE, targetFolder.FolderPath, copiedFile.FileName), FileMode.Create))
-                    {
-                        await sourceStream.CopyToAsync(destinationStream);
-                    }
-
-                    unitOfWork.Save();
-
-                    return m_mapper.Map<FileViewDto>(copiedFile);
+                    await sourceStream.CopyToAsync(destinationStream);
                 }
-                catch
-                {
-                    throw;
-                }
-                finally { unitOfWork.Dispose(); }
+
+                m_unitOfWork.Save();
+
+                return m_mapper.Map<FileViewDto>(copiedFile);
+            }
+            catch
+            {
+                throw;
             }
         }
 
@@ -432,38 +424,34 @@ namespace Service.Services.FileServicePath
 
         public async Task<FileViewDto> MoveFileToAnotherFolder(long fileId, long targetFolderId, Guid userId)
         {
-            using (var unitOfWork = new UnitOfWork())
+            try
             {
-                try
-                {
-                    var file = await unitOfWork.FileRepository.FindByIdAsync(fileId);
-                    var currentFolder = await unitOfWork.FolderRepository.FindByIdAsync(file.FolderId);
-                    var targetFolder = await unitOfWork.FolderRepository.FindByIdAsync(targetFolderId);
+                var file = await m_unitOfWork.FileRepository.FindByIdAsync(fileId);
+                var currentFolder = await m_unitOfWork.FolderRepository.FindByIdAsync(file.FolderId);
+                var targetFolder = await m_unitOfWork.FolderRepository.FindByIdAsync(targetFolderId);
 
-                    CheckFolderAndPermits(currentFolder, userId);
-                    CheckFolderAndPermits(targetFolder, userId);
+                CheckFolderAndPermits(currentFolder, userId);
+                CheckFolderAndPermits(targetFolder, userId);
 
-                    var newFileName = await GetNewFileName(unitOfWork, targetFolder, file);
+                var newFileName = await GetNewFileName(m_unitOfWork, targetFolder, file);
 
-                    var copiedFile = new FileboxFile(targetFolderId, newFileName, Path.Combine(targetFolder.FolderPath, newFileName), file.FileType, file.FileSize);
+                var copiedFile = new FileboxFile(targetFolderId, newFileName, Path.Combine(targetFolder.FolderPath, newFileName), file.FileType, file.FileSize);
 
-                    await unitOfWork.FileRepository.SaveAsync(copiedFile);
+                await m_unitOfWork.FileRepository.SaveAsync(copiedFile);
 
-                    var sourcePath = Path.Combine(Util.DIRECTORY_BASE, file.FilePath);
-                    var targetPath = Path.Combine(Util.DIRECTORY_BASE, targetFolder.FolderPath, copiedFile.FileName);
+                var sourcePath = Path.Combine(Util.DIRECTORY_BASE, file.FilePath);
+                var targetPath = Path.Combine(Util.DIRECTORY_BASE, targetFolder.FolderPath, copiedFile.FileName);
 
-                    await MoveFileAsync(sourcePath, targetPath);
+                await MoveFileAsync(sourcePath, targetPath);
 
-                    await unitOfWork.FileRepository.Delete(file);
-                    unitOfWork.Save();
+                await m_unitOfWork.FileRepository.Delete(file);
+                m_unitOfWork.Save();
 
-                    return m_mapper.Map<FileViewDto>(copiedFile);
-                }
-                catch
-                {
-                    throw;
-                }
-                finally { unitOfWork.Dispose(); }
+                return m_mapper.Map<FileViewDto>(copiedFile);
+            }
+            catch
+            {
+                throw;
             }
         }
 

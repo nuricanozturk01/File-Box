@@ -13,11 +13,13 @@ namespace Service.Services.UploadService
         private readonly FolderRepositoryDal m_folderRepositoryDal;
         private readonly FileRepositoryDal m_fileRepositoryDal;
         private readonly IMapper m_mapper;
-        public UploadService(FolderRepositoryDal folderRepositoryDal, FileRepositoryDal fileRepositoryDal, IMapper mapper)
+        private readonly UnitOfWork m_unitOfWork;
+        public UploadService(FolderRepositoryDal folderRepositoryDal, FileRepositoryDal fileRepositoryDal, IMapper mapper, UnitOfWork unitOfWork)
         {
             m_folderRepositoryDal = folderRepositoryDal;
             m_fileRepositoryDal = fileRepositoryDal;
             m_mapper = mapper;
+            m_unitOfWork = unitOfWork;
         }
 
 
@@ -50,63 +52,59 @@ namespace Service.Services.UploadService
          */
         public async Task<List<FileViewDto>> UploadMultipleFiles(List<IFormFile> formFiles, long folderId, Guid uid)
         {
-            using (var unitOfWork = new UnitOfWork())
+            try
             {
-                try
+                var fileList = new List<FileViewDto>();
+                var totalBytes = formFiles.Select(ff => ff.Length).Sum();
+
+                if (totalBytes > Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE)
+                    throw new ServiceException("Maximum Uploaded single file limit is " + Util.ByteToMB(Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE) + " MB");
+
+                var folder = await m_unitOfWork.FolderRepository.FindByIdAsync(folderId);
+
+                CheckFolderAndPermits(folder, uid);
+
+                var currentFilesOnFolder = await m_unitOfWork.FileRepository.FindByFilterAsync(f => f.FolderId == folderId);
+
+                foreach (var ff in formFiles)
                 {
-                    var fileList = new List<FileViewDto>();
-                    var totalBytes = formFiles.Select(ff => ff.Length).Sum();
-
-                    if (totalBytes > Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE)
-                        throw new ServiceException("Maximum Uploaded single file limit is " + Util.ByteToMB(Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE) + " MB");
-
-                    var folder = await unitOfWork.FolderRepository.FindByIdAsync(folderId);
-
-                    CheckFolderAndPermits(folder, uid);
-
-                    var currentFilesOnFolder = await unitOfWork.FileRepository.FindByFilterAsync(f => f.FolderId == folderId);
-
-                    foreach (var ff in formFiles)
+                    try
                     {
-                        try
+                        var SameFileListByName = currentFilesOnFolder.Where(f => f.FileName.Contains(Path.GetFileNameWithoutExtension(ff.FileName))).ToList();
+
+                        string newFileName = await GetNewFileName(m_unitOfWork, folder, ff.FileName);
+
+                        var targetPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, newFileName);
+
+                        using (var destinationStream = new FileStream(targetPath, FileMode.Create))
                         {
-                            var SameFileListByName = currentFilesOnFolder.Where(f => f.FileName.Contains(Path.GetFileNameWithoutExtension(ff.FileName))).ToList();
-                            string newFileName = await GetNewFileName(unitOfWork, folder, ff.FileName);
-
-
-                            var targetPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, newFileName);
-
-                            using (var destinationStream = new FileStream(targetPath, FileMode.Create))
-                            {
-                                await ff.CopyToAsync(destinationStream);
-                            }
-
-                            var fileInfo = new FileInfo(targetPath);
-
-                            var savedFile = new FileboxFile(folderId, newFileName, Path.Combine(folder.FolderPath, newFileName), fileInfo.Extension, fileInfo.Length);
-
-                            var file = unitOfWork.FileRepository.Save(savedFile);
-                            unitOfWork.Save();
-                            fileList.Add(m_mapper.Map<FileViewDto>(file));
+                            await ff.CopyToAsync(destinationStream);
                         }
-                        catch (Exception ex)
-                        {
-                            throw new ServiceException(ex.Message);
-                        }
-                        
+
+                        var fileInfo = new FileInfo(targetPath);
+
+                        var savedFile = new FileboxFile(folderId, newFileName, Path.Combine(folder.FolderPath, newFileName), fileInfo.Extension, fileInfo.Length);
+
+                        var file = m_unitOfWork.FileRepository.Save(savedFile);
+                        m_unitOfWork.Save();
+                        fileList.Add(m_mapper.Map<FileViewDto>(file));
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ServiceException(ex.Message);
                     }
 
-                    return fileList;
                 }
-                catch (ServiceException ex)
-                {
-                    throw new ServiceException(ex.GetMessage);
-                }
-                catch (Exception ex)
-                {
-                    throw new ServiceException(ex.Message);
-                }
-                finally { unitOfWork.Dispose(); }
+
+                return fileList;
+            }
+            catch (ServiceException ex)
+            {
+                throw new ServiceException(ex.GetMessage);
+            }
+            catch (Exception ex)
+            {
+                throw new ServiceException(ex.Message);
             }
         }
 
