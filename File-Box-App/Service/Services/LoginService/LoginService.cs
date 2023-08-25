@@ -41,7 +41,6 @@ namespace FileBoxService.Service
         {
             try
             {
-              //  await m_redisService.SetValueAsync(username, token);
                 return true;
             }
 

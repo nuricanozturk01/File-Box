@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
+using RepositoryLib.Repository;
 using Service.Exceptions;
 using System.Data;
 
@@ -54,46 +55,44 @@ namespace Service.Services.FolderService
          */
         public async Task<(string folderPath, long folderId, string creationDate)> CreateFolder(FolderSaveDTO folderSaveDto)
         {
-            using (var context = new FileBoxDbContext())
-            using(var transaction = await context.Database.BeginTransactionAsync())
+            using (var unitOfWork = new UnitOfWork())
             {
                 try
                 {
                     var userUID = Guid.Parse(folderSaveDto.userId); // user uuid
-                    
-                    var folder = await  context.Set<FileboxFolder>().Where(f => f.FolderId == folderSaveDto.currentFolderId).SingleOrDefaultAsync();
+
+                    var folder = await unitOfWork.FolderRepository.FindByIdAsync(folderSaveDto.currentFolderId);
 
                     if (folder.UserId != userUID)
                         throw new ServiceException("Folder owner not this user!");
 
                     var folderNameWithoutPath = Util.ConvertToEnglishCharacters(folderSaveDto.newFolderName); // just folder name
 
-
                     var parentFolderPath = Util.DIRECTORY_BASE + folder.FolderPath;
-
                     var userFolderPath = folder.FolderPath + "\\" + folderSaveDto.newFolderName;
-
                     var fullName = parentFolderPath + "\\" + folderSaveDto.newFolderName;
 
-                    var fileBoxFolder = new FileboxFolder(GetParentFolderId(folder.FolderPath), userUID, folderNameWithoutPath, userFolderPath);
+                    var newFolder = new FileboxFolder(GetParentFolderId(folder.FolderPath), userUID, folderNameWithoutPath, userFolderPath);
 
-                    await context.FileboxFolders.AddAsync(fileBoxFolder);
-                    await context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                    await unitOfWork.FolderRepository.SaveAsync(newFolder);
+                    unitOfWork.Save();
 
                     if (!Directory.Exists(fullName))
                         Directory.CreateDirectory(fullName);
-                    
-                    return (fileBoxFolder.FolderPath, fileBoxFolder.FolderId, fileBoxFolder.CreationDate?.ToString("dd/MM/yyyy HH:mm:ss"));
+
+                    return (newFolder.FolderPath, newFolder.FolderId, newFolder.CreationDate?.ToString("dd/MM/yyyy HH:mm:ss"));
                 }
                 catch
                 {
-                    await transaction.RollbackAsync();
                     throw;
                 }
+                finally
+                {
+                    unitOfWork.Dispose();
+                }
             }
-               
         }
+
 
 
 
@@ -108,9 +107,9 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        private async Task<IEnumerable<FileboxFolder>> GetAllSubFolders(FileboxFolder folder)
+        private async Task<IEnumerable<FileboxFolder>> GetAllSubFolders(UnitOfWork unitOfWork, FileboxFolder folder)
         {
-            var folders = await m_folderDal.FindByFilterAsync(f => f.FolderId >= folder.FolderId && f.FolderPath.Contains(folder.FolderName));
+            var folders = await unitOfWork.FolderRepository.FindByFilterAsync(f => f.FolderId >= folder.FolderId && f.FolderPath.Contains(folder.FolderName));
 
             return folders.OrderByDescending(f => f.FolderPath.Length);
         }
@@ -129,43 +128,46 @@ namespace Service.Services.FolderService
          */
         public async Task<string> DeleteFolder(long folderId, Guid userID)
         {
-            using (var context = new FileBoxDbContext()) // using blogu context kaynağını işi bittikten sonra serbest bırakıyor
-            using (var transaction = await context.Database.BeginTransactionAsync()) 
+            using (var unitOfWork = new UnitOfWork())
             {
                 try
                 {
-                    context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
-                    var dir = context.Set<FileboxFolder>().Where(f => f.FolderId == folderId).SingleOrDefault();
+                    unitOfWork.Context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
 
-                    CheckFolderAndPermits(dir, userID);
+                    var folder = await unitOfWork.FolderRepository.FindByIdAsync(folderId);
 
-                    var deletedFolderWithSubFolders = await GetAllSubFolders(dir);
+                    CheckFolderAndPermits(folder, userID);
 
-                    foreach (var folder in deletedFolderWithSubFolders)
+                    var deletedFolderWithSubFolders = await GetAllSubFolders(unitOfWork, folder);
+
+                    foreach (var folderToDelete in deletedFolderWithSubFolders)
                     {
-                        var files = context.Set<FileboxFile>().Where(f => f.FolderId == folder.FolderId).AsNoTrackingWithIdentityResolution();
+                        var files = await unitOfWork.FileRepository.FindByFilterAsync(f => f.FolderId == folderToDelete.FolderId);
                         foreach (var file in files)
                         {
-                            context.FileboxFiles.Remove(file);
+                            await unitOfWork.FileRepository.Delete(file);
                         }
 
-                        context.FileboxFolders.Remove(folder);
+                        await unitOfWork.FolderRepository.Delete(folderToDelete);
                     }
 
-                    await context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                    unitOfWork.Save();
 
-                    Directory.Delete(Path.Combine(Util.DIRECTORY_BASE, dir.FolderPath), true);
+                    Directory.Delete(Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath), true);
 
-                    return dir.FolderPath;
+                    return folder.FolderPath;
                 }
                 catch
                 {
-                    await transaction.RollbackAsync();
                     throw;
+                }
+                finally
+                {
+                    unitOfWork.Dispose();
                 }
             }
         }
+
 
 
 
@@ -200,12 +202,12 @@ namespace Service.Services.FolderService
          */
         public async Task<FolderViewDto> RenameFolder(long folderId, string newFolderName, Guid userId)
         {
-            using (var context = new FileBoxDbContext())
-            using (var transaction = await context.Database.BeginTransactionAsync())
+            
+            using (var unitOfWork = new UnitOfWork())
             {
                 try
                 {
-                    var folder = await context.Set<FileboxFolder>().Where(f => f.FolderId == folderId).SingleAsync();
+                    var folder = await unitOfWork.FolderRepository.FindByIdAsync(folderId);
                     CheckFolderAndPermits(folder, userId);
 
                     if (folder.ParentFolderId == null)
@@ -219,7 +221,7 @@ namespace Service.Services.FolderService
                     var oldFullPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath);
                     var newFullPath = Path.Combine(Util.DIRECTORY_BASE, newFolderPathStartsWithRoot);
 
-                    await MoveFilesToTarget(folder, oldFullPath, newFullPath);
+                    await MoveFilesToTarget(unitOfWork, folder, oldFullPath, newFullPath);
 
                     Directory.Delete(oldFullPath, true);
 
@@ -227,43 +229,39 @@ namespace Service.Services.FolderService
                     folder.FolderPath = newFolderPathStartsWithRoot;
                     folder.UpdatedDate = DateTime.Now;
 
-                    context.FileboxFolders.Attach(folder);
-                    context.Entry(folder).State = EntityState.Modified;
+                    unitOfWork.FolderRepository.Update(folder);
 
-                    var filesToUpdate = await context.Set<FileboxFile>().Where(f => f.FilePath.Contains(oldFolderPathStartsWithRoot)).ToListAsync();
+                    var filesToUpdate = await unitOfWork.FileRepository.FindByFilterAsync(f => f.FilePath.Contains(oldFolderPathStartsWithRoot));
 
-                    // Non tracked object
                     foreach (var file in filesToUpdate)
                     {
                         file.FilePath = file.FilePath.Replace(oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot);
-                        context.FileboxFiles.Attach(file);
-                        context.Entry(file).State = EntityState.Modified;
+                        unitOfWork.FileRepository.Update(file);
                     }
 
-                    var foldersToUpdate = await context.Set<FileboxFolder>().Where(f => f.FolderPath.Contains(oldFolderPathStartsWithRoot)).ToListAsync();
-                    
+                    var foldersToUpdate = await unitOfWork.FolderRepository.FindByFilterAsync(f => f.FolderPath.Contains(oldFolderPathStartsWithRoot));
+
                     foreach (var folderToUpdate in foldersToUpdate)
                     {
                         folderToUpdate.FolderPath = folderToUpdate.FolderPath.Replace(oldFolderPathStartsWithRoot, newFolderPathStartsWithRoot);
-                        context.FileboxFolders.Attach(folderToUpdate);
-                        context.Entry(folderToUpdate).State = EntityState.Modified;
+                        unitOfWork.FolderRepository.Update(folderToUpdate);
                     }
 
-                    await context.SaveChangesAsync();
-                    await transaction.CommitAsync();
+                   
+
+                    unitOfWork.Save();
 
                     return m_mapper.Map<FolderViewDto>(folder);
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    await transaction.RollbackAsync();
                     throw new ServiceException(ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    await transaction.RollbackAsync();
                     throw new ServiceException(ex.Message);
                 }
+                finally { unitOfWork.Dispose(); }
             }
 
 
@@ -279,14 +277,14 @@ namespace Service.Services.FolderService
          * Move files to targetPath. But with copy operation.
          * 
          */
-        private async Task MoveFilesToTarget(FileboxFolder folder, string sourceFullPath, string targetFullPath)
+        private async Task MoveFilesToTarget(UnitOfWork unitOfWork, FileboxFolder folder, string sourceFullPath, string targetFullPath)
         {
             // Create Folder If not exists
             if (!Directory.Exists(targetFullPath))
                 Directory.CreateDirectory(targetFullPath);
 
             // Find SubFolders
-            var subFolders = (await GetAllSubFolders(folder)).Where(sf => sf.FolderId != folder.FolderId);
+            var subFolders = (await GetAllSubFolders(unitOfWork, folder)).Where(sf => sf.FolderId != folder.FolderId);
 
             // Create the subfolders
             foreach (var subfolder in subFolders.Reverse())
@@ -298,8 +296,8 @@ namespace Service.Services.FolderService
                     Directory.CreateDirectory(newSubFolderPath);
             }
             // Copy subfiles to subfolders
-            await CopySubFilesToSubFolders(subFolders, sourceFullPath, targetFullPath);
-            await CopyFiles(folder, targetFullPath);
+            await CopySubFilesToSubFolders(unitOfWork,subFolders, sourceFullPath, targetFullPath);
+            await CopyFiles(unitOfWork, folder, targetFullPath);
         }
 
 
@@ -311,9 +309,9 @@ namespace Service.Services.FolderService
          * Copy Files to target path but only mainfolder files 
          * 
          */
-        private async Task CopyFiles(FileboxFolder folder, string targetFullPath)
+        private async Task CopyFiles(UnitOfWork unitOfWork, FileboxFolder folder, string targetFullPath)
         {
-            var mainFiles = await m_fileRepositoryDal.FindFilesByFolderId(folder.FolderId); // Find files in main folder
+            var mainFiles = await unitOfWork.FileRepository.FindByFilterAsync(f => f.FolderId == folder.FolderId); // Find files in main folder
 
             foreach (var file in mainFiles)
             {
@@ -353,7 +351,7 @@ namespace Service.Services.FolderService
          * Copy subfiles to subfolders
          * 
          */
-        private async Task CopySubFilesToSubFolders(IEnumerable<FileboxFolder> subFolders, string sourceFullPath, string targetFullPath)
+        private async Task CopySubFilesToSubFolders(UnitOfWork unitOfWork, IEnumerable<FileboxFolder> subFolders, string sourceFullPath, string targetFullPath)
         {
             foreach (var subfolder in subFolders)
             {
@@ -365,7 +363,7 @@ namespace Service.Services.FolderService
                     Directory.CreateDirectory(newSubFolderPath);
 
                     // Find files in the subfolder
-                    var filesOnSubFolders = await m_fileRepositoryDal.FindFilesByFolderId(subfolder.FolderId);
+                    var filesOnSubFolders = await unitOfWork.FileRepository.FindByFilterAsync(f => f.FolderId == subfolder.FolderId);
 
                     foreach (var file in filesOnSubFolders.Reverse())
                     {

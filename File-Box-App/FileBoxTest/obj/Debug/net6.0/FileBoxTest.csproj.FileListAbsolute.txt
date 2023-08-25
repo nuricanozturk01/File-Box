@@ -338,10 +338,7 @@ C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\Micr
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\Moq.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\Newtonsoft.Json.dll
-C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\NRedisStack.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\NuGet.Frameworks.dll
-C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\Pipelines.Sockets.Unofficial.dll
-C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\StackExchange.Redis.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\Stef.Validation.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\System.Configuration.ConfigurationManager.dll
 C:\Users\hp\source\repos\File-Box\File-Box-App\FileBoxTest\bin\Debug\net6.0\System.Drawing.Common.dll

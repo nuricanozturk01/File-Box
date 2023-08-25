@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Http;
 using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
+using RepositoryLib.Repository;
 using Service.Exceptions;
-using System.Globalization;
-using System.Text;
 
 namespace Service.Services.UploadService
 {
@@ -22,9 +21,26 @@ namespace Service.Services.UploadService
         }
 
 
+        private async Task<string> GetNewFileName(UnitOfWork unitOfWork, FileboxFolder targetFolder, string fileName)
+        {
+            var currentFilesOnFolder = await unitOfWork.FileRepository.FindByFilterAsync(f => f.FolderId == targetFolder.FolderId);
+
+            var SameFileListByName = currentFilesOnFolder.Where(f => f.FileName.Contains(Path.GetFileNameWithoutExtension(fileName))).ToList();
+
+            string newFileName = Path.GetFileNameWithoutExtension(fileName);
+
+            if (SameFileListByName.Count != 0) // If exists same file
+            {
+                var count = SameFileListByName.Count;
+
+                newFileName += $"({count})";
+            }
+            newFileName += Path.GetExtension(fileName);
+
+            return Util.ConvertToEnglishCharacters(newFileName);
+        }
 
 
-       
 
         /*
          * 
@@ -34,82 +50,66 @@ namespace Service.Services.UploadService
          */
         public async Task<List<FileViewDto>> UploadMultipleFiles(List<IFormFile> formFiles, long folderId, Guid uid)
         {
-           
-            try
+            using (var unitOfWork = new UnitOfWork())
             {
-                var fileList = new List<FileViewDto>();
-                var totalBytes = formFiles.Select(ff => ff.Length).Sum();
-
-                if (totalBytes > Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE)
-                    throw new ServiceException("Maximum Uploaded single file limit is " + Util.ByteToMB(Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE) + " MB");
-
-                var folder = await m_folderRepositoryDal.FindByIdAsync(folderId);
-
-                CheckFolderAndPermits(folder, uid);
-                
-                var currentFilesOnFolder = await m_fileRepositoryDal.FindFilesByFolderId(folderId);
-
-                var newFormFiles = formFiles.ToList();
-                
-                using (var context = new FileBoxDbContext())
-                using (var transaction = await context.Database.BeginTransactionAsync())
+                try
                 {
-                    foreach (var ff in newFormFiles)
+                    var fileList = new List<FileViewDto>();
+                    var totalBytes = formFiles.Select(ff => ff.Length).Sum();
+
+                    if (totalBytes > Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE)
+                        throw new ServiceException("Maximum Uploaded single file limit is " + Util.ByteToMB(Util.MAX_BYTE_UPLOAD_MULTIPLE_FILE) + " MB");
+
+                    var folder = await unitOfWork.FolderRepository.FindByIdAsync(folderId);
+
+                    CheckFolderAndPermits(folder, uid);
+
+                    var currentFilesOnFolder = await unitOfWork.FileRepository.FindByFilterAsync(f => f.FolderId == folderId);
+
+                    foreach (var ff in formFiles)
                     {
                         try
                         {
-                            var sourcePath = ff.OpenReadStream();
-
                             var SameFileListByName = currentFilesOnFolder.Where(f => f.FileName.Contains(Path.GetFileNameWithoutExtension(ff.FileName))).ToList();
-                            string newFileName = Path.GetFileNameWithoutExtension(ff.FileName);
+                            string newFileName = await GetNewFileName(unitOfWork, folder, ff.FileName);
 
-                            if (SameFileListByName.Count != 0) // If exists same file
-                            {
-                                var count = SameFileListByName.Count;
 
-                                newFileName += $"({count})";
-                            }
-                            newFileName += Path.GetExtension(ff.FileName);
-
-                            newFileName = Util.ConvertToEnglishCharacters(newFileName);
-
-                            string targetPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, newFileName);
+                            var targetPath = Path.Combine(Util.DIRECTORY_BASE, folder.FolderPath, newFileName);
 
                             using (var destinationStream = new FileStream(targetPath, FileMode.Create))
                             {
-                                await sourcePath.CopyToAsync(destinationStream);
+                                await ff.CopyToAsync(destinationStream);
                             }
 
                             var fileInfo = new FileInfo(targetPath);
 
-
                             var savedFile = new FileboxFile(folderId, newFileName, Path.Combine(folder.FolderPath, newFileName), fileInfo.Extension, fileInfo.Length);
 
-                            await context.FileboxFiles.AddAsync(savedFile);
-                            await context.SaveChangesAsync();
-
-                            fileList.Add(m_mapper.Map<FileViewDto>(savedFile));
+                            var file = unitOfWork.FileRepository.Save(savedFile);
+                            unitOfWork.Save();
+                            fileList.Add(m_mapper.Map<FileViewDto>(file));
                         }
                         catch (Exception ex)
                         {
-                            await transaction.RollbackAsync();
+                            throw new ServiceException(ex.Message);
                         }
-
+                        
                     }
-                    await transaction.CommitAsync();
-                }
 
-                return fileList;
-            }
-            catch (ServiceException ex)
-            {   
-                throw new ServiceException(ex.GetMessage);
-            }
-            catch (Exception ex)
-            {
-                throw new ServiceException(ex.Message);
+                    return fileList;
+                }
+                catch (ServiceException ex)
+                {
+                    throw new ServiceException(ex.GetMessage);
+                }
+                catch (Exception ex)
+                {
+                    throw new ServiceException(ex.Message);
+                }
+                finally { unitOfWork.Dispose(); }
             }
         }
+
 
 
 

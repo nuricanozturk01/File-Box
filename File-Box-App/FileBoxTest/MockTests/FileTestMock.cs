@@ -69,10 +69,9 @@ namespace FileBoxTest.MockTests
 
             var fileDal = new FileRepositoryDal(m_fileRepositoy.Object);
             var folderDal = new FolderRepositoryDal(m_folderRepository.Object);
-            var userDal = new UserRepositoryDal(m_userRepository.Object);
-
+         
             // Act
-            var fileService = new FileService(fileDal, folderDal, m_mapper, userDal);
+            var fileService = new FileService(fileDal, folderDal, m_mapper);
             var filesOnFolders = await fileService
                 .GetFilesByFileExtensionAndFolderIdAsync(TEST_FOLDER_ID, ".pdf", Guid.Parse(TEST_USER_ID));
 
@@ -105,10 +104,9 @@ namespace FileBoxTest.MockTests
 
             var fileDal = new FileRepositoryDal(m_fileRepositoy.Object);
             var folderDal = new FolderRepositoryDal(m_folderRepository.Object);
-            var userDal = new UserRepositoryDal(m_userRepository.Object);
 
             // Act
-            var fileService = new FileService(fileDal, folderDal, m_mapper, userDal);
+            var fileService = new FileService(fileDal, folderDal, m_mapper);
             var filesOnFolders = async () => await fileService
                 .GetFilesByFileExtensionAndFolderIdAsync(TEST_FOLDER_ID, ".pdf", Guid.Parse(Util.INVALID_USER_ID));
 
@@ -140,10 +138,9 @@ namespace FileBoxTest.MockTests
 
             var fileDal = new FileRepositoryDal(m_fileRepositoy.Object);
             var folderDal = new FolderRepositoryDal(m_folderRepository.Object);
-            var userDal = new UserRepositoryDal(m_userRepository.Object);
 
             // Act
-            var fileService = new FileService(fileDal, folderDal, m_mapper, userDal);
+            var fileService = new FileService(fileDal, folderDal, m_mapper);
             var sortedFiles = await fileService.SortFilesByFileBytesAsync(TEST_FOLDER_ID, Guid.Parse(Util.USER_ID));
 
             Assert.NotNull(sortedFiles);
@@ -185,10 +182,10 @@ namespace FileBoxTest.MockTests
 
             var fileDal = new FileRepositoryDal(m_fileRepositoy.Object);
             var folderDal = new FolderRepositoryDal(m_folderRepository.Object);
-            var userDal = new UserRepositoryDal(m_userRepository.Object);
+            
 
             // Act
-            var fileService = new FileService(fileDal, folderDal, m_mapper, userDal);
+            var fileService = new FileService(fileDal, folderDal, m_mapper);
             var sortedFiles = await fileService.SortFilesByCreationDateAsync(TEST_FOLDER_ID, Guid.Parse(Util.USER_ID));
 
             Assert.NotNull(sortedFiles);

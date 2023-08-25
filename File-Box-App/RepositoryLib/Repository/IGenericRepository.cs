@@ -109,5 +109,11 @@ namespace RepositoryLib.Repository
          * 
          */
         Task UpdateAll(IEnumerable<T> folder);
+
+
+
+
+
+        T Save(T entity);
     }
 }

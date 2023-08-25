@@ -27,7 +27,6 @@ namespace File_Box_App.Configuration
             services.AddScoped<IForgottenInformationService, ForgottenInformationService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddSingleton<LoginTest>();
         }
 
 

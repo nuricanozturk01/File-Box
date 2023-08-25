@@ -20,7 +20,7 @@ namespace FileBoxTest.UploadTest
         public UploadTest()
         {
             var context = new FileBoxDbContext();
-            var userRepoDal = new UserRepositoryDal(new CrudRepository<FileboxUser, Guid>(context));
+
             var folderRepoDal = new FolderRepositoryDal(new CrudRepository<FileboxFolder, long>(context));
 
             var fileRepoDal = new FileRepositoryDal(new CrudRepository<FileboxFile, long>(context));
@@ -32,7 +32,7 @@ namespace FileBoxTest.UploadTest
                 cfg.CreateMap<FileboxFile, FileViewDto>().ReverseMap();
             }).CreateMapper();
             m_uploadService = new UploadService(folderRepoDal, fileRepoDal, mapper);
-            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper, userRepoDal);
+            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper);
         }
 
 
@@ -58,7 +58,7 @@ namespace FileBoxTest.UploadTest
         {
             return new List<IFormFile>
             {
-                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".txt", "Test Single")
+                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".single", "Test Single")
             };
         }
 
@@ -67,10 +67,10 @@ namespace FileBoxTest.UploadTest
         {
             return new List<IFormFile>
             {
-                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".txt", "Test1"),
-                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".txt", "Test2"),
-                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".txt", "Test3"),
-                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".txt", "Test4")
+                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".multiple", "Test1"),
+                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".multiple", "Test2"),
+                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".multiple", "Test3"),
+                GenerateFormFile(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".multiple", "Test4")
             };
         }
 
@@ -87,7 +87,7 @@ namespace FileBoxTest.UploadTest
         [Fact]
         public async void UploadSingleFile_WithGivenFormFilesFolderIdAndUserId_ShouldReturnEqual()
         {
-            var uploadedFileList = await m_uploadService.UploadMultipleFiles(CreateFileListSingle(),TESTED_FOLDER_ID,TESTED_USER_ID);
+            var uploadedFileList = await m_uploadService.UploadMultipleFiles(CreateFileListSingle(), TESTED_FOLDER_ID, TESTED_USER_ID);
 
             Assert.NotNull(uploadedFileList);
 
@@ -111,7 +111,7 @@ namespace FileBoxTest.UploadTest
         [Fact]
         public async void UploadMultipleFile_WithGivenFormFilesFolderIdAndUserId_ShouldReturnEqual()
         {
-            var uploadedFileList = await m_uploadService.UploadMultipleFiles(CreateFileListMultiple(),TESTED_FOLDER_ID,TESTED_USER_ID);
+            var uploadedFileList = await m_uploadService.UploadMultipleFiles(CreateFileListMultiple(), TESTED_FOLDER_ID, TESTED_USER_ID);
 
             Assert.NotNull(uploadedFileList);
 

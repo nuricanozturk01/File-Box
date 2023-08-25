@@ -68,7 +68,15 @@ namespace RepositoryLib.Repository
         public async Task<T> SaveAsync(T entity)
         {
             return (await m_dbContext.AddAsync(entity)).Entity;
+        }
 
+
+
+
+
+        public T Save(T entity)
+        {
+            return m_dbContext.Add(entity).Entity;
         }
 
 

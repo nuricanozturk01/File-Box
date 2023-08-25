@@ -340,10 +340,6 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[7.0.9, )"
-            },
-            "NRedisStack": {
-              "target": "Package",
-              "version": "[0.8.0, )"
             }
           },
           "imports": [

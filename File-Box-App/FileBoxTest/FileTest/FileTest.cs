@@ -41,7 +41,6 @@ namespace FileBoxTest.FileTest
         public FileTest()
         {
             var context = new FileBoxDbContext();
-            var userRepoDal = new UserRepositoryDal(new CrudRepository<FileboxUser, Guid>(context));
             var folderRepoDal = new FolderRepositoryDal(new CrudRepository<FileboxFolder, long>(context));
 
             var fileRepoDal = new FileRepositoryDal(new CrudRepository<FileboxFile, long>(context));
@@ -52,7 +51,7 @@ namespace FileBoxTest.FileTest
                 cfg.CreateMap<FolderViewDto, FileboxFolder>().ReverseMap();
                 cfg.CreateMap<FileboxFile, FileViewDto>().ReverseMap();
             }).CreateMapper();
-            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper, userRepoDal);
+            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper);
             m_fileController = new FileController(m_fileService);
         }
 

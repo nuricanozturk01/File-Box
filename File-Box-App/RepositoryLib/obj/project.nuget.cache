@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "PLrl37xxVS4lMffHoEpJPsK6r8UnzDCk9ITpccr/B6Rf1wUDwzdfgnxLVffvWzgYJiDWf1vaRGhuS5YOWC8slg==",
+  "dgSpecHash": "OGcV73gvZSnuWCEqMSfn81qeesZuZdvkVqQEWjIKX186yl+OyokHl4JqL47YdnVUpfdyFJkaUpx4UBV/ZxJboQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\hp\\source\\repos\\File-Box\\File-Box-App\\RepositoryLib\\RepositoryLib.csproj",
   "expectedPackageFiles": [
@@ -42,9 +42,6 @@
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.win32.registry\\5.0.0\\microsoft.win32.registry.5.0.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\microsoft.win32.systemevents\\5.0.0\\microsoft.win32.systemevents.5.0.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\mono.texttemplating\\2.2.1\\mono.texttemplating.2.2.1.nupkg.sha512",
-    "C:\\Users\\hp\\.nuget\\packages\\nredisstack\\0.8.0\\nredisstack.0.8.0.nupkg.sha512",
-    "C:\\Users\\hp\\.nuget\\packages\\pipelines.sockets.unofficial\\2.2.2\\pipelines.sockets.unofficial.2.2.2.nupkg.sha512",
-    "C:\\Users\\hp\\.nuget\\packages\\stackexchange.redis\\2.6.96\\stackexchange.redis.2.6.96.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\system.codedom\\4.4.0\\system.codedom.4.4.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\system.configuration.configurationmanager\\5.0.0\\system.configuration.configurationmanager.5.0.0.nupkg.sha512",
@@ -54,7 +51,6 @@
     "C:\\Users\\hp\\.nuget\\packages\\system.globalization\\4.3.0\\system.globalization.4.3.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\system.identitymodel.tokens.jwt\\6.21.0\\system.identitymodel.tokens.jwt.6.21.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\system.io\\4.3.0\\system.io.4.3.0.nupkg.sha512",
-    "C:\\Users\\hp\\.nuget\\packages\\system.io.pipelines\\5.0.1\\system.io.pipelines.5.0.1.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\system.memory.data\\1.0.2\\system.memory.data.1.0.2.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",

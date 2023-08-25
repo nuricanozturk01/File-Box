@@ -23,7 +23,6 @@ namespace FileBoxTest.DownloadTest
         public DownloadTest()
         {
             var context = new FileBoxDbContext();
-            var userRepoDal = new UserRepositoryDal(new CrudRepository<FileboxUser, Guid>(context));
             var folderRepoDal = new FolderRepositoryDal(new CrudRepository<FileboxFolder, long>(context));
 
             var fileRepoDal = new FileRepositoryDal(new CrudRepository<FileboxFile, long>(context));
@@ -35,7 +34,7 @@ namespace FileBoxTest.DownloadTest
                 cfg.CreateMap<FileboxFile, FileViewDto>().ReverseMap();
             }).CreateMapper();
 
-            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper, userRepoDal);
+            m_fileService = new FileService(fileRepoDal, folderRepoDal, mapper);
             m_downloadService = new DownloadService(fileRepoDal, folderRepoDal);
             m_folderService = new FolderService(folderRepoDal, mapper, fileRepoDal);
         }

@@ -1,10 +1,7 @@
-﻿using ElmahCore.Mvc;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using RepositoryLib.Models;
 using System.Text;
 
 namespace File_Box_App.Configuration
@@ -38,15 +35,6 @@ namespace File_Box_App.Configuration
         }
 
 
-        public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDbContext<FileBoxDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("sqlConnection")), ServiceLifetime.Transient);
-        }
-        public static void ConfigureElmah(this IServiceCollection services)
-        {
-            services.AddElmah();
-        }
-
         public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
@@ -73,8 +61,6 @@ namespace File_Box_App.Configuration
                 };
             }
             );
-
-
         }
     }
 }
