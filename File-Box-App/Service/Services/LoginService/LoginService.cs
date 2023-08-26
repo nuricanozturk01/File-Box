@@ -1,12 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using RepositoryLib.Dal;
+﻿using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using RepositoryLib.Models;
 using Service;
 using Service.Exceptions;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
+using Service.Services.TokenService;
 
 
 namespace FileBoxService.Service
@@ -15,81 +12,17 @@ namespace FileBoxService.Service
     {
         private readonly UserRepositoryDal m_userRepositoryDal;
         private readonly FolderRepositoryDal m_folderRepositoryDal;
-        private readonly IConfiguration m_configuration;
+        private readonly ITokenService m_tokenService;
 
 
-        public LoginService(UserRepositoryDal userRepositoryDal, IConfiguration configuration, FolderRepositoryDal folderRepositoryDal)
+        public LoginService(UserRepositoryDal userRepositoryDal, 
+                            FolderRepositoryDal folderRepositoryDal, 
+                            ITokenService tokenService)
         {
             m_userRepositoryDal = userRepositoryDal;
-            m_configuration = configuration;
             m_folderRepositoryDal = folderRepositoryDal;
-        }
+            m_tokenService = tokenService;
 
-
-
-
-
-
-        /*
-         * 
-         * 
-         * Create jwt token and return it
-         * 
-         * 
-         */
-        public string CreateToken()
-        {
-            var signinCredentials = GetSignInCredentials();
-
-            var tokenOptions = GenerateTokenOptions(signinCredentials);
-
-            var accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            return accessToken;
-        }
-
-
-
-
-
-
-        /*
-         * 
-         * 
-         * Control and validate the jwt token options
-         * returns JwtSecurityToken
-         * 
-         */
-        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signinCredentials)
-        {
-            var jwtSettings = m_configuration.GetSection("JwtSettings");
-
-            var tokenOptions = new JwtSecurityToken(
-                    issuer: jwtSettings["validIssuer"],
-                    audience: jwtSettings["validAudience"],
-                    expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expires"])),
-                    signingCredentials: signinCredentials);
-
-            return tokenOptions;
-        }
-
-
-
-
-
-
-        /*
-         * 
-         * 
-         * Return the SigningCredentials about jwt tokents.
-         * 
-         * 
-         */
-        private SigningCredentials GetSignInCredentials()
-        {
-            var jwtSettings = m_configuration.GetSection("JwtSettings");
-            var key = Encoding.UTF8.GetBytes(jwtSettings["secretKey"]);
-            var secret = new SymmetricSecurityKey(key);
-            return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
 
@@ -104,9 +37,18 @@ namespace FileBoxService.Service
          * 
          * 
          */
-        public bool Logout(string username)
+        public async Task<bool> Logout(string username, string token)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                throw new ServiceException(ex.Message);
+            }
+
         }
 
 
@@ -121,7 +63,7 @@ namespace FileBoxService.Service
          * 
          * 
          */
-        internal async void CreateDirectoryIfNotExists(string username, Guid userId, FileboxUser user)
+        internal async Task CreateDirectoryIfNotExists(string username, Guid userId, FileboxUser user)
         {
             var dirName = Util.DIRECTORY_BASE + username;
 
@@ -133,10 +75,13 @@ namespace FileBoxService.Service
             }
             else
             {
-                var rootFolder = m_folderRepositoryDal.FindByFilter(folder => folder.UserId == user.UserId).FirstOrDefault();
+                var rootFolder = (await m_folderRepositoryDal.FindByFilterAsync(folder => folder.UserId == user.UserId)).FirstOrDefault();
 
                 if (rootFolder is null)
-                    m_folderRepositoryDal.Save(new FileboxFolder(null, userId, username, username));
+                {
+                    await m_folderRepositoryDal.Save(new FileboxFolder(null, userId, username, username));
+                    await m_folderRepositoryDal.SaveChangesAsync();
+                }
             }
         }
 
@@ -152,14 +97,33 @@ namespace FileBoxService.Service
          * returns the status of login operation
          * 
          */
-        public async Task Login(UserLoginDTO userLoginDTO)
+        public async Task<(string? token, string uid)> Login(UserLoginDTO userLoginDTO)
         {
             var user = (await m_userRepositoryDal.FindByFilterAsyncUser(user => user.Username == userLoginDTO.Username)).FirstOrDefault();
 
             if (user is null || !Util.VerifyPassword(userLoginDTO.Password, user.Password))
                 throw new ServiceException("Username or password is invalid!");
 
-            CreateDirectoryIfNotExists(user.Username, user.UserId, user);
+            var token = m_tokenService.CreateToken(user.UserId.ToString());
+
+            await CreateDirectoryIfNotExists(user.Username, user.UserId, user);
+            user.LastToken = "Bearer " + token;
+            await m_userRepositoryDal.SaveChangesAsync();
+            
+            return (token, user.UserId.ToString());
+        }
+
+        public async Task<FileboxUser> FindUserByResetPasswordToken(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+                throw new ServiceException("Token is not found!");
+
+            var user = await m_userRepositoryDal.FindUserByToken(token);
+            
+            if (user is null)
+                throw new ServiceException("User Not found!");
+            
+            return user;
         }
     }
 }

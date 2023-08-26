@@ -6,10 +6,10 @@
         {
             app.UseCors(
                 builder => builder
-                    .WithOrigins("http://localhost:5299", "http://127.0.0.1:5500", "http://localhost:5299")
+                    .AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials()
+                   // .AllowCredentials()
                 );
         }
     }

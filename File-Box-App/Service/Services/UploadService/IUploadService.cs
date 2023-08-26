@@ -31,7 +31,7 @@ namespace Service.Services.UploadService
          * returns the boolean value that if success return true else return false
          * 
          */
-        Task<(string path, long totalLength)> UploadMultipleFiles(List<IFormFile> formFile, long folderId, Guid uid);
+        Task<List<FileViewDto>> UploadMultipleFiles(List<IFormFile> formFile, long folderId, Guid uid);
 
 
 
@@ -45,5 +45,10 @@ namespace Service.Services.UploadService
          * 
          */
         Task<List<FolderUploadDto>> UploadMultipleFolder(List<FolderUploadDto> sourcePaths, long folderId, Guid uid);
+
+
+
+
+
     }
 }

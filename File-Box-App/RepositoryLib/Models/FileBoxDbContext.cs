@@ -129,6 +129,14 @@ public partial class FileBoxDbContext : DbContext
                 .HasMaxLength(45)
                 .IsUnicode(false)
                 .HasColumnName("username");
+            entity.Property(e => e.LastToken)
+                .HasMaxLength(256)
+                .IsUnicode(false)
+                .HasColumnName("last_token");
+            entity.Property(e => e.ResetPasswordToken)
+                .HasMaxLength(256)
+                .IsUnicode(false)
+                .HasColumnName("reset_password_token");
         });
 
 

@@ -19,12 +19,12 @@ namespace Service.Services.FolderService
          * 
          */
         Task<IEnumerable<FolderViewDto>> GetFoldersByUserIdAsync(Guid userId);
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
         /*
          * 
          * 
@@ -32,7 +32,7 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        Task<bool> CreateFolder(FolderSaveDTO folderSaveDto);
+        Task<(string folderPath, long folderId, string creationDate)> CreateFolder(FolderSaveDTO folderSaveDto);
 
 
 
@@ -60,7 +60,7 @@ namespace Service.Services.FolderService
          * 
          * 
          */
-        Task<(string oldPath, string newPath)> RenameFolder(long folderId, string newFolderName, Guid userId);
+        Task<FolderViewDto> RenameFolder(long folderId, string newFolderName, Guid userId);
 
 
 
@@ -75,5 +75,40 @@ namespace Service.Services.FolderService
          * 
          */
         Task<FolderViewDto> FindRootFolder(Guid guid);
+
+
+
+
+
+
+        /*
+         * 
+         * Find all Folder and files with given user id
+         * 
+         */
+        Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid);
+
+
+
+
+
+
+        /*
+         * 
+         * Find all Folder and files with given user id and folder id
+         * 
+         */
+        Task<IEnumerable<FoldersWithFilesDto>> FindFolderWithFiles(Guid guid, long folderId);
+
+
+
+
+
+        /*
+         * 
+         * Find Folder with folder id and user id
+         * 
+         */
+        Task<FolderViewDto> FindFolderWithFolderId(Guid guid, long folderId);
     }
 }

@@ -12,5 +12,12 @@
             Message = message;
             Data = data;
         }
+
+        public ResponseMessage() { }
+
+        public string toString()
+        {
+            return "Success: " + Success + " - " + "Message: " + Message + "\nDATA" + Data + "\n";
+        }
     }
 }

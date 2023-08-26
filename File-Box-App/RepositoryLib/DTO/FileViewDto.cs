@@ -4,6 +4,9 @@ namespace RepositoryLib.DTO
 {
     public class FileViewDto
     {
+        [JsonPropertyName("file_id")]
+        public long FileId { get; }
+
         [JsonPropertyName("file_name")]
         public string FileName { get; }
         
@@ -22,18 +25,19 @@ namespace RepositoryLib.DTO
         [JsonPropertyName("updated_date")]
         public string UpdateDate { get; }
 
-        [JsonIgnore]
+        [JsonPropertyName("real_path")]
         public string RealMachinePath { get; } //"C:\\Users\\hp\\Desktop\\file_box\\ahmetkoc\\files\\deneme.docx"
 
-        public FileViewDto(string fileName, string fileType, long fileSize, string filePath, DateTime createdDate, DateTime updatedDate) 
+        public FileViewDto(long fileId, string fileName, string fileType, long fileSize, string filePath, DateTime? createdDate, DateTime? updatedDate) 
         {
+            FileId = fileId;
             FileName = fileName;
             FileType = fileType;
             FileSize = fileSize;
             FilePath = filePath;
-            UpdateDate = updatedDate.ToString("dd/MM/yyyy HH:mm:ss");
-            CreatedDate = createdDate.ToString("dd/MM/yyyy HH:mm:ss");
-            RealMachinePath = @"C:\Users\hp\Desktop\file_box\" + FilePath;
+            UpdateDate = updatedDate?.ToString("dd/MM/yyyy HH:mm:ss");
+            CreatedDate = createdDate?.ToString("dd/MM/yyyy HH:mm:ss");
+            RealMachinePath = @"C:\Users\hp\WebstormProjects\filebox\src\components\file_box\" + FilePath;
         }
     }
 }

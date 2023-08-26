@@ -4,6 +4,7 @@ using RepositoryLib.DTO;
 using Service.Exceptions;
 using Service.Services.FileServicePath;
 
+
 namespace Presentation.Controllers
 {
     [Authorize]
@@ -12,10 +13,10 @@ namespace Presentation.Controllers
     public class FileController : ControllerBase
     {
         private readonly IFileService m_fileService;
-
+       
         public FileController(IFileService fileService)
         {
-            m_fileService = fileService;
+            m_fileService = fileService;            
         }
 
 
@@ -34,6 +35,7 @@ namespace Presentation.Controllers
         {
             try
             {
+              
                 await m_fileService.CreateFile(fileSaveDto);
 
                 return Ok(new ResponseMessage(true, "file created successfully!", new FileResponseSuccessWithFileNameAndOwner(fileSaveDto.fileName, fileSaveDto.userId)));
@@ -83,14 +85,17 @@ namespace Presentation.Controllers
          * 
          */
 
-        [HttpPut("rename")]
+        [HttpPost("rename")]
         public async Task<IActionResult> RenameFile([FromQuery(Name = "fid")] long fileId, [FromQuery(Name = "n")] string newFileName, [FromQuery(Name = "uid")] string userId)
         {
             try
             {
-                var oldFileName = await m_fileService.RenameFile(fileId, newFileName, Guid.Parse(userId));
+                var oldFile = await m_fileService.RenameFile(fileId, newFileName, Guid.Parse(userId));
 
-                return Ok(new ResponseMessage(true, "Rename operation is successful!", new FileResponseSuccessRename(oldFileName, newFileName)));
+                return Ok(new ResponseMessage(true, "Rename operation is successful!", new
+                {
+                    file = oldFile
+                }));
             }
             catch (ServiceException ex)
             {
@@ -114,7 +119,8 @@ namespace Presentation.Controllers
         {
             try
             {
-                var filesOnFolders = await m_fileService.GetFilesByFolderIdAsync(folderId, Guid.Parse(userId));
+                var currentToken = HttpContext.Request.Headers["Authorization"].ToString();                
+                var filesOnFolders = await m_fileService.GetFilesByFolderIdAsync(folderId, Guid.Parse(userId), currentToken);
                 return Ok(new ResponseMessage(true, $"Found {filesOnFolders.Count()} items.", new FileResponseFileList(filesOnFolders)));
             }
             catch (ServiceException ex)
@@ -168,6 +174,120 @@ namespace Presentation.Controllers
             {
                 var filesOnFolders = await m_fileService.SortFilesByFileBytesAsync(folderId, Guid.Parse(userId));
                 return Ok(new ResponseMessage(true, $"Found {filesOnFolders.Count()} items.", new FileResponseFileList(filesOnFolders)));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+      /*
+       * 
+       * Sort files with given folder ıd, user ıd and file extension parameter
+       * 
+       * 
+       */
+        [HttpGet("sort/date/creation")]
+        public async Task<IActionResult> SortFilesByCreationDateAsync([FromQuery(Name = "fid")] long folderId,
+                                                                   [FromQuery(Name = "uid")] string userId)
+        {
+            try
+            {
+                var filesOnFolders = await m_fileService.SortFilesByCreationDateAsync(folderId, Guid.Parse(userId));
+                return Ok(new ResponseMessage(true, $"Found {filesOnFolders.Count()} items.", new FileResponseFileList(filesOnFolders)));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+        /*
+         * 
+         * Copy file to another path
+         * 
+         * 
+         */
+        [HttpPost("copy")]
+        public async Task<IActionResult> CopyFileToAnotherFolder(
+                                                                   [FromQuery(Name = "file_id")] long fileId,
+                                                                   [FromQuery(Name = "folder_id")] long folderId,
+                                                                   [FromQuery(Name = "uid")] string userId)
+        {
+            try
+            {
+                var filesOnFolders = await m_fileService.CopyFileToAnotherFolder(fileId, folderId, Guid.Parse(userId));
+                return Ok(new ResponseMessage(true, "File copied to another folder successfully!", new
+                {
+                    new_file = filesOnFolders
+                }));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+        /*
+         * 
+         * Copy file to another path
+         * 
+         * 
+         */
+        [HttpPost("move")]
+        public async Task<IActionResult> MoveFileToAnotherFolder(
+                                                                   [FromQuery(Name = "file_id")] long fileId,
+                                                                   [FromQuery(Name = "folder_id")] long folderId,
+                                                                   [FromQuery(Name = "uid")] string userId)
+        {
+            try
+            {
+                var filesOnFolders = await m_fileService.MoveFileToAnotherFolder(fileId, folderId, Guid.Parse(userId));
+                return Ok(new ResponseMessage(true, "File moved to another folder successfully!", new
+                {
+                    new_file = filesOnFolders
+                }));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Remove files with given file ids parameter
+         * 
+         */
+
+        [HttpPost("remove/multiple")]
+        public async Task<IActionResult> RemoveMultipleFile([FromBody] List<long> fileIds, [FromQuery(Name = "uid")] string uid)
+        {
+            try
+            {
+                var deletedFiles = await m_fileService.DeleteMultipleFile(fileIds, Guid.Parse(uid));
+
+                return Ok(new ResponseMessage(true, "file removed successfully!", new
+                {
+                    removed_files = deletedFiles
+                }));
             }
             catch (ServiceException ex)
             {

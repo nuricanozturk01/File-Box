@@ -1,5 +1,4 @@
 ﻿using RepositoryLib.DTO;
-using RepositoryLib.Models;
 
 namespace Service.Services.FileServicePath
 {
@@ -46,7 +45,7 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        Task<string> RenameFile(long fileId, string newFileName, Guid userId);
+        Task<FileViewDto> RenameFile(long fileId, string newFileName, Guid userId);
 
 
 
@@ -59,7 +58,7 @@ namespace Service.Services.FileServicePath
          * 
          * 
          */
-        Task<IEnumerable<FileViewDto>> GetFilesByFolderIdAsync(long folderId, Guid userId);
+        Task<IEnumerable<FileViewDto>> GetFilesByFolderIdAsync(long folderId, Guid userId, string currentToken);
 
 
 
@@ -84,5 +83,57 @@ namespace Service.Services.FileServicePath
          * 
          */
         Task<IEnumerable<FileViewDto>> SortFilesByFileBytesAsync(long folderId, Guid userId);
+
+
+
+
+        /*
+         * 
+         * Sort files with given folder ıd and user ıd about creation date
+         * 
+         * 
+         */
+        Task<IEnumerable<FileViewDto>> SortFilesByCreationDateAsync(long folderId, Guid userId);
+
+
+
+
+        /*
+         * 
+         * Find File with given parameter is file id and user id 
+         * 
+         */
+        Task<FileViewDto> FindFileByFileId(long fileId, Guid userId);
+
+
+
+
+
+        /*
+         * 
+         * Copy file to another folder. 
+         * 
+         */
+        Task<FileViewDto> CopyFileToAnotherFolder(long fileId, long targetFolderId, Guid userId);
+
+
+
+
+        /*
+         * 
+         * Move file to another folder. 
+         * 
+         */
+        Task<FileViewDto> MoveFileToAnotherFolder(long fileId, long targetFolderId, Guid userId);
+
+
+
+
+        /*
+         * 
+         * Remove multiple files
+         * 
+         */
+        Task<List<FileViewDto>> DeleteMultipleFile(List<long> fileIds, Guid guid);
     }
 }

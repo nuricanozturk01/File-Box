@@ -1,4 +1,5 @@
 ﻿using RepositoryLib.DTO;
+using RepositoryLib.Models;
 
 namespace FileBoxService.Service
 {
@@ -13,11 +14,24 @@ namespace FileBoxService.Service
         /*
          * 
          * 
+         * Find User with given reset password token
+         * 
+         */
+        Task<FileboxUser> FindUserByResetPasswordToken(string token);
+
+
+
+
+
+
+        /*
+         * 
+         * 
          * Login operation for user with given userLoginDto parameter. 
          * returns the status of login operation
          * 
          */
-        Task Login(UserLoginDTO userLoginDTO);
+        Task<(string? token, string uid)> Login(UserLoginDTO userLoginDTO);
 
 
 
@@ -31,20 +45,6 @@ namespace FileBoxService.Service
          * 
          * 
          */
-        bool Logout(string username);
-
-
-
-
-
-
-        /*
-         * 
-         * 
-         * Create jwt token and return it
-         * 
-         * 
-         */
-        string CreateToken();
+        Task<bool> Logout(string username, string token);
     }
 }

@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using RepositoryLib.Dal;
 using RepositoryLib.DTO;
 using Service.Exceptions;
 using Service.Services.FolderService;
+using System.IO;
 
 namespace Presentation.Controllers
 {
@@ -12,10 +15,11 @@ namespace Presentation.Controllers
     public class FolderController : ControllerBase
     {
         private readonly IFolderService m_folderService;
-
-        public FolderController(IFolderService folderService)
+        private readonly UserRepositoryDal m_userRepositoryDal;
+        public FolderController(IFolderService folderService, UserRepositoryDal userRepositoryDal)
         {
             m_folderService = folderService;
+            m_userRepositoryDal = userRepositoryDal;
         }
 
 
@@ -35,9 +39,9 @@ namespace Presentation.Controllers
         {
             try
             {
-                await m_folderService.CreateFolder(folderSaveDTO);
+               var response =  await m_folderService.CreateFolder(folderSaveDTO);
 
-                return Ok(new ResponseMessage(true, "folder created succesfully!", new FolderCreatedResponseDto(folderSaveDTO.currentFolderPath, folderSaveDTO.newFolderName)));
+                return Ok(new ResponseMessage(true, "folder created succesfully!", new FolderCreatedResponseDto(response.folderPath, response.folderId, folderSaveDTO.newFolderName, response.creationDate)));
             }
             catch (Exception ex)
             {
@@ -87,12 +91,13 @@ namespace Presentation.Controllers
          * 
          */
         [HttpGet("find/root/uuid")]
+        [AllowAnonymous]
         public async Task<IActionResult> FindRootFolderByUserId([FromQuery(Name = "uid")] string uid)
         {
             try
             {
                 var folder = await m_folderService.FindRootFolder(Guid.Parse(uid));
-                
+
                 return Ok(new ResponseMessage(true, "Root folder is found!", new
                 { // I use anonymous class.
                     folder_name = folder.folderName,
@@ -126,17 +131,13 @@ namespace Presentation.Controllers
 
                 return Ok(new ResponseMessage(true, "Folder rename operation is successful!", new
                 {
-                    folder_old_path = renameFolder.oldPath,
-                    folder_new_path = renameFolder.newPath
+                    folder = renameFolder
                 }));
             }
             catch (ServiceException ex)
             {
                 return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
             }
-            
-
-            return Ok();
         }
 
 
@@ -160,6 +161,102 @@ namespace Presentation.Controllers
                 return Ok(new ResponseMessage(true, "Folder removed successfully!", new
                 {
                     removed_folder_name = removedFolder
+                }));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Find Folders given user id
+         * 
+         */
+        [HttpGet("find/all/folderfiles")]
+        public async Task<IActionResult> FindFoldersWithFiles([FromQuery(Name = "id")] Guid id)
+        {
+            try
+            {
+
+
+               // var token = HttpContext.Request.Headers["Authorization"].ToString();
+                
+                var user = await m_userRepositoryDal.FindByIdAsyncUser(id);
+
+
+               /* if (token != user.LastToken)
+                    throw new ServiceException("You cannot access these files!");*/
+
+
+                var folders = await m_folderService.FindFolderWithFiles(id);
+                return Ok(new ResponseMessage(true, $"{folders.Count()} folder found!", folders));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Find Folders given user id but ont one folder
+         * 
+         */
+        [HttpGet("find/all/folder")]
+        public async Task<IActionResult> FindFoldersWithFilesOnlySelected([FromQuery(Name = "id")] Guid id, [FromQuery(Name = "fid")] long folderId)
+        {
+            try
+            {
+                //var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var user = await m_userRepositoryDal.FindByIdAsyncUser(id);
+
+                /*if (user == null || token != user.LastToken)
+                    throw new ServiceException("You cannot access these files!");*/
+
+                var folders = await m_folderService.FindFolderWithFiles(id, folderId);
+
+                return Ok(new ResponseMessage(true, $"{folders.Count()} folder found!", folders));
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(500, new ResponseMessage(false, ex.GetMessage, null));
+            }
+        }
+
+
+
+
+
+        /*
+         * 
+         * 
+         * Find Folders given user id but ont one folder
+         * 
+         */
+        [HttpGet("find/folder")]
+        public async Task<IActionResult> FindFoldersWithFolderId([FromQuery(Name = "id")] Guid id, [FromQuery(Name = "fid")] long folderId)
+        {
+            try
+            {
+                var folder = await m_folderService.FindFolderWithFolderId(id, folderId);               
+
+                return Ok(new ResponseMessage(true, "Folder is found!", new
+                {
+                    folder = folder
                 }));
             }
             catch (ServiceException ex)

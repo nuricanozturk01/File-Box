@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace RepositoryLib.Models;
+﻿namespace RepositoryLib.Models;
 
 public partial class FileboxUser
 {
@@ -16,6 +13,9 @@ public partial class FileboxUser
     public string Username { get; set; } = null!;
 
     public string Password { get; set; } = null!;
+
+    public string? LastToken { get; set; }
+    public string? ResetPasswordToken { get; set; }
 
     public virtual ICollection<FileboxFolder> FileboxFolders { get; set; } = new List<FileboxFolder>();
 }

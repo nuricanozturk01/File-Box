@@ -1,8 +1,11 @@
-﻿namespace Service
+﻿using System.Globalization;
+using System.Text;
+
+namespace Service
 {
     public class Util
     {
-        public static readonly string DIRECTORY_BASE = @"C:\Users\hp\Desktop\file_box\";
+        public static readonly string DIRECTORY_BASE = @"C:\Users\hp\WebstormProjects\filebox\src\components\file_box\";
         public static readonly long MAX_BYTE_UPLOAD_SINGLE_FILE = 1_073_741_824;
         public static readonly long MAX_BYTE_UPLOAD_MULTIPLE_FILE = 2_000_000_000;
 
@@ -18,6 +21,23 @@
         public static bool VerifyPassword(string enteredPassword, string hashedPassword)
         {
             return BCrypt.Net.BCrypt.Verify(enteredPassword, hashedPassword);
+        }
+
+        public static string ConvertToEnglishCharacters(string input)
+        {
+            var normalizedString = input.Normalize(NormalizationForm.FormKD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

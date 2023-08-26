@@ -1,15 +1,16 @@
-﻿using RepositoryLib.Dal;
-using RepositoryLib.Repository.Impl;
-using RepositoryLib.Repository;
+﻿using ElmahCore.Mvc;
 using FileBoxService.Service;
+using FileBoxTest.LoginTest;
+using RepositoryLib.Dal;
+using RepositoryLib.Repository;
 using Service.Services.DownloadService;
+using Service.Services.EmailService;
 using Service.Services.FileServicePath;
 using Service.Services.FolderService;
-using Service.Services.ScanService;
-using Service.Services.UploadService;
 using Service.Services.ForgottenInformationService;
-using Service.Services.PasswordGenerator;
-using Service.Services.EmailService;
+using Service.Services.ScanService;
+using Service.Services.TokenService;
+using Service.Services.UploadService;
 
 namespace File_Box_App.Configuration
 {
@@ -24,21 +25,27 @@ namespace File_Box_App.Configuration
             services.AddScoped<IUploadService, UploadService>();
             services.AddScoped<IDownloadService, DownloadService>();
             services.AddScoped<IForgottenInformationService, ForgottenInformationService>();
-            services.AddScoped<IPasswordGenerator, PasswordGenerator>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<UnitOfWork>();
         }
 
-        public static void ConfigureRepositoriesAndHelpers(this IServiceCollection services)
+
+
+
+
+
+        public static void ConfigureRepositoriesAndHelpers(this IServiceCollection services, IConfiguration configuration)
         {
             // helper classes
-            services.AddSingleton<UserRepositoryDal>();
-            services.AddSingleton<FolderRepositoryDal>();
-            services.AddSingleton<FileRepositoryDal>();
+            services.AddScoped<UserRepositoryDal>();
+            services.AddScoped<FolderRepositoryDal>();
+            services.AddScoped<FileRepositoryDal>();
+            services.AddElmah();
+            services.AddHttpContextAccessor();
 
             // Repositories
-            services.AddSingleton<IUserRepository, UserRepository>();
-            services.AddSingleton<IFileRepository, FileRepository>();
-            services.AddSingleton<IFolderRepository, FolderRepository>();
+            services.AddScoped(typeof(IGenericRepository<,>), typeof(CrudRepository<,>));
         }
 
     }

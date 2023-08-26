@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
-namespace RepositoryLib.Models;
+﻿namespace RepositoryLib.Models;
 
 public partial class FileboxFolder
 {
@@ -28,6 +24,15 @@ public partial class FileboxFolder
     public FileboxFolder(long? parentFolderId, Guid userId, string folderName, string folderPath)
     {
         ParentFolderId = parentFolderId;
+        UserId = userId;
+        FolderName = folderName;
+        FolderPath = folderPath;
+        CreationDate = DateTime.Now;
+        UpdatedDate = DateTime.Now;
+    }
+
+    public FileboxFolder(Guid userId, string folderName, string folderPath)
+    {
         UserId = userId;
         FolderName = folderName;
         FolderPath = folderPath;

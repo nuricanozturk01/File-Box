@@ -9,9 +9,9 @@ namespace RepositoryLib.DTO
         [Required(ErrorMessage = "new folder name is required!")]
         public string newFolderName { get; set; }
 
-        [JsonPropertyName("current_folder_path")]
+        [JsonPropertyName("current_folder_id")]
         [Required(ErrorMessage = "current folder path is required!")]
-        public string currentFolderPath { get; set; }
+        public long currentFolderId { get; set; }
 
         [JsonPropertyName("user_id")]
         [Required(ErrorMessage = "user id is required!")]
@@ -19,10 +19,10 @@ namespace RepositoryLib.DTO
 
         public FolderSaveDTO() { }
 
-        public FolderSaveDTO(string newFolderName, string currentFolderPath, string userId)
+        public FolderSaveDTO(string newFolderName, long currentFolderId, string userId)
         {
             this.newFolderName = newFolderName;
-            this.currentFolderPath = currentFolderPath;
+            this.currentFolderId = currentFolderId;
             this.userId = userId;
         }
     }
