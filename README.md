@@ -18,7 +18,7 @@ FileBox provides a set of features to easily manage your files:
 - **File Sorting:** Sort files by date created or file size.
 
 
-## Technologies and Approaches
+## Technologies and Approaches
 
 - Asp.Net Core v6
 - Entity Framework
