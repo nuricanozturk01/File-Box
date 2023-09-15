@@ -62,17 +62,12 @@ Then run the Asp.Net Core Project. (Backend application running port is: 5299)
 2. Clone the FrontEnd project
    Follow the link of front-end project
 
-## Screenshots And Videos   
+### Videos [Click the images]
 
-### Screenshots
+#### Preview Program
 
+[![Watch the video](https://github.com/nuricanozturk01/File-Box/assets/62218588/2caa159d-0202-4c03-acd0-6a170188464f)](https://www.youtube.com/watch?v=I_nEvGljPjk&list=PLB80H1Af3NVpbIEDaBZGPIUuR0x6by_vK)
 
-  
-### Videos
+#### Forgot Password
+[![Watch the video](https://github.com/nuricanozturk01/File-Box/assets/62218588/a25e0e8b-6b98-4272-8cbe-69c61d85b2fa)](https://www.youtube.com/watch?v=uhQnSITgZ_I&list=PLB80H1Af3NVpbIEDaBZGPIUuR0x6by_vK)
 
-
-https://www.youtube.com/watch?v=I_nEvGljPjk&list=PLB80H1Af3NVpbIEDaBZGPIUuR0x6by_vK
-
-https://www.youtube.com/watch?v=uhQnSITgZ_I&list=PLB80H1Af3NVpbIEDaBZGPIUuR0x6by_vK
-
- 
