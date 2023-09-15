@@ -40,9 +40,9 @@ FileBox provides a set of features to easily manage your files:
 
 ## Project Links
   ### Front-End
-    - https://github.com/nuricanozturk01/File-Box-FrontEnd
+    https://github.com/nuricanozturk01/File-Box-FrontEnd
   ### Selenium Test
-    - https://github.com/nuricanozturk01/File-Box-Selenium-Test
+    https://github.com/nuricanozturk01/File-Box-Selenium-Test
 
 
 ## Getting Started
