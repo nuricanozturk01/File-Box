@@ -66,8 +66,14 @@ Then run the Asp.Net Core Project. (Backend application running port is: 5299)
 
 #### Preview Of Application (Direct: Youtube)
 
-[![Watch the video](https://github.com/nuricanozturk01/File-Box/assets/62218588/2caa159d-0202-4c03-acd0-6a170188464f)](https://www.youtube.com/watch?v=I_nEvGljPjk&list=PLB80H1Af3NVpbIEDaBZGPIUuR0x6by_vK)
+
+https://github.com/nuricanozturk01/File-Box/assets/62218588/f30b0aa7-7870-4e36-8a7a-77543cd13a22
+
+
 
 #### Forgot Password (Direct: Youtube)
-[![Watch the video](https://github.com/nuricanozturk01/File-Box/assets/62218588/a25e0e8b-6b98-4272-8cbe-69c61d85b2fa)](https://www.youtube.com/watch?v=uhQnSITgZ_I&list=PLB80H1Af3NVpbIEDaBZGPIUuR0x6by_vK)
+
+
+
+https://github.com/nuricanozturk01/File-Box/assets/62218588/3fa0e752-6291-4924-b8b7-dbf9bb10e099
 
