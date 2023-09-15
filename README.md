@@ -3,6 +3,9 @@
 FileBox is an open-source application that helps you create your own personal file management system. It offers a range of features for file management, including file upload, download, renaming, moving, copying, and more. Additionally, it allows you to filter files by type, date created, and file size, as well as create folders for better organization.
 
 
+![Ekran Resmi 2023-09-15 20 32 18](https://github.com/nuricanozturk01/File-Box/assets/62218588/ad803f3a-bbf8-4a8d-a3ed-406afa4fa479)
+
+
 ## Features
 
 FileBox provides a set of features to easily manage your files:
