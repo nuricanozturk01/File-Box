@@ -5,6 +5,7 @@ FileBox is an open-source application that helps you create your own personal fi
 
 ![Ekran Resmi 2023-09-15 20 32 18](https://github.com/nuricanozturk01/File-Box/assets/62218588/ad803f3a-bbf8-4a8d-a3ed-406afa4fa479)
 
+![Ekran Resmi 2023-09-16 00 05 50](https://github.com/nuricanozturk01/File-Box/assets/62218588/bf43c595-e81b-4e43-9c89-e48a1b1e4946)
 
 ## Features
 
